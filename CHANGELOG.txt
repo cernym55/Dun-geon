@@ -1,0 +1,22 @@
+/  ( Note: only major changes affecting end users are logged here.
+/  For development updates, see Dun-geon's Bitbucket repository:
+/  https://bitbucket.org/torchie8/dun-geon/src )
+
+
+
+--- 01/08/2017 --- (latest)
+ - Dun-geon is now licensed under the GNU GPLv3.
+ - Initial playable version. Features a pre-set character, limited
+     UI and one world of random empty box-layout rooms.
+ - Added a repeat command under the keywords "a" ([a]gain), "again",
+     "repeat" and "last".
+     Repeat commands can be performed multiple times by specifying a number.
+     This replaces the memorized last command with the new multiplied command.
+     Specifying a direction changes it while keeping the rest of the command.
+ - Fixed a fatal bug where rooms could still spawn entrances leading outside
+     the world grid.
+
+
+
+/  ( Dun-geon: A text-based roguelike RPG/adventure.
+/  Copyright (C) 2016-2017 Matyas Cerny <cerny-matyas(at)email.cz> )
