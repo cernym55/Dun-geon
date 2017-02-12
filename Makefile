@@ -9,20 +9,23 @@ CC = clang++
 win: CC = i686-w64-mingw32-g++
 CFLAGS = -std=c++11 -Wall -pedantic
 win: CFLAGS = -std=c++11 -Wall -pedantic -static-libgcc -static-libstdc++ -Wno-sign-compare
-OBJS = main.o character.o entity.o room.o screen.o player.o utils.o nonport.o world.o parser.o item.o
+OBJS = main.o character.o entity.o room.o screen.o player.o utils.o nonport.o world.o parser.o item.o map_item_entity.o
 NONPORT = nonport.cpp
 win: NONPORT = nonport_win.cpp
 
 # Compiling for Linux
-linux: ./obj $(OBJS)
+linux: ./obj ./data $(OBJS)
 	$(CC) $(CFLAGS) -o $(PROG) $(addprefix $(OBJDIR)/,$(OBJS))
 
 # Compiling for Windows
-win: ./obj $(OBJS)
+win: ./obj ./data $(OBJS)
 	$(CC) $(CFLAGS) -o $(PROG) $(addprefix $(OBJDIR)/,$(OBJS))
 
 ./obj:
-	mkdir $(OBJDIR)
+	mkdir -p $(OBJDIR)
+
+./data:
+	mkdir -p ./data
 
 main.o: $(SRCDIR)/main.cpp
 	$(CC) $(CFLAGS) -c $(SRCDIR)/main.cpp -o $(OBJDIR)/main.o
@@ -32,6 +35,9 @@ character.o: $(SRCDIR)/character.cpp $(SRCDIR)/character.h $(SRCDIR)/entity.h
 
 entity.o: $(SRCDIR)/entity.cpp $(SRCDIR)/entity.h
 	$(CC) $(CFLAGS) -c $(SRCDIR)/entity.cpp -o $(OBJDIR)/entity.o
+
+map_item_entity.o: $(SRCDIR)/map_item_entity.cpp $(SRCDIR)/map_item_entity.h $(SRCDIR)/entity.h
+	$(CC) $(CFLAGS) -c $(SRCDIR)/map_item_entity.cpp -o $(OBJDIR)/map_item_entity.o
 
 room.o: $(SRCDIR)/room.cpp $(SRCDIR)/room.h
 	$(CC) $(CFLAGS) -c $(SRCDIR)/room.cpp -o $(OBJDIR)/room.o
@@ -57,6 +63,6 @@ parser.o: $(SRCDIR)/parser.cpp $(SRCDIR)/parser.h
 item.o: $(SRCDIR)/item.cpp $(SRCDIR)/item.h
 	$(CC) $(CFLAGS) -c $(SRCDIR)/item.cpp -o $(OBJDIR)/item.o
 
-.PHONY: clean
+.PHONY: clean ./obj ./data
 clean:
 	rm -rf $(OBJDIR) ./src/*~ *~ dun-geon dun-geon.exe ./data/controls.conf
