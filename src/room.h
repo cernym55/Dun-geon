@@ -42,6 +42,7 @@ struct Field {
 	int posX, posY;
 	bool isWall;
 	Entity *content;
+  Entity *background;
 };
 
 class Room {

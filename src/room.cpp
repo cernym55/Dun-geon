@@ -187,6 +187,7 @@ void Room::generate(Layout layout, bool forceUp, bool forceRight, bool forceDown
 	dimY += dimY % 2;
 	Field blankField;
 	blankField.content = nullptr;
+  blankField.background = nullptr;
 	blankField.isWall = true;
 	
 	// fill map with wall fields
