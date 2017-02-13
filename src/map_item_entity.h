@@ -32,7 +32,7 @@ class Item;
 
 class MapItemEntity : public Entity {
 private:
-  Item *content;
+    Item *content;
 public:
     MapItemEntity();
     MapItemEntity(Item *item);
