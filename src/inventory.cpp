@@ -1,6 +1,6 @@
 /* *
  *
- * File:  inventory.h
+ * File:  inventory.cpp
  * Brief: Stores items carried by the player
  *
  * Copyright (C) 2016-2017 Matyas Cerny <cerny-matyas(at)email.cz>
@@ -23,26 +23,34 @@
  *
  * */
 
-#ifndef _INVENTORY_H
-#define _INVENTORY_H
+#include "inventory.h"
+#include "item.h"
 
-#include <vector>
+std::vector<Item *> &Inventory::getItems() {
+    return items;
+}
 
-class Item;
+std::size_t Inventory::getSize() {
+    return items.size();
+}
 
-class Inventory {
-private:
-    std::vector<Item *> items;
-    std::vector<Item *> &getItems();
-public:
-    std::size_t getSize();
-    Item *getItem(int index);
-    void addItem(Item *item);
-    void removeItem(int index);
-    void deleteItem(int index);
-    void sortItemsByName();
-    void sortItemsByType();
-    void sortItemsByCount();
-};
+Item *Inventory::getItem(int index) {
+    return index < 0 || index >= items.size() ? nullptr : items[index];
+}
 
-#endif
+void Inventory::addItem(Item *item) {
+    items.push_back(item);
+}
+
+void Inventory::removeItem(int index) {
+    if (index >= 0 && index < items.size()) {
+        items.erase(items.begin() + index);
+    }
+}
+
+void Inventory::deleteItem(int index) {
+    if (index >= 0 && index < items.size()) {
+        delete items[index];
+        items.erase(items.begin() + index);
+    }
+}

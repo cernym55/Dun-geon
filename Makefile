@@ -9,7 +9,7 @@ CC = clang++
 win: CC = i686-w64-mingw32-g++
 CFLAGS = -std=c++11 -Wall -pedantic
 win: CFLAGS = -std=c++11 -Wall -pedantic -static-libgcc -static-libstdc++ -Wno-sign-compare
-OBJS = main.o character.o entity.o room.o screen.o player.o utils.o nonport.o world.o parser.o item.o map_item_entity.o
+OBJS = main.o character.o entity.o room.o screen.o player.o utils.o nonport.o world.o parser.o item.o map_item_entity.o inventory.o
 NONPORT = nonport.cpp
 win: NONPORT = nonport_win.cpp
 
@@ -62,6 +62,9 @@ parser.o: $(SRCDIR)/parser.cpp $(SRCDIR)/parser.h
 
 item.o: $(SRCDIR)/item.cpp $(SRCDIR)/item.h
 	$(CC) $(CFLAGS) -c $(SRCDIR)/item.cpp -o $(OBJDIR)/item.o
+
+inventory.o: $(SRCDIR)/inventory.cpp $(SRCDIR)/inventory.h
+	$(CC) $(CFLAGS) -c $(SRCDIR)/inventory.cpp -o $(OBJDIR)/inventory.o
 
 .PHONY: clean ./obj ./data
 clean:
