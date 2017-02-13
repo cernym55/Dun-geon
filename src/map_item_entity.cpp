@@ -48,5 +48,8 @@ void MapItemEntity::setContent(Item *value) {
 
 // Remember to call this every time items are destroyed and not picked up
 void MapItemEntity::deleteContent() {
-    delete content;
+    if (content != nullptr) {
+        delete content;
+        content = nullptr;
+    }
 }
