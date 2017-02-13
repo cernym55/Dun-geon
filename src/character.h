@@ -46,6 +46,7 @@ class Character: public Entity {
 		Room *currentRoom;
 		Direction lastMove;
 	public:
+    virtual ~Character() {};
 		void move(Direction direction);
 		std::vector<Field *> collision();
 		Field *collision(Direction direction);

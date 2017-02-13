@@ -36,7 +36,7 @@ class Entity {
 		std::string name;
 		std::string desc;
 	public:
-		// TODO: VIRTUAL DESTRUCTOR
+    virtual ~Entity() {};
 		int getPosX();
 		void setPosX(int value);
 		int getPosY();

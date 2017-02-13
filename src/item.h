@@ -43,6 +43,7 @@ protected:
     bool droppable;
     int price;
 public:
+    virtual ~Item() {};
     std::string getName();
     void setName(std::string value);
     std::string getDesc();
