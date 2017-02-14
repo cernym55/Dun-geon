@@ -63,10 +63,7 @@ Field *Character::collision(Direction direction) {
 
 // Returns whatever object the character has just walked up to (or null)
 Entity *Character::touching() {
-    if (lastMove >= 0 && collision(lastMove) != nullptr) {
-        return collision(lastMove)->content;
-    }
-    return nullptr;
+    return lastMove == nil || collision(lastMove) == nullptr ? nullptr : collision(lastMove)->content;
 }
 
 Stats &Character::getStats() {
