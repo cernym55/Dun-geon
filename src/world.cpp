@@ -30,7 +30,7 @@ World::World(int num, Player *pl) {
 	playerPtr = pl;
 	number = num;
 	nextRoomNum = 1;
-	rooms = std::vector<std::vector<Room *>>(15, std::vector<Room *>(15, nullptr));
+	rooms = std::vector<std::vector<Room *>>(WORLD_SIZE, std::vector<Room *>(WORLD_SIZE, nullptr));
 	for (int i = 0; i < rooms.size(); i++) {
 		for (int j = 0; j < rooms[i].size(); j++) {
 			rooms[i][j] = new Room(this);
@@ -59,11 +59,7 @@ int World::getNum() {
 }
 
 Room *World::getRoom(int x, int y) {
-	if (x < 0 || x >= 15 || y < 0 || y >= 15) {
-		return nullptr;
-	} else {
-		return rooms[x][y];
-	}
+    return x < 0 || x >= WORLD_SIZE || y < 0 || y >= WORLD_SIZE ? nullptr : rooms[x][y];
 }
 
 std::vector<std::vector<Room *>> &World::getRooms() {

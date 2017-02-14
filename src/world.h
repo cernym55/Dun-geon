@@ -28,6 +28,8 @@
 
 #include <vector>
 
+#define WORLD_SIZE 15
+
 class Room;
 class Player;
 
