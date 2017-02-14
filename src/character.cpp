@@ -27,70 +27,64 @@
 #include "room.h"
 
 void Character::move(Direction direction) {
-	switch (direction) {
-		case up:
-			posY -= 1;
-			break;
-		case right:
-			posX += 1;
-			break;
-		case down:
-			posY += 1;
-			break;
-		case left:
-			posX -= 1;
-			break;
-		case nil:
-			break;
-	}
-	lastMove = direction;
+    switch (direction) {
+    case up:
+        posY--;
+        break;
+    case right:
+        posX++;
+        break;
+    case down:
+        posY++;
+        break;
+    case left:
+        posX--;
+        break;
+    case nil:
+        break;
+    }
+    lastMove = direction;
 }
 
 // Returns pointers to the 4 fields adjacent to the character
-std::vector<Field *> Character::collision() {
-	std::vector<Field *> colBox = {
-		currentRoom->getField(posX, posY - 1),
-		currentRoom->getField(posX + 1, posY),
-		currentRoom->getField(posX, posY + 1),
-		currentRoom->getField(posX - 1, posY)
-	};
-	return colBox;
+std::array<Field *, 4> Character::collision() {
+    return { {
+        currentRoom->getField(posX, posY - 1),
+        currentRoom->getField(posX + 1, posY),
+        currentRoom->getField(posX, posY + 1),
+        currentRoom->getField(posX - 1, posY)
+    } };
 }
 
 // Returns pointer to a specific field adjacent to the character
 Field *Character::collision(Direction direction) {
-	if (direction == nil) {
-		return currentRoom->getField(posX, posY);
-	} else {
-		return collision()[direction];
-	}
+    return direction == nil ? currentRoom->getField(posX, posY) : collision()[direction];
 }
 
 // Returns whatever object the character has just walked up to (or null)
 Entity *Character::touching() {
-	if (lastMove >= 0 && collision(lastMove) != nullptr) {
-		return collision(lastMove)->content;
-	} else {
-		return nullptr;
-	}
+    if (lastMove >= 0 && collision(lastMove) != nullptr) {
+        return collision(lastMove)->content;
+    }
+    return nullptr;
 }
 
 Stats &Character::getStats() {
-	return stats;
+    return stats;
 }
 
 Room *Character::getCurrentRoom() {
-	return currentRoom;
+    return currentRoom;
 }
 
 void Character::setCurrentRoom(Room *roomPtr) {
-	currentRoom = roomPtr;
+    currentRoom = roomPtr;
 }
 
 Direction Character::getLastMove() {
-	return lastMove;
+    return lastMove;
 }
 
 void Character::setLastMove(Direction direction) {
-	lastMove = direction;
+    lastMove = direction;
 }

@@ -27,6 +27,7 @@
 #define _CHARACTER_H
 
 #include <vector>
+#include <array>
 #include "entity.h"
 
 struct Field;
@@ -35,20 +36,20 @@ class Room;
 enum Direction { up, right, down, left, nil = -1 };
 
 struct Stats {
-	int level, XP, XPToNextLevel, dun, health, healthMax, mana, manaMax, vigor, valor, haste, magic;
-	//std::vector<Skill> skills; //TODO: add this when skills are done
-	//std::vector<Item> inventory; //TODO: add this when items are done
+    int level, XP, XPToNextLevel, dun, health, healthMax, mana, manaMax, vigor, valor, haste, magic;
+    //std::vector<Skill> skills; //TODO: add this when skills are done
+    //std::vector<Item> inventory; //TODO: add this when items are done
 };
 
 class Character: public Entity {
-	protected:
+protected:
 		Stats stats;
 		Room *currentRoom;
 		Direction lastMove;
-	public:
+public:
     virtual ~Character() {};
 		void move(Direction direction);
-		std::vector<Field *> collision();
+		std::array<Field *, 4> collision();
 		Field *collision(Direction direction);
 		Entity *touching();
 		Stats &getStats();
