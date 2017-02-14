@@ -29,9 +29,9 @@
 #include "character.h"
 
 class Player : public Character {
-	private:
-	public:
-		bool attemptMove(Direction dir);
+private:
+public:
+    bool attemptMove(Direction dir);
 };
 
 #endif
