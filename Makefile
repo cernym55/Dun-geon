@@ -5,22 +5,31 @@ SRCDIR = src
 OBJDIR = obj
 DATADIR = data
 CXX = g++
-CXXFLAGS = -std=c++14 -Wall -pedantic
-SRCS = $(wildcard $(SRCDIR)/*.cpp)
-OBJS = $(patsubst %.cpp,%.o,$(notdir $(SRCS)))
+INCDIRS = $(shell find $(SRCDIR) -type d)
+INCFLAGS = $(addprefix -I,$(INCDIRS))
+CXXFLAGS = -std=c++14 -Wall -pedantic $(INCFLAGS) $(DEPFLAGS)
+DEPFLAGS = -MMD -MP
+SRCS = $(shell find $(SRCDIR) -name *.cpp)
+OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))
+DEPS = $(OBJS:.o=.d)
 
 all: $(PROG)
 
-$(PROG): $(addprefix $(OBJDIR)/, $(OBJS)) $(DATADIR)
-	$(CXX) $(CXXFLAGS) -o $(PROG) $(addprefix $(OBJDIR)/,$(OBJS))
+$(PROG): $(OBJS) $(DATADIR)
+	$(CXX) -o $(PROG) $(OBJS)
 
 $(OBJDIR) $(DATADIR):
-	mkdir -p $@
+	@mkdir -p $@
 
-$(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)
+%.o: %.cpp
+
+$(OBJDIR)/%.o: %.cpp | $(OBJDIR)
+	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	rm -rf $(OBJDIR) $(PROG)
+	@rm -rf $(OBJDIR) $(PROG)
 
-.PHONY: all clean $(OBJDIR) $(DATADIR)
+.PHONY: all clean
+
+-include $(DEPS)
