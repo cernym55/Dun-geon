@@ -1,9 +1,9 @@
 *~
 *.swp
 obj/
-*.o
+deps/
 .#*
 TODO
 data/
 dun-geon
-**/.vscode
+.vscode
