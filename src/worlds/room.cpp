@@ -8,6 +8,9 @@
 #define MAX_WIDTH_DIFF 15
 #define MAX_HEIGHT_DIFF 5
 
+namespace Worlds
+{
+
 Room::Room(World* worldPtr)
 {
     world = worldPtr;
@@ -89,20 +92,20 @@ void Room::setDimY(int value)
     dimY = value;
 }
 
-Field* Room::getEntrance(Direction dir)
+Field* Room::getEntrance(Entities::Direction dir)
 {
     switch (dir)
     {
-    case up:
+    case Entities::up:
         return entranceUp;
         break;
-    case right:
+    case Entities::right:
         return entranceRight;
         break;
-    case down:
+    case Entities::down:
         return entranceDown;
         break;
-    case left:
+    case Entities::left:
         return entranceLeft;
         break;
     default:
@@ -111,20 +114,20 @@ Field* Room::getEntrance(Direction dir)
     }
 }
 
-Room* Room::getNeighbor(Direction dir)
+Room* Room::getNeighbor(Entities::Direction dir)
 {
     switch (dir)
     {
-    case up:
+    case Entities::up:
         return roomUp;
         break;
-    case right:
+    case Entities::right:
         return roomRight;
         break;
-    case down:
+    case Entities::down:
         return roomDown;
         break;
-    case left:
+    case Entities::left:
         return roomLeft;
         break;
     default:
@@ -145,12 +148,12 @@ Field* Room::getField(int x, int y)
     }
 }
 
-Entity* Room::getEntity(int number)
+Entities::Entity* Room::getEntity(int number)
 {
     return entities[number];
 }
 
-void Room::addEntity(Entity* ent)
+void Room::addEntity(Entities::Entity* ent)
 {
     entities.push_back(ent);
 }
@@ -214,41 +217,41 @@ void Room::generate(Layout layout, bool forceUp, bool forceRight, bool forceDown
     // check if forced entrances are needed/allowed
     bool allowUp = true, allowRight = true, allowDown = true, allowLeft = true;
     // TODO: check if neighbor rooms aren't null (posX/posY check doesn't seem to be working)
-    if (getNeighbor(up) == nullptr)
+    if (getNeighbor(Entities::up) == nullptr)
     {
         allowUp = false;
         forceUp = false;
     }
-    else if (getNeighbor(up)->generated())
+    else if (getNeighbor(Entities::up)->generated())
     {
-        getNeighbor(up)->getEntrance(down) == nullptr ? allowUp = false : forceUp = true;
+        getNeighbor(Entities::up)->getEntrance(Entities::down) == nullptr ? allowUp = false : forceUp = true;
     }
-    if (getNeighbor(right) == nullptr)
+    if (getNeighbor(Entities::right) == nullptr)
     {
         allowRight = false;
         forceRight = false;
     }
-    else if (getNeighbor(right)->generated())
+    else if (getNeighbor(Entities::right)->generated())
     {
-        getNeighbor(right)->getEntrance(left) == nullptr ? allowRight = false : forceRight = true;
+        getNeighbor(Entities::right)->getEntrance(Entities::left) == nullptr ? allowRight = false : forceRight = true;
     }
-    if (getNeighbor(down) == nullptr)
+    if (getNeighbor(Entities::down) == nullptr)
     {
         allowDown = false;
         forceDown = false;
     }
-    else if (getNeighbor(down)->generated())
+    else if (getNeighbor(Entities::down)->generated())
     {
-        getNeighbor(down)->getEntrance(up) == nullptr ? allowDown = false : forceDown = true;
+        getNeighbor(Entities::down)->getEntrance(Entities::up) == nullptr ? allowDown = false : forceDown = true;
     }
-    if (getNeighbor(left) == nullptr)
+    if (getNeighbor(Entities::left) == nullptr)
     {
         allowLeft = false;
         forceLeft = false;
     }
-    else if (getNeighbor(left)->generated())
+    else if (getNeighbor(Entities::left)->generated())
     {
-        getNeighbor(left)->getEntrance(right) == nullptr ? allowLeft = false : forceLeft = true;
+        getNeighbor(Entities::left)->getEntrance(Entities::right) == nullptr ? allowLeft = false : forceLeft = true;
     }
 
     // generate layout
@@ -312,3 +315,5 @@ bool Room::generated()
 {
     return genStatus;
 }
+
+} /* namespace Worlds */

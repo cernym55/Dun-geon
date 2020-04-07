@@ -1,10 +1,13 @@
 #pragma once
 
 #include "entities/character.h"
+#include "entities/entity.h"
 #include <vector>
 
-class Entity;
-class World;
+namespace Worlds
+{
+
+class World; //TODO: remove forward declaration
 
 enum Layout
 {
@@ -17,8 +20,8 @@ struct Field
 {
     int posX, posY;
     bool isWall;
-    Entity* content;
-    Entity* background;
+    Entities::Entity* content;
+    Entities::Entity* background;
 };
 
 class Room
@@ -31,7 +34,7 @@ private:
     Field *entranceUp, *entranceLeft, *entranceRight, *entranceDown;
     Room *roomUp, *roomLeft, *roomRight, *roomDown;
     std::vector<std::vector<Field>> fields;
-    std::vector<Entity*> entities;
+    std::vector<Entities::Entity*> entities;
     bool genStatus;
 
 public:
@@ -49,14 +52,16 @@ public:
     int getDimY();
     void setDimX(int value);
     void setDimY(int value);
-    Field* getEntrance(Direction dir);
-    Room* getNeighbor(Direction dir);
+    Field* getEntrance(Entities::Direction dir);
+    Room* getNeighbor(Entities::Direction dir);
     Field* getField(int x, int y);
-    Entity* getEntity(int number);
-    void addEntity(Entity* ent);
+    Entities::Entity* getEntity(int number);
+    void addEntity(Entities::Entity* ent);
     void deleteEntity(int index);
     void updateEntityPos();
     void generate(Layout layout, bool forceUp = false, bool forceRight = false,
                   bool forceDown = false, bool forceLeft = false);
     bool generated();
 };
+
+} /* namespace Worlds */

@@ -2,8 +2,8 @@
 #include "entities/player.h"
 #include "misc/utils.h"
 #include "screen.h"
-#include "world/room.h"
-#include "world/world.h"
+#include "worlds/room.h"
+#include "worlds/world.h"
 #include <algorithm>
 #include <cctype>
 #include <cstdlib>
@@ -11,6 +11,9 @@
 
 #define PLAYER getScreen()->getCurrentRoom()->getParentWorld()->getPlayer()
 #define KEY_CONF_FILENAME "data/controls.conf"
+
+namespace UI
+{
 
 Parser::Parser()
 {
@@ -57,20 +60,20 @@ Parser::Parser()
     cmdDict["q"] = QUIT;
     cmdDict["quit"] = QUIT;
     cmdDict["exit"] = QUIT;
-    dirDict["u"] = up;
-    dirDict["up"] = up;
-    dirDict["r"] = right;
-    dirDict["right"] = right;
-    dirDict["d"] = down;
-    dirDict["down"] = down;
-    dirDict["l"] = left;
-    dirDict["left"] = left;
+    dirDict["u"] = Entities::up;
+    dirDict["up"] = Entities::up;
+    dirDict["r"] = Entities::right;
+    dirDict["right"] = Entities::right;
+    dirDict["d"] = Entities::down;
+    dirDict["down"] = Entities::down;
+    dirDict["l"] = Entities::left;
+    dirDict["left"] = Entities::left;
     andKeywords = { "and", "&", "then" };
     lastKeywords = { "a", "last", "repeat", "again" };
     makeKeyConf();
     loadKeyConf();
     last.type = NIL;
-    last.dir = nil;
+    last.dir = Entities::nil;
     last.rep = 1;
 }
 
@@ -87,7 +90,7 @@ void Parser::evalWorld()
     }
     Command cmd;
     cmd.type = NIL;
-    cmd.dir = nil;
+    cmd.dir = Entities::nil;
     cmd.rep = 1;
     int andLoc = -1;
     bool lastCalled = false;
@@ -176,21 +179,21 @@ void Parser::execCommand()
     }
     // exec & pop the command in front of queue
     CmdType type = cmdQueue.front().type;
-    Direction dir = cmdQueue.front().dir;
+    Entities::Direction dir = cmdQueue.front().dir;
     int rep = cmdQueue.front().rep;
     std::string dirStr;
     switch (dir)
     {
-    case up:
+    case Entities::up:
         dirStr = "up";
         break;
-    case right:
+    case Entities::right:
         dirStr = "right";
         break;
-    case down:
+    case Entities::down:
         dirStr = "down";
         break;
-    case left:
+    case Entities::left:
         dirStr = "left";
         break;
     default:
@@ -200,12 +203,12 @@ void Parser::execCommand()
     {
     case NIL:
         // drop through to move command if dir given
-        if (dir == nil)
+        if (dir == Entities::nil)
         {
             break;
         }
     case MOVE:
-        if (dir == nil)
+        if (dir == Entities::nil)
         {
             message = "No direction given.";
         }
@@ -253,7 +256,7 @@ void Parser::execCommand()
     cmdQueue.pop_front();
 }
 
-Direction Parser::findDir(std::string input)
+Entities::Direction Parser::findDir(std::string input)
 {
     if (dirDict.find(input) != dirDict.end())
     {
@@ -261,7 +264,7 @@ Direction Parser::findDir(std::string input)
     }
     else
     {
-        return nil;
+        return Entities::nil;
     }
 }
 
@@ -540,28 +543,28 @@ void Parser::loadKeyConf()
                 {
                     for (int i = 1; i < wordVec.size(); i++)
                     {
-                        dirDict[wordVec[i]] = up;
+                        dirDict[wordVec[i]] = Entities::up;
                     }
                 }
                 else if (wordVec[0] == "RIGHT")
                 {
                     for (int i = 1; i < wordVec.size(); i++)
                     {
-                        dirDict[wordVec[i]] = right;
+                        dirDict[wordVec[i]] = Entities::right;
                     }
                 }
                 else if (wordVec[0] == "DOWN")
                 {
                     for (int i = 1; i < wordVec.size(); i++)
                     {
-                        dirDict[wordVec[i]] = down;
+                        dirDict[wordVec[i]] = Entities::down;
                     }
                 }
                 else if (wordVec[0] == "LEFT")
                 {
                     for (int i = 1; i < wordVec.size(); i++)
                     {
-                        dirDict[wordVec[i]] = left;
+                        dirDict[wordVec[i]] = Entities::left;
                     }
                 }
                 else if (wordVec[0] == "AND")
@@ -582,3 +585,5 @@ void Parser::loadKeyConf()
         }
     }
 }
+
+} /* namespace UI */

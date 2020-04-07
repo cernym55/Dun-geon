@@ -1,7 +1,10 @@
 #include "world.h"
 #include "room.h"
 
-World::World(int num, Player* pl)
+namespace Worlds
+{
+
+World::World(int num, Entities::Player* pl)
 {
     playerPtr = pl;
     number = num;
@@ -62,7 +65,9 @@ void World::setNextRoomNum(int value)
     nextRoomNum = value;
 }
 
-Player* World::getPlayer()
+Entities::Player* World::getPlayer()
 {
     return playerPtr;
 }
+
+} /* namespace Worlds */

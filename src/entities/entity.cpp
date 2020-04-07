@@ -1,5 +1,8 @@
 #include "entity.h"
 
+namespace Entities
+{
+
 int Entity::getPosX()
 {
     return posX;
@@ -59,3 +62,5 @@ void Entity::setDesc(std::string value)
 {
     desc = value;
 }
+
+} /* namespace Entities */

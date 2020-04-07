@@ -1,7 +1,11 @@
 #pragma once
 
 #include "parser.h"
+#include "worlds/room.h"
 #include <iostream>
+
+namespace UI
+{
 
 enum Mode
 {
@@ -10,13 +14,11 @@ enum Mode
     INVENTORY //, BATTLE, SKILLS, INVENTORY, MAP
 };
 
-class Room;
-
 class Screen
 {
 private:
     Parser pars;
-    Room* currentRoom;
+    Worlds::Room* currentRoom;
     Mode mode;
     std::string getMapRow(int rowNumber);
     void printHUDRow(int rowNumber);
@@ -33,6 +35,8 @@ public:
     void drawBattle();
     Mode getMode();
     void setMode(Mode m);
-    Room* getCurrentRoom();
-    void setCurrentRoom(Room* roomPtr);
+    Worlds::Room* getCurrentRoom();
+    void setCurrentRoom(Worlds::Room* roomPtr);
 };
+
+} /* namespace UI */

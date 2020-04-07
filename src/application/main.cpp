@@ -1,16 +1,16 @@
 #include "entities/player.h"
-#include "io/parser.h"
-#include "io/screen.h"
-#include "world/room.h"
-#include "world/world.h"
+#include "ui/parser.h"
+#include "ui/screen.h"
+#include "worlds/room.h"
+#include "worlds/world.h"
 
 int main()
 {
     int nextWorldNum = 1;
-    Player* player = new Player();
-    World* world = new World(nextWorldNum, player);
-    world->getRoom(7, 7)->generate(box, false, false, false, false);
-    Screen screen;
+    Entities::Player* player = new Entities::Player();
+    Worlds::World* world = new Worlds::World(nextWorldNum, player);
+    world->getRoom(7, 7)->generate(Worlds::box, false, false, false, false);
+    UI::Screen screen;
     screen.clear();
     screen.mainMenu();
     player->setPosX(world->getRoom(7, 7)->getDimX() / 2);
@@ -18,7 +18,7 @@ int main()
     player->setBlocking(false);
     player->setName("Gref");
     player->setIcon(player->getName()[0]);
-    player->setLastMove(up);
+    player->setLastMove(Entities::up);
     player->getStats().level = 1;
     player->getStats().XP = 0;
     player->getStats().XPToNextLevel = 0;
@@ -32,7 +32,7 @@ int main()
     player->getStats().haste = 5;
     player->getStats().magic = 10;
     player->setCurrentRoom(world->getRoom(7, 7));
-    screen.setMode(WORLD);
+    screen.setMode(UI::WORLD);
     screen.setCurrentRoom(player->getCurrentRoom());
     screen.parser().setScreen(&screen);
     while (!screen.parser().quit())

@@ -6,6 +6,9 @@
 #include <map>
 #include <vector>
 
+namespace UI
+{
+
 enum CmdType
 {
     NIL,
@@ -25,7 +28,7 @@ enum CmdType
 struct Command
 {
     CmdType type;
-    Direction dir;
+    Entities::Direction dir;
     int rep;
 };
 
@@ -40,7 +43,7 @@ private:
     std::string message;
     Command last;
     std::deque<Command> cmdQueue;
-    std::map<std::string, Direction> dirDict;
+    std::map<std::string, Entities::Direction> dirDict;
     std::map<std::string, CmdType> cmdDict;
     std::vector<std::string> andKeywords;
     std::vector<std::string> lastKeywords;
@@ -54,7 +57,7 @@ public:
     void setScreen(Screen* value);
     std::deque<Command>& getCmdQueue();
     void execCommand();
-    Direction findDir(std::string input);
+    Entities::Direction findDir(std::string input);
     CmdType findCmdType(std::string input);
     void readInput();
     void parse();
@@ -66,3 +69,5 @@ public:
     void makeKeyConf();
     void loadKeyConf();
 };
+
+} /* namespace UI */

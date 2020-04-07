@@ -2,6 +2,9 @@
 
 #include <iostream>
 
+namespace Items
+{
+
 enum ItemType
 {
     trash,
@@ -22,7 +25,8 @@ protected:
     int price;
 
 public:
-    virtual ~Item(){};
+    Item();
+    virtual ~Item() = default;
     std::string getName();
     void setName(std::string value);
     std::string getDesc();
@@ -40,3 +44,5 @@ public:
     int getPrice();
     void setPrice(int value);
 };
+
+} /* namespace Items */

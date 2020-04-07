@@ -1,12 +1,15 @@
 #include "player.h"
-#include "world/room.h"
-#include "world/world.h"
+#include "worlds/room.h"
+#include "worlds/world.h"
+
+namespace Entities
+{
 
 // TODO: separate room transitions into another function
 // TODO: do not move the player, handle that elsewhere using the return bool
 bool Player::attemptMove(Direction dir)
 {
-    Field* colField = collision(dir);
+    Worlds::Field* colField = collision(dir);
     if (dir != nil && colField != nullptr && !colField->isWall)
     {
         if (colField->content == nullptr || !colField->content->isBlocking())
@@ -24,16 +27,16 @@ bool Player::attemptMove(Direction dir)
             switch (nextEntranceDir)
             {
             case up:
-                currentRoom->generate(randLayout, true);
+                currentRoom->generate(Worlds::randLayout, true);
                 break;
             case right:
-                currentRoom->generate(randLayout, false, true);
+                currentRoom->generate(Worlds::randLayout, false, true);
                 break;
             case down:
-                currentRoom->generate(randLayout, false, false, true);
+                currentRoom->generate(Worlds::randLayout, false, false, true);
                 break;
             case left:
-                currentRoom->generate(randLayout, false, false, false, true);
+                currentRoom->generate(Worlds::randLayout, false, false, false, true);
                 break;
             default:
                 break;
@@ -45,3 +48,5 @@ bool Player::attemptMove(Direction dir)
     }
     return false;
 }
+
+} /* namespace Entities */

@@ -1,5 +1,8 @@
 #include "item.h"
 
+namespace Items
+{
+
 std::string Item::getName()
 {
     return name;
@@ -59,3 +62,5 @@ void Item::setPrice(int value)
 {
     price = value;
 }
+
+} /* namespace Items */

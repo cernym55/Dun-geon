@@ -2,6 +2,9 @@
 
 #include <iostream>
 
+namespace Entities
+{
+
 class Entity
 {
 protected:
@@ -26,3 +29,5 @@ public:
     std::string getDesc();
     void setDesc(std::string value);
 };
+
+} /* namespace Entities */

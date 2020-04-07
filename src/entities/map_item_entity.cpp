@@ -1,6 +1,9 @@
 #include "map_item_entity.h"
 #include "items/item.h"
 
+namespace Entities
+{
+
 MapItemEntity::MapItemEntity()
 {
     content = nullptr;
@@ -8,19 +11,19 @@ MapItemEntity::MapItemEntity()
     icon = '*';
 }
 
-MapItemEntity::MapItemEntity(Item* item)
+MapItemEntity::MapItemEntity(Items::Item* item)
 {
     content = item;
     blocking = false;
     icon = '*';
 }
 
-Item* MapItemEntity::getContent()
+Items::Item* MapItemEntity::getContent()
 {
     return content;
 }
 
-void MapItemEntity::setContent(Item* value)
+void MapItemEntity::setContent(Items::Item* value)
 {
     content = value;
 }
@@ -34,3 +37,5 @@ void MapItemEntity::deleteContent()
         content = nullptr;
     }
 }
+
+} /* namespace Entities */

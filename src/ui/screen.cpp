@@ -2,8 +2,8 @@
 #include "entities/player.h"
 #include "misc/utils.h"
 #include "parser.h"
-#include "world/room.h"
-#include "world/world.h"
+#include "worlds/room.h"
+#include "worlds/world.h"
 #include <cmath>
 #include <limits>
 
@@ -14,6 +14,9 @@
 #define PLAYER_STATS currentRoom->getParentWorld()->getPlayer()->getStats()
 #define PLAYER_HEALTH_PC std::lround(PLAYER_STATS.health / 1.0 / PLAYER_STATS.healthMax * 100)
 #define PLAYER_MANA_PC std::lround(PLAYER_STATS.mana / 1.0 / PLAYER_STATS.manaMax * 100)
+
+namespace UI
+{
 
 Parser& Screen::parser()
 {
@@ -319,12 +322,12 @@ void Screen::setMode(Mode m)
     mode = m;
 }
 
-Room* Screen::getCurrentRoom()
+Worlds::Room* Screen::getCurrentRoom()
 {
     return currentRoom;
 }
 
-void Screen::setCurrentRoom(Room* roomPtr)
+void Screen::setCurrentRoom(Worlds::Room* roomPtr)
 {
     currentRoom = roomPtr;
 }
@@ -333,3 +336,5 @@ void Screen::clear()
 {
     std::cout << "\033[2J\033[;H";
 }
+
+} /* namespace UI */

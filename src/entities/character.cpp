@@ -1,5 +1,8 @@
 #include "character.h"
-#include "world/room.h"
+#include "worlds/room.h"
+
+namespace Entities
+{
 
 void Character::move(Direction direction)
 {
@@ -24,7 +27,7 @@ void Character::move(Direction direction)
 }
 
 // Returns pointers to the 4 fields adjacent to the character
-std::array<Field*, 4> Character::collision()
+std::array<Worlds::Field*, 4> Character::collision()
 {
     return { { currentRoom->getField(posX, posY - 1),
                currentRoom->getField(posX + 1, posY),
@@ -33,7 +36,7 @@ std::array<Field*, 4> Character::collision()
 }
 
 // Returns pointer to a specific field adjacent to the character
-Field* Character::collision(Direction direction)
+Worlds::Field* Character::collision(Direction direction)
 {
     return direction == nil ? currentRoom->getField(posX, posY) : collision()[direction];
 }
@@ -49,12 +52,12 @@ Stats& Character::getStats()
     return stats;
 }
 
-Room* Character::getCurrentRoom()
+Worlds::Room* Character::getCurrentRoom()
 {
     return currentRoom;
 }
 
-void Character::setCurrentRoom(Room* roomPtr)
+void Character::setCurrentRoom(Worlds::Room* roomPtr)
 {
     currentRoom = roomPtr;
 }
@@ -68,3 +71,5 @@ void Character::setLastMove(Direction direction)
 {
     lastMove = direction;
 }
+
+} /* namespace Entities */

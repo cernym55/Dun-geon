@@ -4,8 +4,16 @@
 #include <array>
 #include <vector>
 
-struct Field;
+namespace Worlds
+{
+
 class Room;
+struct Field;
+
+} /* namespace Worlds */
+
+namespace Entities
+{
 
 enum Direction
 {
@@ -27,18 +35,20 @@ class Character : public Entity
 {
 protected:
     Stats stats;
-    Room* currentRoom;
+    Worlds::Room* currentRoom;
     Direction lastMove;
 
 public:
     virtual ~Character(){};
     void move(Direction direction);
-    std::array<Field*, 4> collision();
-    Field* collision(Direction direction);
+    std::array<Worlds::Field*, 4> collision();
+    Worlds::Field* collision(Direction direction);
     Entity* touching();
     Stats& getStats();
-    Room* getCurrentRoom();
-    void setCurrentRoom(Room* roomPtr);
+    Worlds::Room* getCurrentRoom();
+    void setCurrentRoom(Worlds::Room* roomPtr);
     Direction getLastMove();
     void setLastMove(Direction direction);
 };
+
+} /* namespace Entities */
