@@ -1,8 +1,8 @@
-#include "parser.h"
-#include "player.h"
-#include "room.h"
-#include "screen.h"
-#include "world.h"
+#include "entities/player.h"
+#include "io/parser.h"
+#include "io/screen.h"
+#include "world/room.h"
+#include "world/world.h"
 
 int main()
 {

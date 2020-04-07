@@ -1,9 +1,9 @@
 #include "screen.h"
+#include "entities/player.h"
+#include "misc/utils.h"
 #include "parser.h"
-#include "player.h"
-#include "room.h"
-#include "utils.h"
-#include "world.h"
+#include "world/room.h"
+#include "world/world.h"
 #include <cmath>
 #include <limits>
 

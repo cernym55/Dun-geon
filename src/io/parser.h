@@ -1,6 +1,6 @@
 #pragma once
 
-#include "character.h"
+#include "entities/character.h"
 #include <deque>
 #include <iostream>
 #include <map>

@@ -1,5 +1,5 @@
 #include "map_item_entity.h"
-#include "item.h"
+#include "items/item.h"
 
 MapItemEntity::MapItemEntity()
 {

@@ -1,6 +1,6 @@
 #include "room.h"
-#include "player.h"
-#include "utils.h"
+#include "entities/player.h"
+#include "misc/utils.h"
 #include "world.h"
 
 #define MAX_WIDTH 40

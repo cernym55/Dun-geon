@@ -1,6 +1,6 @@
 #include "player.h"
-#include "room.h"
-#include "world.h"
+#include "world/room.h"
+#include "world/world.h"
 
 // TODO: separate room transitions into another function
 // TODO: do not move the player, handle that elsewhere using the return bool

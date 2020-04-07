@@ -1,5 +1,5 @@
 #include "character.h"
-#include "room.h"
+#include "world/room.h"
 
 void Character::move(Direction direction)
 {
