@@ -17,7 +17,7 @@ enum Mode
 class Screen
 {
 private:
-    Parser pars;
+    Parser& pars;
     Worlds::Room* currentRoom;
     Mode mode;
     std::string getMapRow(int rowNumber);
@@ -25,6 +25,9 @@ private:
     char getFieldIcon(int fieldX, int fieldY);
 
 public:
+    Screen(Parser& parser);
+    Screen(const Screen&) = delete;
+    ~Screen() = default;
     Parser& parser();
     void printCenter(std::string str, int spaceWidth, bool secondPad);
     void mainMenu();

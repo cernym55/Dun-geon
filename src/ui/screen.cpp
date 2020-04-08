@@ -18,6 +18,11 @@
 namespace UI
 {
 
+Screen::Screen(Parser& parser)
+    : pars(parser)
+{
+}
+
 Parser& Screen::parser()
 {
     return pars;
