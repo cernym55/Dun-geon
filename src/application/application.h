@@ -34,13 +34,6 @@ public:
      */
     void Run();
 
-    /**
-     * @brief Get the Player object
-     * 
-     * @return Entities::Player& 
-     */
-    Entities::Player& GetPlayer();
-
 private:
     /**
      * @brief Application state

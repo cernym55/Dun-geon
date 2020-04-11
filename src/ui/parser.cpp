@@ -15,7 +15,8 @@
 namespace UI
 {
 
-Parser::Parser()
+Parser::Parser(Screen& screen)
+    : m_Screen(screen)
 {
     quitCommand = false;
     cmdDict["wait"] = NIL;
@@ -75,10 +76,6 @@ Parser::Parser()
     last.type = NIL;
     last.dir = Entities::nil;
     last.rep = 1;
-}
-
-Parser::~Parser()
-{
 }
 
 void Parser::evalWorld()
@@ -154,16 +151,6 @@ void Parser::evalWorld()
         words.erase(words.begin(), words.begin() + andLoc + 1);
         eval();
     }
-}
-
-Screen* Parser::getScreen()
-{
-    return screen;
-}
-
-void Parser::setScreen(Screen* value)
-{
-    screen = value;
 }
 
 std::deque<Command>& Parser::getCmdQueue()
@@ -314,19 +301,17 @@ void Parser::parse()
 
 void Parser::eval()
 {
-    switch (getScreen()->getMode())
+    switch (m_Screen.GetView())
     {
-    case WORLD:
+    case Screen::View::World:
         evalWorld();
         break;
-    case TEST:
+    case Screen::View::Test:
         message = "";
         for (int i = 0; i < words.size(); i++)
         {
             message += words[i];
         }
-        break;
-    case INVENTORY:
         break;
     }
 }

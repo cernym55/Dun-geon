@@ -1,4 +1,5 @@
 #include "screen.h"
+#include "application/application.h"
 #include "entities/player.h"
 #include "misc/utils.h"
 #include "parser.h"
@@ -11,24 +12,24 @@
 #define WINDOW_HEIGHT 24
 #define MAP_PANEL_SIZE 50
 #define HUD_PANEL_SIZE 30
-#define PLAYER_STATS currentRoom->getParentWorld()->getPlayer()->getStats()
+#define PLAYER_STATS m_CurrentRoom->getParentWorld()->GetPlayer()->getStats()
 #define PLAYER_HEALTH_PC std::lround(PLAYER_STATS.health / 1.0 / PLAYER_STATS.healthMax * 100)
 #define PLAYER_MANA_PC std::lround(PLAYER_STATS.mana / 1.0 / PLAYER_STATS.manaMax * 100)
 
 namespace UI
 {
 
-Screen::Screen(Parser& parser)
-    : pars(parser)
+Screen::Screen(Parser& parser, Worlds::WorldManager& worldManager)
+    : m_Parser(parser), m_WorldManager(worldManager)
 {
 }
 
-Parser& Screen::parser()
+Parser& Screen::GetParser()
 {
-    return pars;
+    return m_Parser;
 }
 
-void Screen::printCenter(std::string str, int spaceWidth, bool secondPad)
+void Screen::PrintCenter(std::string str, int spaceWidth, bool secondPad)
 {
     int pad = (spaceWidth - str.size());
     pad = (pad - pad % 2) / 2;
@@ -53,7 +54,7 @@ void Screen::printCenter(std::string str, int spaceWidth, bool secondPad)
     }
 }
 
-void Screen::mainMenu()
+void Screen::MainMenu()
 {
     std::vector<std::string> splashMsg = {
         "Speakest not of it.",
@@ -76,15 +77,15 @@ void Screen::mainMenu()
               << "                               __| |\n           "
               << "                              |____/\t  by Matt Black\n\n\n";
     int splashNumber = RNG(0, splashMsg.size() - 1);
-    printCenter(splashMsg[splashNumber], WINDOW_WIDTH, false);
+    PrintCenter(splashMsg[splashNumber], WINDOW_WIDTH, false);
     std::cout << "\n\n\n";
-    printCenter("Select an option:", WINDOW_WIDTH, false);
+    PrintCenter("Select an option:", WINDOW_WIDTH, false);
     std::cout << std::endl;
-    printCenter("b - [b]egin", WINDOW_WIDTH, false);
+    PrintCenter("b - [b]egin", WINDOW_WIDTH, false);
     std::cout << std::endl;
-    printCenter("h - [h]elp", WINDOW_WIDTH, false);
+    PrintCenter("h - [h]elp", WINDOW_WIDTH, false);
     std::cout << std::endl;
-    printCenter("q - [q]uit", WINDOW_WIDTH, false);
+    PrintCenter("q - [q]uit", WINDOW_WIDTH, false);
     std::cout << "\n\n\n\t\t\t> ";
     char select;
     std::cin >> select;
@@ -101,47 +102,47 @@ void Screen::mainMenu()
         break;
     case 'q':
     case 'Q':
-        parser().setQuit();
+        GetParser().setQuit();
         break;
     }
 }
 
-char Screen::getFieldIcon(int fieldX, int fieldY)
+char Screen::GetFieldIcon(int fieldX, int fieldY)
 {
     char fieldIcon;
-    if (currentRoom->getField(fieldX, fieldY)->isWall)
+    if (m_CurrentRoom->getField(fieldX, fieldY)->isWall)
     {
         fieldIcon = '#'; // if wall
     }
-    else if (currentRoom->getField(fieldX, fieldY)->content == nullptr)
+    else if (m_CurrentRoom->getField(fieldX, fieldY)->content == nullptr)
     {
         fieldIcon = ' '; // blank space if not wall nor entity (empty)
     }
     else
     {
-        fieldIcon = currentRoom->getField(fieldX, fieldY)->content->getIcon(); // else get icon from entity
+        fieldIcon = m_CurrentRoom->getField(fieldX, fieldY)->content->getIcon(); // else get icon from entity
     }
     return fieldIcon;
 }
 
-std::string Screen::getMapRow(int rowNumber)
+std::string Screen::GetMapRow(int rowNumber)
 {
-    if (rowNumber > currentRoom->getDimY() - 1)
+    if (rowNumber > m_CurrentRoom->getDimY() - 1)
     {
         return "";
     }
     else
     {
         std::string mapRow = "";
-        for (int i = 0; i < currentRoom->getDimX(); i++)
+        for (int i = 0; i < m_CurrentRoom->getDimX(); i++)
         {
-            mapRow += getFieldIcon(i, rowNumber);
+            mapRow += GetFieldIcon(i, rowNumber);
         }
         return mapRow;
     }
 }
 
-void Screen::printHUDRow(int rowNumber)
+void Screen::PrintHUDRow(int rowNumber)
 {
     int i;
     switch (rowNumber)
@@ -171,16 +172,16 @@ void Screen::printHUDRow(int rowNumber)
         std::cout << "|\n";
         break;
     case 2:
-        std::cout << "|   World " << currentRoom->getParentWorld()->getNum();
-        for (i = 0; i < 10 - std::to_string(currentRoom->getRoomNum()).size(); i++)
+        std::cout << "|   World " << m_CurrentRoom->getParentWorld()->GetWorldNumber();
+        for (i = 0; i < 10 - std::to_string(m_CurrentRoom->getRoomNum()).size(); i++)
         {
             std::cout << ' ';
         }
-        std::cout << "Room " << currentRoom->getRoomNum() << "   |\n";
+        std::cout << "Room " << m_CurrentRoom->getRoomNum() << "   |\n";
         break;
     case 4:
         std::cout << '|';
-        printCenter(currentRoom->getParentWorld()->getPlayer()->getName(), HUD_PANEL_SIZE - 2, true);
+        PrintCenter(m_CurrentRoom->getParentWorld()->GetPlayer()->getName(), HUD_PANEL_SIZE - 2, true);
         std::cout << "|\n";
         break;
     case 5:
@@ -227,31 +228,31 @@ void Screen::printHUDRow(int rowNumber)
         break;
     case 12:
         std::cout << '|';
-        printCenter("Wealth: " + std::to_string(PLAYER_STATS.dun) + " dun", HUD_PANEL_SIZE - 2, true);
+        PrintCenter("Wealth: " + std::to_string(PLAYER_STATS.dun) + " dun", HUD_PANEL_SIZE - 2, true);
         std::cout << "|\n";
         break;
     case 14:
         std::cout << '|';
-        printCenter("[i]tems", HUD_PANEL_SIZE / 2 - 1, true);
-        printCenter("[s]kills", HUD_PANEL_SIZE / 2 - 1, true);
+        PrintCenter("[i]tems", HUD_PANEL_SIZE / 2 - 1, true);
+        PrintCenter("[s]kills", HUD_PANEL_SIZE / 2 - 1, true);
         std::cout << "|\n";
         break;
     case 15:
         std::cout << '|';
-        printCenter("[m]ap ", HUD_PANEL_SIZE / 2 - 1, true);
-        printCenter("[h]elp  ", HUD_PANEL_SIZE / 2 - 1, true);
+        PrintCenter("[m]ap ", HUD_PANEL_SIZE / 2 - 1, true);
+        PrintCenter("[h]elp  ", HUD_PANEL_SIZE / 2 - 1, true);
         std::cout << "|\n";
         break;
     case 16:
         std::cout << '|';
-        printCenter("[q]uit", HUD_PANEL_SIZE - 2, true);
+        PrintCenter("[q]uit", HUD_PANEL_SIZE - 2, true);
         std::cout << "|\n";
         break;
     case 19:
         std::cout << '|';
-        if (currentRoom->getParentWorld()->getPlayer()->touching() != nullptr)
+        if (m_CurrentRoom->getParentWorld()->getPlayer()->touching() != nullptr)
         {
-            printCenter(currentRoom->getParentWorld()->getPlayer()->touching()->getName(), HUD_PANEL_SIZE - 2, true);
+            PrintCenter(m_CurrentRoom->getParentWorld()->getPlayer()->touching()->getName(), HUD_PANEL_SIZE - 2, true);
         }
         else
         {
@@ -264,9 +265,9 @@ void Screen::printHUDRow(int rowNumber)
         break;
     case 20:
         std::cout << '|';
-        if (currentRoom->getParentWorld()->getPlayer()->touching() != nullptr)
+        if (m_CurrentRoom->getParentWorld()->GetPlayer()->touching() != nullptr)
         {
-            printCenter(currentRoom->getParentWorld()->getPlayer()->touching()->getDesc(), HUD_PANEL_SIZE - 2, true);
+            PrintCenter(m_CurrentRoom->getParentWorld()->GetPlayer()->touching()->getDesc(), HUD_PANEL_SIZE - 2, true);
         }
         else
         {
@@ -280,21 +281,21 @@ void Screen::printHUDRow(int rowNumber)
     }
 }
 
-void Screen::draw()
+void Screen::Draw()
 {
     // line 1
-    clear();
+    Clear();
     for (int i = 0; i < MAP_PANEL_SIZE; i++)
     {
         std::cout << ' ';
     }
-    printHUDRow(0);
+    PrintHUDRow(0);
 
     // ...and the rest (getMapRow returns blank string if passed invalid row)
     for (int i = 1; i < 22; i++)
     {
-        printCenter(getMapRow(i - 1), MAP_PANEL_SIZE, true);
-        printHUDRow(i);
+        PrintCenter(GetMapRow(i - 1), MAP_PANEL_SIZE, true);
+        PrintHUDRow(i);
     }
 
     // prompt separator
@@ -306,38 +307,30 @@ void Screen::draw()
     std::cout << "+\n";
 
     // message + prompt
-    std::cout << "  " << parser().getMessage() << "\n  > ";
+    std::cout << "  " << GetParser().getMessage() << "\n  > ";
 }
 
-void Screen::drawInventory()
+Screen::View Screen::GetView()
 {
+    return m_View;
 }
 
-void Screen::drawBattle()
+void Screen::SetView(View m)
 {
+    m_View = m;
 }
 
-Mode Screen::getMode()
+Worlds::Room* Screen::GetCurrentRoom()
 {
-    return mode;
+    return m_CurrentRoom;
 }
 
-void Screen::setMode(Mode m)
+void Screen::SetCurrentRoom(Worlds::Room* roomPtr)
 {
-    mode = m;
+    m_CurrentRoom = roomPtr;
 }
 
-Worlds::Room* Screen::getCurrentRoom()
-{
-    return currentRoom;
-}
-
-void Screen::setCurrentRoom(Worlds::Room* roomPtr)
-{
-    currentRoom = roomPtr;
-}
-
-void Screen::clear()
+void Screen::Clear()
 {
     std::cout << "\033[2J\033[;H";
 }

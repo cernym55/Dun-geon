@@ -16,17 +16,17 @@ protected:
 
 public:
     virtual ~Entity(){};
-    int getPosX();
+    int getPosX() const;
     void setPosX(int value);
-    int getPosY();
+    int getPosY() const;
     void setPosY(int value);
-    bool isBlocking();
+    bool isBlocking() const;
     void setBlocking(bool value);
-    char getIcon();
+    char getIcon() const;
     void setIcon(char value);
-    std::string getName();
+    std::string getName() const;
     void setName(std::string value);
-    std::string getDesc();
+    std::string getDesc() const;
     void setDesc(std::string value);
 };
 

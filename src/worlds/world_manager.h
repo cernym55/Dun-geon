@@ -1,6 +1,6 @@
 #pragma once
 
-#include "application/application_forward.h"
+#include "entities/player.h"
 #include "world.h"
 #include <memory>
 #include <vector>
@@ -17,9 +17,9 @@ public:
     /**
      * @brief Constructor
      * 
-     * @param application Application
+     * @param player player
      */
-    WorldManager(Application::Application& application);
+    WorldManager(Entities::Player& player);
 
     /**
      * @brief Delete copy constructor
@@ -32,14 +32,28 @@ public:
     ~WorldManager() = default;
 
     /**
-     * @brief Get the currently active world.
+     * @brief Get the currently active world
      * 
      * @return World& current world
      */
     World& GetCurrentWorld();
 
+    /**
+     * @brief Get the player position
+     * 
+     * @return std::pair<int, int> position (x, y)
+     */
+    std::pair<int, int> GetPlayerPosition() const;
+
 private:
-    Application::Application& m_Application;
+    /**
+     * @brief Get the Player object
+     * 
+     * @return const Entities::Player& player
+     */
+    const Entities::Player& GetPlayer() const;
+
+    const Entities::Player& m_Player;
     std::vector<std::unique_ptr<World>> m_Worlds;
     int m_NextWorldNum;
 };

@@ -37,7 +37,7 @@ class Screen;
 class Parser
 {
 private:
-    Screen* screen;
+    Screen& m_Screen;
     std::string input;
     std::vector<std::string> words;
     std::string message;
@@ -51,10 +51,9 @@ private:
     void evalWorld();
 
 public:
-    Parser();
-    ~Parser();
-    Screen* getScreen();
-    void setScreen(Screen* value);
+    Parser(Screen& screen);
+    Parser(const Parser& r) = delete;
+    ~Parser() = default;
     std::deque<Command>& getCmdQueue();
     void execCommand();
     Entities::Direction findDir(std::string input);

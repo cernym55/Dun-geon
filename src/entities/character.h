@@ -45,7 +45,8 @@ public:
     Worlds::Field* collision(Direction direction);
     Entity* touching();
     Stats& getStats();
-    Worlds::Room* getCurrentRoom();
+    const Stats& getStats() const;
+    const Worlds::Room* getCurrentRoom() const;
     void setCurrentRoom(Worlds::Room* roomPtr);
     Direction getLastMove();
     void setLastMove(Direction direction);

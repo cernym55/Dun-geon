@@ -1,5 +1,6 @@
 #pragma once
 
+#include "application/application_forward.h"
 #include "parser.h"
 #include "worlds/room.h"
 #include <iostream>
@@ -7,39 +8,76 @@
 namespace UI
 {
 
-enum Mode
-{
-    WORLD,
-    TEST,
-    INVENTORY //, BATTLE, SKILLS, INVENTORY, MAP
-};
-
+/**
+ * @brief Manager for text display and UI
+ */
 class Screen
 {
-private:
-    Parser& pars;
-    Worlds::Room* currentRoom;
-    Mode mode;
-    std::string getMapRow(int rowNumber);
-    void printHUDRow(int rowNumber);
-    char getFieldIcon(int fieldX, int fieldY);
-
 public:
-    Screen(Parser& parser);
+    /**
+     * @brief Primary interface view screens
+     * 
+     */
+    enum class View
+    {
+        /**
+         * @brief View of the game world
+         */
+        World,
+
+        /**
+         * @brief Test
+         */
+        Test,
+
+        /**
+         * @brief View of the player's inventory
+         */
+        Inventory
+    };
+
+    /**
+     * @brief Constructor
+     * 
+     * @param parser parser
+     */
+    Screen(Parser& parser, Worlds::WorldManager& worldManager);
+
+    /**
+     * @brief Delete copy constructor
+     * 
+     */
     Screen(const Screen&) = delete;
+
+    /**
+     * @brief Default destructor
+     */
     ~Screen() = default;
-    Parser& parser();
-    void printCenter(std::string str, int spaceWidth, bool secondPad);
-    void mainMenu();
-    void draw();
-    void prompt();
-    void clear();
-    void drawInventory();
-    void drawBattle();
-    Mode getMode();
-    void setMode(Mode m);
-    Worlds::Room* getCurrentRoom();
-    void setCurrentRoom(Worlds::Room* roomPtr);
+
+    /**
+     * @brief Get the Parser object
+     * 
+     * @return Parser& parser
+     */
+    Parser& GetParser();
+    void MainMenu();
+    void PrintCenter(std::string str, int spaceWidth, bool secondPad);
+    void Draw();
+    void Prompt();
+    void Clear();
+    View GetView();
+    void SetView(View m);
+    Worlds::Room* GetCurrentRoom();
+    void SetCurrentRoom(Worlds::Room* roomPtr);
+
+private:
+    Parser& m_Parser;
+    Worlds::WorldManager& m_WorldManager;
+    Worlds::Room* m_CurrentRoom;
+    View m_View;
+    std::string GetMapRow(int rowNumber);
+    void PrintHUDRow(int rowNumber);
+    char GetFieldIcon(int fieldX, int fieldY);
 };
 
 } /* namespace UI */

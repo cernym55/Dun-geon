@@ -8,25 +8,26 @@
 namespace Worlds
 {
 
+class WorldManager;
 class Room; //TODO: remove forward declaration
 
 class World
 {
-private:
-    int number;
-    int nextRoomNum;
-    std::vector<std::vector<Room*>> rooms;
-    Entities::Player* playerPtr;
-
 public:
-    World(int num, Entities::Player* pl);
+    World(WorldManager& worldManager, int num);
+    World(const World& world);
     ~World();
-    int getNum();
-    Room* getRoom(int x, int y);
-    std::vector<std::vector<Room*>>& getRooms();
-    int getNextRoomNum();
-    void setNextRoomNum(int value);
-    Entities::Player* getPlayer();
+    int GetWorldNumber() const;
+    Room* GetRoom(int x, int y);
+    std::vector<std::vector<Room*>>& GetRooms();
+    int GetNextRoomNum();
+    void SetNextRoomNum(int value);
+
+private:
+    WorldManager& m_WorldManager;
+    int m_WorldNumber;
+    int m_NextRoomNum;
+    std::vector<std::vector<Room*>> m_Rooms;
 };
 
 } /* namespace Worlds */

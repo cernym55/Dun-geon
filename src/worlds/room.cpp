@@ -2,6 +2,7 @@
 #include "entities/player.h"
 #include "misc/utils.h"
 #include "world.h"
+#include "world_manager.h"
 
 #define MAX_WIDTH 40
 #define MAX_HEIGHT 20
@@ -11,9 +12,9 @@
 namespace Worlds
 {
 
-Room::Room(World* worldPtr)
+Room::Room(WorldManager& worldManager, World& world)
+    : m_WorldManager(worldManager), m_World(world)
 {
-    world = worldPtr;
     entranceUp = nullptr;
     entranceLeft = nullptr;
     entranceRight = nullptr;
@@ -31,15 +32,15 @@ Room::~Room()
 
 void Room::loadNeighbors()
 {
-    roomUp = world->getRoom(posX, posY - 1);
-    roomLeft = world->getRoom(posX - 1, posY);
-    roomRight = world->getRoom(posX + 1, posY);
-    roomDown = world->getRoom(posX, posY + 1);
+    roomUp = m_World.GetRoom(posX, posY - 1);
+    roomLeft = m_World.GetRoom(posX - 1, posY);
+    roomRight = m_World.GetRoom(posX + 1, posY);
+    roomDown = m_World.GetRoom(posX, posY + 1);
 }
 
-World* Room::getParentWorld()
+World& Room::getParentWorld()
 {
-    return world;
+    return m_World;
 }
 
 int Room::getPosX()
@@ -183,9 +184,9 @@ void Room::updateEntityPos()
         getField(entities[i]->getPosX(), entities[i]->getPosY())->content = entities[i];
     }
     // add the player too if they are present
-    if (this == world->getPlayer()->getCurrentRoom())
+    if (this == m_WorldManager.GetPlayer()->getCurrentRoom())
     {
-        getField(world->getPlayer()->getPosX(), world->getPlayer()->getPosY())->content = world->getPlayer();
+        getField(m_WorldManager.GetPlayerPosition().first, m_WorldManager.GetPlayerPosition().second)->content = &m_WorldManager.GetPlayer();
     }
 }
 
@@ -256,18 +257,18 @@ void Room::generate(Layout layout, bool forceUp, bool forceRight, bool forceDown
 
     // generate layout
     int layoutNum;
-    if (layout == randLayout)
+    if (layout == Layout::RandLayout)
     {
         //layoutNum = RNG(0, NUM_LAYOUTS); TODO: uncomment after more layouts are added (don't ask why)
         layoutNum = 0;
     }
     else
     {
-        layoutNum = layout;
+        layoutNum = static_cast<int>(layout);
     }
     switch (layoutNum)
     {
-    case box:
+    case static_cast<int>(Layout::Box):
         for (int i = 1; i < dimX - 1; i++)
         {
             for (int j = 1; j < dimY - 1; j++)
@@ -306,8 +307,8 @@ void Room::generate(Layout layout, bool forceUp, bool forceRight, bool forceDown
         }
         break;
     }
-    roomNum = world->getNextRoomNum();
-    world->setNextRoomNum(roomNum + 1);
+    roomNum = m_World.GetNextRoomNum();
+    m_World.SetNextRoomNum(roomNum + 1);
     genStatus = true;
 }
 

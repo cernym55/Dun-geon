@@ -2,18 +2,17 @@
 
 #include "entities/character.h"
 #include "entities/entity.h"
+#include "world.h"
+#include "world_manager.h"
 #include <vector>
 
 namespace Worlds
 {
 
-class World; //TODO: remove forward declaration
-
-enum Layout
+enum class Layout
 {
-    randLayout = -1,
-    box,
-    NUM_LAYOUTS = 1
+    RandLayout = -1,
+    Box = 0,
 };
 
 struct Field
@@ -26,22 +25,12 @@ struct Field
 
 class Room
 {
-private:
-    int dimX, dimY;
-    int posX, posY;
-    World* world;
-    int roomNum;
-    Field *entranceUp, *entranceLeft, *entranceRight, *entranceDown;
-    Room *roomUp, *roomLeft, *roomRight, *roomDown;
-    std::vector<std::vector<Field>> fields;
-    std::vector<Entities::Entity*> entities;
-    bool genStatus;
-
 public:
-    Room(World* worldPtr);
+    Room(WorldManager& worldManager, World& world);
+    Room(const Room& r);
     ~Room();
     void loadNeighbors();
-    World* getParentWorld();
+    World& getParentWorld();
     int getPosX();
     int getPosY();
     int getRoomNum();
@@ -62,6 +51,18 @@ public:
     void generate(Layout layout, bool forceUp = false, bool forceRight = false,
                   bool forceDown = false, bool forceLeft = false);
     bool generated();
+
+private:
+    WorldManager& m_WorldManager;
+    World& m_World;
+    int dimX, dimY;
+    int posX, posY;
+    int roomNum;
+    Field *entranceUp, *entranceLeft, *entranceRight, *entranceDown;
+    Room *roomUp, *roomLeft, *roomRight, *roomDown;
+    std::vector<std::vector<Field>> fields;
+    std::vector<Entities::Entity*> entities;
+    bool genStatus;
 };
 
 } /* namespace Worlds */
