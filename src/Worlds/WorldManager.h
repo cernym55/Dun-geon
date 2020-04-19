@@ -67,7 +67,7 @@ public:
      * @param dir direction
      * @return Room& new current room
      */
-    const Room& SwitchCurrentRoom(Direction dir);
+    Room& SwitchCurrentRoom(Direction dir);
 
 private:
     /**

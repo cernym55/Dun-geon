@@ -33,23 +33,31 @@ public:
               char icon = 0,
               bool isBlocking = true);
 
-    virtual ~Character(){};
-    void move(Direction dir);
-    bool CanMove(Direction dir) const;
-    // std::array<Worlds::Field*, 4> collision();
-    const std::array<const Worlds::Field*, 4> collision() const;
-    const Worlds::Field* collision(Direction direction) const;
-    // Entity* touching();
-    const Entity* touching() const;
-    Stats& getStats();
-    const Stats& getStats() const;
-    Direction getLastMove();
-    void setLastMove(Direction direction);
+    /**
+     * @brief Default destructor
+     */
+    virtual ~Character() = default;
+
+    /**
+     * @brief Move the character position in the given direction
+     * 
+     * @param dir direction
+     */
+    void Move(Direction dir);
+
+    /**
+     * @brief Get the direction of the last move the character performed
+     * 
+     * @return Direction last move direction
+     */
+    Direction GetLastMoveDirection() const;
+
+    Stats& GetStats();
+    const Stats& GetStats() const;
 
 protected:
-    Stats stats;
-    const Worlds::Room* currentRoom; // I hate this, get rid of this pls
-    Direction lastMove;
+    Direction m_LastMoveDirection;
+    Stats m_Stats;
 };
 
 } /* namespace Entities */

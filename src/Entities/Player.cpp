@@ -1,6 +1,5 @@
 #include "Player.h"
 #include "Misc/Direction.h"
-#include "Worlds/Room.h"
 
 namespace Entities
 {
@@ -13,9 +12,9 @@ Player::Player(const std::string& name,
 {
 }
 
-void Player::SwitchCurrentRoom(Direction dir)
+void Player::SetLastMoveDirection(Direction dir)
 {
-    currentRoom = &currentRoom->GetNeighbor(dir);
+    m_LastMoveDirection = dir;
 }
 
 } /* namespace Entities */

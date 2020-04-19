@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Entity.h"
+#include "Character.h"
+#include "Misc/Direction.h"
 #include "Player.h"
 #include "Worlds/Room.h"
 #include "Worlds/WorldManager.h"
@@ -46,29 +48,85 @@ public:
     /**
      * @brief Perform behavior for all entities in the current room
      */
-    void UpdateEntitiesInCurrentRoom();
+    void CycleEntitiesInCurrentRoom();
+
+    /**
+     * @brief Try to move the player in the given direction
+     * This counts as a player action and results in entities cycling if successful.
+     * 
+     * @param dir direction
+     * @return true if move successful
+     */
+    bool TryMovePlayerEntity(Direction dir);
+
+    /**
+     * @brief Get the entity the character is touching
+     * This is any entity next to the character in the direction of its last move.
+     * 
+     * @param character character
+     * @return const Entity* entity being approached
+     */
+    const Entity* GetApproachedEntity(const Character& character) const;
 
 private:
+    /**
+     * @brief Check if the character will leave the room if it moves in the given direction
+     * 
+     * @param character character
+     * @param moveDirection direction of the move
+     * @return true if player will leave the room
+     */
+    bool IsCharacterAboutToLeaveRoom(const Character& character,
+                                     Direction moveDirection) const;
+
+    /**
+     * @brief Check if the character can move in the given direction
+     * 
+     * @param character character
+     * @param dir direction
+     * @return true if can move
+     */
+    bool CanCharacterMove(const Character& character, Direction dir) const;
+
+    /**
+     * @brief Get an array of fields surrounding the entity
+     * 
+     * @param entity entity
+     * @return const std::array<const Worlds::Field*, 4> surrounding fields
+     */
+    const std::array<const Worlds::Field*, 4> GetFieldsNextToEntity(const Entity& entity) const;
+
+    /**
+     * @brief Get the field next to the entity in the given direction
+     * 
+     * @param entity entity
+     * @param direction direction
+     * @return const Worlds::Field* neighboring field
+     */
+    const Worlds::Field* GetFieldNextToEntity(const Entity& entity, Direction dir) const;
+
     /**
      * @brief Perform behavior for all entities in the given room
      * 
      * @param room room
      */
-    void UpdateEntitiesInRoom(Worlds::Room& room);
+    void CycleEntitiesInRoom(Worlds::Room& room);
 
     /**
-     * @brief Place the stored entities in the given room in their positions
+     * @brief Place the entity in its position in the given room
      * 
+     * @param entity entity
      * @param room room
      */
-    void PlaceStoredEntitiesInRoom(Worlds::Room& room);
+    void PlaceEntityInRoom(Entity& entity, Worlds::Room& room);
 
     /**
-     * @brief Vacate all fields occupied by stored entities in the given room
+     * @brief Vacate the field occupied by the entity in the given room
      * 
+     * @param entity entity
      * @param room room
      */
-    void VacateStoredEntityFieldsInRoom(Worlds::Room& room);
+    void VacateEntityFieldInRoom(Entity& entity, Worlds::Room& room);
 
     Worlds::WorldManager& m_WorldManager;
     Player& m_Player;

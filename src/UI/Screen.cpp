@@ -1,5 +1,6 @@
 #include "Screen.h"
 #include "Application/Application.h"
+#include "Entities/EntityManager.h"
 #include "Entities/Player.h"
 #include "Misc/Coords.h"
 #include "Misc/Utils.h"
@@ -15,17 +16,19 @@
 #define WINDOW_HEIGHT 24
 #define MAP_PANEL_SIZE 50
 #define HUD_PANEL_SIZE 30
-#define PLAYER_HEALTH_PC std::lround(m_Player.getStats().health / 1.0 / m_Player.getStats().healthMax * 100)
-#define PLAYER_MANA_PC std::lround(m_Player.getStats().mana / 1.0 / m_Player.getStats().manaMax * 100)
+#define PLAYER_HEALTH_PC std::lround(m_Player.GetStats().health / 1.0 / m_Player.GetStats().healthMax * 100)
+#define PLAYER_MANA_PC std::lround(m_Player.GetStats().mana / 1.0 / m_Player.GetStats().manaMax * 100)
 
 namespace UI
 {
 
 Screen::Screen(Parser& parser,
                const Worlds::WorldManager& worldManager,
+               const Entities::EntityManager& entityManager,
                const Entities::Player& player)
     : m_Parser(parser),
       m_WorldManager(worldManager),
+      m_EntityManager(entityManager),
       m_Player(player)
 {
 }
@@ -153,7 +156,7 @@ std::string Screen::GetMapRow(int rowNumber)
 
 void Screen::PrintHUDRow(int rowNumber)
 {
-    const auto& stats = m_Player.getStats();
+    const auto& stats = m_Player.GetStats();
     int i;
     switch (rowNumber)
     {
@@ -260,9 +263,9 @@ void Screen::PrintHUDRow(int rowNumber)
         break;
     case 19:
         std::cout << '|';
-        if (m_Player.touching() != nullptr)
+        if (m_EntityManager.GetApproachedEntity(m_Player) != nullptr)
         {
-            PrintCenter(m_Player.touching()->GetName(), HUD_PANEL_SIZE - 2, true);
+            PrintCenter(m_EntityManager.GetApproachedEntity(m_Player)->GetName(), HUD_PANEL_SIZE - 2, true);
         }
         else
         {
@@ -275,9 +278,9 @@ void Screen::PrintHUDRow(int rowNumber)
         break;
     case 20:
         std::cout << '|';
-        if (m_Player.touching() != nullptr)
+        if (m_EntityManager.GetApproachedEntity(m_Player) != nullptr)
         {
-            PrintCenter(m_Player.touching()->GetDescription(), HUD_PANEL_SIZE - 2, true);
+            PrintCenter(m_EntityManager.GetApproachedEntity(m_Player)->GetDescription(), HUD_PANEL_SIZE - 2, true);
         }
         else
         {

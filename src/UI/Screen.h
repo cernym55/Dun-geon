@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Application/Application_forward.h"
+#include "Entities/Player.h"
+#include "Entities/EntityManager.h"
 #include "Misc/Coords.h"
 #include "Parser.h"
 #include "Worlds/Field.h"
@@ -42,8 +44,14 @@ public:
      * @brief Constructor
      * 
      * @param parser parser
+     * @param worldManager world manager
+     * @param entityManager entity manager
+     * @param player player entity
      */
-    Screen(Parser& parser, const Worlds::WorldManager& worldManager, const Entities::Player& player);
+    Screen(Parser& parser,
+           const Worlds::WorldManager& worldManager,
+           const Entities::EntityManager& entityManager,
+           const Entities::Player& player);
 
     /**
      * @brief Delete copy constructor
@@ -73,6 +81,7 @@ public:
 private:
     Parser& m_Parser;
     const Worlds::WorldManager& m_WorldManager;
+    const Entities::EntityManager& m_EntityManager;
     const Entities::Player& m_Player;
     View m_View;
     std::string GetMapRow(int rowNumber);

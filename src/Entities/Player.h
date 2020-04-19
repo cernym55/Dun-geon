@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Character.h"
+#include "Misc/Direction.h"
 #include <string>
 
 namespace Entities
@@ -23,11 +24,11 @@ public:
            bool isBlocking = true);
 
     /**
-     * @brief Switch the current room to the neighbor in the given direction
+     * @brief Set the direction of the last move
      * 
      * @param dir direction
      */
-    void SwitchCurrentRoom(Direction dir);
+    void SetLastMoveDirection(Direction dir);
 
 private:
 };

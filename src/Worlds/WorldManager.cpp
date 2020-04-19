@@ -37,7 +37,7 @@ bool WorldManager::IsCurrentRoom(const Room& room) const
     return room.GetCoords() == m_CurrentRoomCoords;
 }
 
-const Room& WorldManager::SwitchCurrentRoom(Direction dir)
+Room& WorldManager::SwitchCurrentRoom(Direction dir)
 {
     Coords newCoords = Coords(m_CurrentRoomCoords).MoveInDirection(dir);
     if (!GetCurrentRoom().HasNeighbor(dir))

@@ -44,14 +44,6 @@ public:
     bool TryMovePlayer(Direction dir);
 
 private:
-    /**
-     * @brief Check if the player is going to leave the room if they move in the given direction.
-     * 
-     * @param moveDirection direction of the move
-     * @return true if player will leave the room
-     */
-    bool IsPlayerAboutToLeaveRoom(Direction moveDirection) const;
-
     Entities::EntityManager& m_EntityManager;
     Worlds::WorldManager& m_WorldManager;
     Entities::Player& m_PlayerEntity;
