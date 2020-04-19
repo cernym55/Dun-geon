@@ -72,11 +72,6 @@ const Stats& Character::getStats() const
     return stats;
 }
 
-const Worlds::Room* Character::getCurrentRoom() const
-{
-    return currentRoom;
-}
-
 Direction Character::getLastMove()
 {
     return lastMove;

@@ -28,7 +28,7 @@ bool Controller::TryMovePlayer(Direction dir)
         Direction nextRoomEntranceDir = dir.Opposite();
         m_WorldManager.SwitchCurrentRoom(dir);
         m_PlayerEntity.SwitchCurrentRoom(dir);
-        Coords newCoords = const_cast<const Worlds::WorldManager&>(m_WorldManager)
+        Coords newCoords = m_WorldManager
                                .GetCurrentRoom()
                                .GetEntrance(nextRoomEntranceDir)
                                .GetCoords();
@@ -46,9 +46,9 @@ bool Controller::IsPlayerAboutToLeaveRoom(Direction moveDirection) const
     case Direction::Value::Up:
         return m_PlayerEntity.GetCoords().GetY() == 0;
     case Direction::Value::Right:
-        return m_PlayerEntity.GetCoords().GetX() == m_PlayerEntity.getCurrentRoom()->GetWidth() - 1;
+        return m_PlayerEntity.GetCoords().GetX() == m_WorldManager.GetCurrentRoom().GetWidth() - 1;
     case Direction::Value::Down:
-        return m_PlayerEntity.GetCoords().GetY() == m_PlayerEntity.getCurrentRoom()->GetHeight() - 1;
+        return m_PlayerEntity.GetCoords().GetY() == m_WorldManager.GetCurrentRoom().GetHeight() - 1;
     case Direction::Value::Left:
         return m_PlayerEntity.GetCoords().GetX() == 0;
     default:

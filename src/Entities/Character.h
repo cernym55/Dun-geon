@@ -43,13 +43,12 @@ public:
     const Entity* touching() const;
     Stats& getStats();
     const Stats& getStats() const;
-    const Worlds::Room* getCurrentRoom() const;
     Direction getLastMove();
     void setLastMove(Direction direction);
 
 protected:
     Stats stats;
-    const Worlds::Room* currentRoom;
+    const Worlds::Room* currentRoom; // I hate this, get rid of this pls
     Direction lastMove;
 };
 
