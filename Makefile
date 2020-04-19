@@ -7,7 +7,7 @@ DATADIR = data
 CXX = g++
 INCDIRS = $(shell find $(SRCDIR) -type d)
 INCFLAGS = $(addprefix -I,$(INCDIRS))
-CXXFLAGS = -std=c++14 -Wall -pedantic $(INCFLAGS) $(DEPFLAGS)
+CXXFLAGS = -g -O2 -std=c++14 -Wall -pedantic $(INCFLAGS) $(DEPFLAGS)
 DEPFLAGS = -MMD -MP
 SRCS = $(shell find $(SRCDIR) -name *.cpp)
 OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))
