@@ -1,6 +1,6 @@
-/  ( Note: only major changes affecting end users are logged here.
-/  For development updates, see Dun-geon's Bitbucket repository:
-/  https://bitbucket.org/torchie8/dun-geon/src )
+/  ( Note: only major changes are logged here, with a few exceptions.
+/  For more development progress, see Dun-geon's Github repository:
+/  https://github.com/cernym55/Dun-geon )
 
 
 --- v0.2.0 | 04/20/2020 --- (latest)
@@ -24,5 +24,4 @@
 
 
 
-/  ( Dun-geon: A terminal-based roguelike RPG/adventure.
-/  Copyright (C) 2016-2020 Matyas Cerny <nospikeen@gmail.com> )
+/  ( Dun-geon: A terminal-based roguelike RPG/adventure. )
