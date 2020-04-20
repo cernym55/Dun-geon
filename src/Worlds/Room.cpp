@@ -4,7 +4,7 @@
 #include "Field.h"
 #include "Misc/Coords.h"
 #include "Misc/Direction.h"
-#include "Misc/Utils.h"
+#include "Misc/RNG.h"
 #include "World.h"
 #include "WorldManager.h"
 #include <sstream>
@@ -27,14 +27,6 @@ Room::Room(WorldManager& worldManager, World& world, int roomNumber, Coords coor
     entranceLeft = nullptr;
     entranceRight = nullptr;
     entranceDown = nullptr;
-}
-
-Room::~Room()
-{
-    for (int i = 0; i < entities.size(); i++)
-    {
-        delete entities[i];
-    }
 }
 
 Coords Room::GetCoords() const
@@ -175,9 +167,9 @@ const Field& Room::GetFieldAt(Coords coords) const
 void Room::generate(Layout layout, bool forceUp, bool forceRight, bool forceDown, bool forceLeft)
 {
     // generate random dimensions (within constraints)
-    m_Width = RNG(0, 120) % MAX_WIDTH_DIFF + MAX_WIDTH - MAX_WIDTH_DIFF;
+    m_Width = RNG::RandomInt(MAX_WIDTH_DIFF) + MAX_WIDTH - MAX_WIDTH_DIFF;
     m_Width += m_Width % 2;
-    m_Height = RNG(0, 120) % MAX_HEIGHT_DIFF + MAX_HEIGHT - MAX_HEIGHT_DIFF;
+    m_Height = RNG::RandomInt(MAX_HEIGHT_DIFF) + MAX_HEIGHT - MAX_HEIGHT_DIFF;
     m_Height += m_Height % 2;
 
     // fill map with wall fields
@@ -255,30 +247,30 @@ void Room::generate(Layout layout, bool forceUp, bool forceRight, bool forceDown
             }
         }
         // generate entrances (check if room is not on edge of map and if neighbor rooms can be connected)
-        if (allowUp && (forceUp || RNG(0, 1) == 0))
+        if (allowUp && (forceUp || RNG::Chance(0.5)))
         {
-            entranceUp = &GetFieldAt({ RNG(3, m_Width - 4), 0 });
+            entranceUp = &GetFieldAt({ RNG::RandomInt(3, m_Width - 3), 0 });
             entranceUp->VacateForeground();
             GetFieldAt({ entranceUp->GetCoords().GetX() - 1, 0 }).VacateForeground();
             GetFieldAt({ entranceUp->GetCoords().GetX() + 1, 0 }).VacateForeground();
         }
-        if (allowDown && (forceDown || RNG(0, 1) == 0))
+        if (allowDown && (forceDown || RNG::Chance(0.5)))
         {
-            entranceDown = &GetFieldAt({ RNG(3, m_Width - 4), m_Height - 1 });
+            entranceDown = &GetFieldAt({ RNG::RandomInt(3, m_Width - 3), m_Height - 1 });
             entranceDown->VacateForeground();
             GetFieldAt({ entranceDown->GetCoords().GetX() - 1, m_Height - 1 }).VacateForeground();
             GetFieldAt({ entranceDown->GetCoords().GetX() + 1, m_Height - 1 }).VacateForeground();
         }
-        if (allowLeft && (forceLeft || RNG(0, 1) == 0))
+        if (allowLeft && (forceLeft || RNG::Chance(0.5)))
         {
-            entranceLeft = &GetFieldAt({ 0, RNG(3, m_Height - 4) });
+            entranceLeft = &GetFieldAt({ 0, RNG::RandomInt(3, m_Height - 3) });
             entranceLeft->VacateForeground();
             GetFieldAt({ 0, entranceLeft->GetCoords().GetY() - 1 }).VacateForeground();
             GetFieldAt({ 0, entranceLeft->GetCoords().GetY() + 1 }).VacateForeground();
         }
-        if (allowRight && (forceRight || RNG(0, 1) == 0))
+        if (allowRight && (forceRight || RNG::Chance(0.5)))
         {
-            entranceRight = &GetFieldAt({ m_Width - 1, RNG(3, m_Height - 4) });
+            entranceRight = &GetFieldAt({ m_Width - 1, RNG::RandomInt(3, m_Height - 3) });
             entranceRight->VacateForeground();
             GetFieldAt({ m_Width - 1, entranceRight->GetCoords().GetY() - 1 }).VacateForeground();
             GetFieldAt({ m_Width - 1, entranceRight->GetCoords().GetY() + 1 }).VacateForeground();

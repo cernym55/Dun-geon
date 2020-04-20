@@ -3,6 +3,7 @@
 #include "Entities/EntityManager.h"
 #include "Entities/Player.h"
 #include "Misc/Coords.h"
+#include "Misc/RNG.h"
 #include "Misc/Utils.h"
 #include "Parser.h"
 #include "Worlds/Field.h"
@@ -85,7 +86,7 @@ void Screen::MainMenu()
               << "\\____/  \\_____| \\_/ \\_|       \\__  | \\____/ \\____/ \\_/ \\_|\n           "
               << "                               __| |\n           "
               << "                              |____/\t  by Matt Black\n\n\n";
-    int splashNumber = RNG(0, splashMsg.size() - 1);
+    int splashNumber = RNG::RandomInt(splashMsg.size());
     PrintCenter(splashMsg[splashNumber], WINDOW_WIDTH, false);
     std::cout << "\n\n\n";
     PrintCenter("Select an option:", WINDOW_WIDTH, false);

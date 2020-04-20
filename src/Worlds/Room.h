@@ -39,10 +39,9 @@ public:
     Room(const Room&) = delete;
 
     /**
-     * @brief Destructor
-     * 
+     * @brief Default destructor
      */
-    ~Room();
+    ~Room() = default;
 
     /**
      * @brief Get the coordinates
@@ -140,7 +139,6 @@ protected:
     Field *entranceUp, *entranceLeft, *entranceRight, *entranceDown;
     Room *roomUp, *roomLeft, *roomRight, *roomDown;
     std::vector<std::vector<Field>> fields;
-    std::vector<Entities::Entity*> entities;
 };
 
 } /* namespace Worlds */
