@@ -27,12 +27,12 @@ Coords Field::GetCoords() const
     return m_Coords;
 }
 
-const Entities::Entity* Field::GetForegroundEntity() const
+const Entities::Entity* Field::TryGetForegroundEntity() const
 {
     return m_ForegroundEntity;
 }
 
-const Entities::Entity* Field::GetBackgroundEntity() const
+const Entities::Entity* Field::TryGetBackgroundEntity() const
 {
     return m_BackgroundEntity;
 }

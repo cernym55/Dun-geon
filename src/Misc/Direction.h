@@ -16,10 +16,29 @@ public:
      */
     enum class Value
     {
+        /**
+         * @brief None
+         */
         None = -1,
+
+        /**
+         * @brief Up
+         */
         Up = 0,
+
+        /**
+         * @brief Right
+         */
         Right = 1,
+
+        /**
+         * @brief Down
+         */
         Down = 2,
+
+        /**
+         * @brief Left
+         */
         Left = 3
     };
 
@@ -80,6 +99,13 @@ public:
      * @return Direction opposite direction
      */
     Direction Opposite() const;
+
+    /**
+     * @brief Return the int representation of the enum value
+     * 
+     * @return int int value
+     */
+    int ToInt() const;
 
     /**
      * @brief Return a Direction object with the value Up

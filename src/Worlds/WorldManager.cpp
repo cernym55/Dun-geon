@@ -39,32 +39,10 @@ bool WorldManager::IsCurrentRoom(const Room& room) const
 
 Room& WorldManager::SwitchCurrentRoom(Direction dir)
 {
-    Coords newCoords = Coords(m_CurrentRoomCoords).MoveInDirection(dir);
-    if (!GetCurrentRoom().HasNeighbor(dir))
+    Coords newCoords = Coords(m_CurrentRoomCoords).GetAdjacent(dir);
+    if (!m_CurrentWorld->RoomExistsAt(newCoords))
     {
-        Room& newRoom = m_CurrentWorld->CreateRoom(newCoords);
-        Direction nextEntranceDir = dir.Opposite();
-        switch (nextEntranceDir())
-        {
-        case Direction::Value::Up: {
-            newRoom.generate(Worlds::Layout::RandLayout, true);
-            break;
-        }
-        case Direction::Value::Right: {
-            newRoom.generate(Worlds::Layout::RandLayout, false, true);
-            break;
-        }
-        case Direction::Value::Down: {
-            newRoom.generate(Worlds::Layout::RandLayout, false, false, true);
-            break;
-        }
-        case Direction::Value::Left: {
-            newRoom.generate(Worlds::Layout::RandLayout, false, false, false, true);
-            break;
-        }
-        default:
-            break;
-        }
+        m_CurrentWorld->CreateRoomAt(newCoords);
     }
     m_CurrentRoomCoords = newCoords;
     return GetCurrentRoom();

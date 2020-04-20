@@ -7,6 +7,7 @@
 #include "Misc/RNG.h"
 #include "World.h"
 #include "WorldManager.h"
+#include <array>
 #include <sstream>
 
 #define MAX_WIDTH 40
@@ -21,12 +22,9 @@ Room::Room(WorldManager& worldManager, World& world, int roomNumber, Coords coor
     : m_WorldManager(worldManager),
       m_World(world),
       m_RoomNumber(roomNumber),
-      m_Coords(coords)
+      m_Coords(coords),
+      m_Entrances({ nullptr })
 {
-    entranceUp = nullptr;
-    entranceLeft = nullptr;
-    entranceRight = nullptr;
-    entranceDown = nullptr;
 }
 
 Coords Room::GetCoords() const
@@ -54,84 +52,46 @@ int Room::GetRoomNumber() const
     return m_RoomNumber;
 }
 
-bool Room::HasEntrance(Direction dir) const
+bool Room::IsAtWorldGridEdge(Direction dir) const
 {
     switch (dir())
     {
     case Direction::Value::Up:
-        return entranceUp != nullptr;
+        return m_Coords.GetY() == 0;
     case Direction::Value::Right:
-        return entranceRight != nullptr;
+        return m_Coords.GetX() == m_World.MaxSpan - 1;
     case Direction::Value::Down:
-        return entranceDown != nullptr;
+        return m_Coords.GetY() == m_World.MaxSpan - 1;
     case Direction::Value::Left:
-        return entranceLeft != nullptr;
+        return m_Coords.GetX() == 0;
     default:
         return false;
     }
 }
 
-const Field& Room::GetEntrance(Direction dir) const
+const Field* Room::TryGetEntrance(Direction dir) const
 {
-    switch (dir())
-    {
-    case Direction::Value::Up:
-        return *entranceUp;
-        break;
-    case Direction::Value::Right:
-        return *entranceRight;
-        break;
-    case Direction::Value::Down:
-        return *entranceDown;
-        break;
-    case Direction::Value::Left:
-        return *entranceLeft;
-        break;
-    default: {
-        std::ostringstream errorMessage;
-        errorMessage << "Requested nonexistent entrance field in direction "
-                     << dir;
-        throw std::invalid_argument(errorMessage.str());
-    }
-    }
+    return m_Entrances[(int)dir()];
 }
 
 bool Room::HasNeighbor(Direction dir) const
 {
-    switch (dir())
-    {
-    case Direction::Value::Up:
-        return roomUp != nullptr;
-    case Direction::Value::Right:
-        return roomRight != nullptr;
-    case Direction::Value::Down:
-        return roomDown != nullptr;
-    case Direction::Value::Left:
-        return roomLeft != nullptr;
-    default:
-        return false;
-    }
+    if (IsAtWorldGridEdge(dir)) return false;
+
+    return m_World.RoomExistsAt(m_Coords.GetAdjacent(dir));
 }
 
 const Room& Room::GetNeighbor(Direction dir) const
 {
-    switch (dir())
+    if (HasNeighbor(dir))
     {
-    case Direction::Value::Up:
-        return *roomUp;
-    case Direction::Value::Right:
-        return *roomRight;
-    case Direction::Value::Down:
-        return *roomDown;
-    case Direction::Value::Left:
-        return *roomLeft;
-    default: {
-        std::ostringstream errorMessage;
-        errorMessage << "Requested nonexistent neighboring room in direction "
-                     << dir;
-        throw std::invalid_argument(errorMessage.str());
+        return m_World.GetRoomAt(m_Coords.GetAdjacent(dir));
     }
-    }
+
+    std::ostringstream errorMessage;
+    errorMessage << "Requested nonexistent neighboring room in direction "
+                 << dir;
+    throw std::invalid_argument(errorMessage.str());
 }
 
 Field& Room::GetFieldAt(Coords coords)
@@ -145,7 +105,7 @@ Field& Room::GetFieldAt(Coords coords)
     }
     else
     {
-        return fields[coords.GetX()][coords.GetY()];
+        return m_Fields[coords.GetX()][coords.GetY()];
     }
 }
 
@@ -160,72 +120,55 @@ const Field& Room::GetFieldAt(Coords coords) const
     }
     else
     {
-        return fields[coords.GetX()][coords.GetY()];
+        return m_Fields[coords.GetX()][coords.GetY()];
     }
 }
 
-void Room::generate(Layout layout, bool forceUp, bool forceRight, bool forceDown, bool forceLeft)
+void Room::Generate(Layout layout, std::array<bool, 4> forceEntrances)
 {
-    // generate random dimensions (within constraints)
+    // Fenerate random dimensions (within constraints)
     m_Width = RNG::RandomInt(MAX_WIDTH_DIFF) + MAX_WIDTH - MAX_WIDTH_DIFF;
     m_Width += m_Width % 2;
     m_Height = RNG::RandomInt(MAX_HEIGHT_DIFF) + MAX_HEIGHT - MAX_HEIGHT_DIFF;
     m_Height += m_Height % 2;
 
-    // fill map with wall fields
-    fields.resize(m_Width);
+    // Fill map with wall fields
+    m_Fields.resize(m_Width);
     for (size_t i = 0; i < m_Width; i++)
     {
         for (size_t j = 0; j < m_Height; j++)
         {
-            fields[i].emplace_back(Coords(i, j));
-            fields[i].back().PlaceEntity(Entities::Wall);
+            m_Fields[i].emplace_back(Coords(i, j));
+            m_Fields[i].back().PlaceEntity(Entities::Wall);
         }
     }
 
-    // check if forced entrances are needed/allowed
-    bool allowUp = true, allowRight = true, allowDown = true, allowLeft = true;
-    if (!HasNeighbor(Direction::Up()))
+    // By default, an entrance *may* be generated
+    std::array<bool, 4> allowEntrances = { true, true, true, true };
+
+    for (auto& dir : Direction::All())
     {
-        allowUp = false;
-        forceUp = false;
-    }
-    else
-    {
-        GetNeighbor(Direction::Up()).HasEntrance(Direction::Down()) ? allowUp = false : forceUp = true;
+        // If there can be no neighbor, forbid entrances
+        if (IsAtWorldGridEdge(dir))
+        {
+            allowEntrances[dir.ToInt()] = false;
+        }
+        else if (HasNeighbor(dir))
+        {
+            // If there is a neighbor with an entrance, force one here
+            if (GetNeighbor(dir).TryGetEntrance(dir.Opposite()) != nullptr)
+            {
+                forceEntrances[dir.ToInt()] = true;
+            }
+            // If there is a neighbor without an entrance, forbid one here
+            else
+            {
+                allowEntrances[dir.ToInt()] = false;
+            }
+        }
     }
 
-    if (!HasNeighbor(Direction::Right()))
-    {
-        allowRight = false;
-        forceRight = false;
-    }
-    else
-    {
-        GetNeighbor(Direction::Right()).HasEntrance(Direction::Left()) ? allowRight = false : forceRight = true;
-    }
-
-    if (!HasNeighbor(Direction::Down()))
-    {
-        allowDown = false;
-        forceDown = false;
-    }
-    else
-    {
-        GetNeighbor(Direction::Down()).HasEntrance(Direction::Up()) ? allowDown = false : forceDown = true;
-    }
-
-    if (!HasNeighbor(Direction::Left()))
-    {
-        allowLeft = false;
-        forceLeft = false;
-    }
-    else
-    {
-        GetNeighbor(Direction::Left()).HasEntrance(Direction::Right()) ? allowLeft = false : forceLeft = true;
-    }
-
-    // generate layout
+    // Generate layout
     int layoutNum;
     if (layout == Layout::RandLayout)
     {
@@ -243,37 +186,45 @@ void Room::generate(Layout layout, bool forceUp, bool forceRight, bool forceDown
         {
             for (size_t j = 1; j < m_Height - 1; j++)
             {
-                fields[i][j].VacateForeground();
+                m_Fields[i][j].VacateForeground();
             }
         }
-        // generate entrances (check if room is not on edge of map and if neighbor rooms can be connected)
-        if (allowUp && (forceUp || RNG::Chance(0.5)))
+        // Generate entrances (check if room is not on edge of map and if neighbor rooms can be connected)
+        if (allowEntrances[Direction::Up().ToInt()] &&
+            (forceEntrances[Direction::Up().ToInt()] || RNG::Chance(0.5)))
         {
+            auto& entranceUp = m_Entrances[Direction::Up().ToInt()];
             entranceUp = &GetFieldAt({ RNG::RandomInt(3, m_Width - 3), 0 });
             entranceUp->VacateForeground();
             GetFieldAt({ entranceUp->GetCoords().GetX() - 1, 0 }).VacateForeground();
             GetFieldAt({ entranceUp->GetCoords().GetX() + 1, 0 }).VacateForeground();
         }
-        if (allowDown && (forceDown || RNG::Chance(0.5)))
+        if (allowEntrances[Direction::Right().ToInt()] &&
+            (forceEntrances[Direction::Right().ToInt()] || RNG::Chance(0.5)))
         {
+            auto& entranceRight = m_Entrances[Direction::Right().ToInt()];
+            entranceRight = &GetFieldAt({ m_Width - 1, RNG::RandomInt(3, m_Height - 3) });
+            entranceRight->VacateForeground();
+            GetFieldAt({ m_Width - 1, entranceRight->GetCoords().GetY() - 1 }).VacateForeground();
+            GetFieldAt({ m_Width - 1, entranceRight->GetCoords().GetY() + 1 }).VacateForeground();
+        }
+        if (allowEntrances[Direction::Down().ToInt()] &&
+            (forceEntrances[Direction::Down().ToInt()] || RNG::Chance(0.5)))
+        {
+            auto& entranceDown = m_Entrances[Direction::Down().ToInt()];
             entranceDown = &GetFieldAt({ RNG::RandomInt(3, m_Width - 3), m_Height - 1 });
             entranceDown->VacateForeground();
             GetFieldAt({ entranceDown->GetCoords().GetX() - 1, m_Height - 1 }).VacateForeground();
             GetFieldAt({ entranceDown->GetCoords().GetX() + 1, m_Height - 1 }).VacateForeground();
         }
-        if (allowLeft && (forceLeft || RNG::Chance(0.5)))
+        if (allowEntrances[Direction::Left().ToInt()] &&
+            (forceEntrances[Direction::Left().ToInt()] || RNG::Chance(0.5)))
         {
+            auto& entranceLeft = m_Entrances[Direction::Left().ToInt()];
             entranceLeft = &GetFieldAt({ 0, RNG::RandomInt(3, m_Height - 3) });
             entranceLeft->VacateForeground();
             GetFieldAt({ 0, entranceLeft->GetCoords().GetY() - 1 }).VacateForeground();
             GetFieldAt({ 0, entranceLeft->GetCoords().GetY() + 1 }).VacateForeground();
-        }
-        if (allowRight && (forceRight || RNG::Chance(0.5)))
-        {
-            entranceRight = &GetFieldAt({ m_Width - 1, RNG::RandomInt(3, m_Height - 3) });
-            entranceRight->VacateForeground();
-            GetFieldAt({ m_Width - 1, entranceRight->GetCoords().GetY() - 1 }).VacateForeground();
-            GetFieldAt({ m_Width - 1, entranceRight->GetCoords().GetY() + 1 }).VacateForeground();
         }
         break;
     }

@@ -44,8 +44,8 @@ bool EntityManager::TryMovePlayerEntity(Direction dir)
         VacateEntityFieldInRoom(m_Player, m_WorldManager.GetCurrentRoom());
         Worlds::Room& nextRoom = m_WorldManager.SwitchCurrentRoom(dir);
         Coords newCoords = nextRoom
-                               .GetEntrance(nextRoomEntranceDir)
-                               .GetCoords();
+                               .TryGetEntrance(nextRoomEntranceDir)
+                               ->GetCoords();
         m_Player.SetCoords(newCoords);
         m_Player.SetLastMoveDirection(dir);
         PlaceEntityInRoom(m_Player, nextRoom);
@@ -60,7 +60,7 @@ bool EntityManager::TryMovePlayerEntity(Direction dir)
 const Entity* EntityManager::GetApproachedEntity(const Character& approachingCharacter) const
 {
     const Worlds::Field* approachedField = GetFieldNextToEntity(approachingCharacter, approachingCharacter.GetLastMoveDirection());
-    return approachedField != nullptr ? approachedField->GetForegroundEntity() : nullptr;
+    return approachedField != nullptr ? approachedField->TryGetForegroundEntity() : nullptr;
 }
 
 bool EntityManager::IsCharacterAboutToLeaveRoom(const Character& character,
@@ -86,7 +86,7 @@ bool EntityManager::CanCharacterMove(const Character& character, Direction dir) 
     if (dir == Direction::None()) return true;
 
     const Worlds::Field* targetField = GetFieldNextToEntity(character, dir);
-    if (targetField != nullptr && targetField->GetForegroundEntity() == nullptr)
+    if (targetField != nullptr && targetField->TryGetForegroundEntity() == nullptr)
     {
         return true;
     }

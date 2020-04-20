@@ -87,7 +87,15 @@ public:
      * @param coords coordinates
      * @return Room& new room
      */
-    Room& CreateRoom(Coords coords);
+    Room& CreateRoomAt(Coords coords);
+
+    /**
+     * @brief Check if a room exists at the given coordinates
+     * 
+     * @param coords coordinates
+     * @return true if a room exists at the given coordinates
+     */
+    bool RoomExistsAt(Coords coords) const;
 
 private:
     /**

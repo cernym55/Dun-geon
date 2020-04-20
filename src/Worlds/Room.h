@@ -6,6 +6,7 @@
 #include "Misc/Direction.h"
 #include "World.h"
 #include "WorldManager.h"
+#include <array>
 #include <vector>
 
 namespace Worlds
@@ -79,12 +80,12 @@ public:
     int GetRoomNumber() const;
 
     /**
-     * @brief Check if the room has an entrance in the given direction
+     * @brief Check if the room is at the edge of the world grid in the given direction
      * 
      * @param dir direction
-     * @return true if an entrance exists in the given direction
+     * @return true if at the edge
      */
-    bool HasEntrance(Direction dir) const;
+    bool IsAtWorldGridEdge(Direction dir) const;
 
     /**
      * @brief Get the entrance field in the given direction
@@ -92,7 +93,7 @@ public:
      * @param dir direction
      * @return const Field& entrance field
      */
-    const Field& GetEntrance(Direction dir) const;
+    const Field* TryGetEntrance(Direction dir) const;
 
     /**
      * @brief Check if the room has a neighboring room in the given direction
@@ -126,8 +127,13 @@ public:
      */
     const Field& GetFieldAt(Coords coords) const;
 
-    void generate(Layout layout, bool forceUp = false, bool forceRight = false,
-                  bool forceDown = false, bool forceLeft = false);
+    /**
+     * @brief Generate the layout of the room
+     * 
+     * @param layout layout type
+     * @param forcedEntrances whether or not to force generating an entrance if possible (for each side)
+     */
+    void Generate(Layout layout, std::array<bool, 4> forceEntrances = { false, false, false, false });
 
 protected:
     WorldManager& m_WorldManager;
@@ -136,9 +142,8 @@ protected:
     Coords m_Coords;
     size_t m_Width;
     size_t m_Height;
-    Field *entranceUp, *entranceLeft, *entranceRight, *entranceDown;
-    Room *roomUp, *roomLeft, *roomRight, *roomDown;
-    std::vector<std::vector<Field>> fields;
+    std::array<Field*, 4> m_Entrances;
+    std::vector<std::vector<Field>> m_Fields;
 };
 
 } /* namespace Worlds */

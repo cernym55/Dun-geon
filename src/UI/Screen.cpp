@@ -119,13 +119,13 @@ void Screen::MainMenu()
 
 char Screen::GetFieldIcon(const Worlds::Field& field) const
 {
-    if (field.GetForegroundEntity() != nullptr)
+    if (field.TryGetForegroundEntity() != nullptr)
     {
-        return field.GetForegroundEntity()->GetIcon();
+        return field.TryGetForegroundEntity()->GetIcon();
     }
-    else if (field.GetBackgroundEntity() != nullptr)
+    else if (field.TryGetBackgroundEntity() != nullptr)
     {
-        return field.GetBackgroundEntity()->GetIcon();
+        return field.TryGetBackgroundEntity()->GetIcon();
     }
     else
     {

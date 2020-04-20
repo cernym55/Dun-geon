@@ -55,6 +55,7 @@ void Application::Run()
         }
         m_Parser.execCommand();
     }
+    m_Screen.Clear();
 }
 
 } /* namespace Application */

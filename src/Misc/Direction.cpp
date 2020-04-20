@@ -54,6 +54,11 @@ Direction Direction::Opposite() const
     }
 }
 
+int Direction::ToInt() const
+{
+    return static_cast<int>(m_Value);
+}
+
 Direction Direction::Up()
 {
     return Direction(Value::Up);
