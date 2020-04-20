@@ -3,9 +3,15 @@
 /  https://bitbucket.org/torchie8/dun-geon/src )
 
 
+--- v0.2.0 | 04/20/2020 --- (latest)
+ - Most parts of the game have been completely rewritten. In this version,
+     the original functionality found in v0.1.0 has been replicated.
+     More cool stuff coming soon!
+ - Walls are now considered an interactive map object and display a message
+     when approached.
 
---- 01/08/2017 --- (latest)
- - Dun-geon is now licensed under the GNU GPLv3.
+
+--- v0.1.0 | 01/08/2017 ---
  - Initial playable version. Features a pre-set character, limited
      UI and one world of random empty box-layout rooms.
  - Added a repeat command under the keywords "a" ([a]gain), "again",
@@ -18,5 +24,5 @@
 
 
 
-/  ( Dun-geon: A text-based roguelike RPG/adventure.
-/  Copyright (C) 2016-2017 Matyas Cerny <cerny-matyas(at)email.cz> )
+/  ( Dun-geon: A terminal-based roguelike RPG/adventure.
+/  Copyright (C) 2016-2020 Matyas Cerny <nospikeen@gmail.com> )
