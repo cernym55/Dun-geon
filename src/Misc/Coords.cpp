@@ -14,13 +14,6 @@ Coords::Coords(size_t xCoord, size_t yCoord)
 {
 }
 
-Coords& Coords::operator=(Coords r)
-{
-    m_XCoord = r.m_XCoord;
-    m_YCoord = r.m_YCoord;
-    return *this;
-}
-
 bool Coords::operator==(const Coords& r) const
 {
     return m_XCoord == r.m_XCoord && m_YCoord == r.m_YCoord;

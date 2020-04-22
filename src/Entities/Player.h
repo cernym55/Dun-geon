@@ -22,6 +22,19 @@ public:
            const std::string& description = "",
            char icon = 0,
            bool isBlocking = true);
+    
+    Player(const Player&) = delete;
+
+    Player(Player&&) = delete;
+
+    Player& operator=(const Player&) = delete;
+
+    Player& operator=(Player&&) = delete;
+
+    /**
+     * @brief Destructor
+     */
+    virtual ~Player() = default;
 
     /**
      * @brief Set the direction of the last move

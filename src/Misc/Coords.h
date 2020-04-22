@@ -23,32 +23,12 @@ public:
     Coords(size_t xCoord, size_t yCoord);
 
     /**
-     * @brief Default copy constructor
-     * 
-     * @param r
-     */
-    Coords(const Coords& r) = default;
-
-    /**
-     * @brief Assignment operator overload
-     * 
-     * @param r 
-     * @return Coords& assigned object
-     */
-    Coords& operator=(Coords r);
-
-    /**
      * @brief Equals operator overload
      * 
      * @param r 
      * @return true if equal
      */
     bool operator==(const Coords& r) const;
-
-    /**
-     * @brief Default destructor
-     */
-    ~Coords() = default;
 
     /**
      * @brief Get the X coordinate

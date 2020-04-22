@@ -22,13 +22,16 @@ public:
      */
     WorldManager();
 
-    /**
-     * @brief Delete copy constructor
-     */
     WorldManager(const WorldManager&) = delete;
 
+    WorldManager(WorldManager&&) = delete;
+
+    WorldManager& operator=(const WorldManager&) = delete;
+
+    WorldManager& operator=(WorldManager&&) = delete;
+
     /**
-     * @brief Default destructor
+     * @brief Destructor
      */
     ~WorldManager() = default;
 

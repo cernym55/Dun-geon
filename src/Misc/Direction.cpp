@@ -11,17 +11,6 @@ Direction::Direction(Value value)
 {
 }
 
-Direction::Direction(const Direction& r)
-    : m_Value(r.m_Value)
-{
-}
-
-Direction& Direction::operator=(Direction r)
-{
-    std::swap(m_Value, r.m_Value);
-    return *this;
-}
-
 bool Direction::operator==(const Direction& r) const
 {
     return m_Value == r.m_Value;

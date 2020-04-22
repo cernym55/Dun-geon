@@ -15,13 +15,6 @@ Field::Field(Coords coords)
 {
 }
 
-Field::Field(const Field& r)
-    : m_Coords(r.m_Coords),
-      m_ForegroundEntity(r.m_ForegroundEntity),
-      m_BackgroundEntity(r.m_BackgroundEntity)
-{
-}
-
 Coords Field::GetCoords() const
 {
     return m_Coords;

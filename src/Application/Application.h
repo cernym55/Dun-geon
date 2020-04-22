@@ -21,10 +21,13 @@ public:
      */
     Application();
 
-    /**
-     * @brief Delete copy constructor
-     */
     Application(const Application&) = delete;
+
+    Application(Application&&) = delete;
+
+    Application& operator=(const Application&) = delete;
+
+    Application& operator=(Application&&) = delete;
 
     /**
      * @brief Default destructor

@@ -32,9 +32,17 @@ public:
               const std::string& description = "",
               char icon = 0,
               bool isBlocking = true);
+    
+    Character(const Character&) = delete;
+
+    Character(Character&&) = delete;
+
+    Character& operator=(const Character&) = delete;
+
+    Character& operator=(Character&&) = delete;
 
     /**
-     * @brief Default destructor
+     * @brief Destructor
      */
     virtual ~Character() = default;
 

@@ -53,14 +53,16 @@ public:
            const Entities::EntityManager& entityManager,
            const Entities::Player& player);
 
-    /**
-     * @brief Delete copy constructor
-     * 
-     */
     Screen(const Screen&) = delete;
 
+    Screen(Screen&&) = delete;
+
+    Screen& operator=(const Screen&) = delete;
+
+    Screen& operator=(Screen&&) = delete;
+
     /**
-     * @brief Default destructor
+     * @brief Destructor
      */
     ~Screen() = default;
 

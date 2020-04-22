@@ -55,7 +55,10 @@ private:
 
 public:
     Parser(Screen& screen, Player::Controller& playerController);
-    Parser(const Parser& r) = delete;
+    Parser(const Parser&) = delete;
+    Parser(Parser&&) = delete;
+    Parser& operator=(const Parser&) = delete;
+    Parser& operator=(Parser&&) = delete;
     ~Parser() = default;
     std::deque<Command>& getCmdQueue();
     void execCommand();

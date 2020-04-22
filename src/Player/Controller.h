@@ -25,13 +25,16 @@ public:
                Worlds::WorldManager& worldManager,
                Entities::Player& playerEntity);
 
-    /**
-     * @brief Delete copy constructor
-     */
     Controller(const Controller&) = delete;
 
+    Controller(Controller&&) = delete;
+
+    Controller& operator=(const Controller&) = delete;
+
+    Controller& operator=(Controller&&) = delete;
+
     /**
-     * @brief Default destructor
+     * @brief Destructor
      */
     ~Controller() = default;
 

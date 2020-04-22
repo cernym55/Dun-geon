@@ -55,21 +55,6 @@ public:
     Direction(Value value);
 
     /**
-     * @brief Copy constructor
-     * 
-     * @param r 
-     */
-    Direction(const Direction& r);
-
-    /**
-     * @brief Operator= overload
-     * 
-     * @param r 
-     * @return Direction& this
-     */
-    Direction& operator=(Direction r);
-
-    /**
      * @brief Operator== overload
      * 
      * @param r

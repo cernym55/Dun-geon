@@ -26,6 +26,10 @@ protected:
 
 public:
     Item();
+    Item(const Item&) = delete;
+    Item(Item&&) = delete;
+    Item& operator=(const Item&) = delete;
+    Item& operator=(Item&&) = delete;
     virtual ~Item() = default;
     std::string getName();
     void setName(std::string value);

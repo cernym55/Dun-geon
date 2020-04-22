@@ -34,13 +34,16 @@ public:
      */
     Room(WorldManager& worldManager, World& world, int roomNumber, Coords coords);
 
-    /**
-     * @brief Delete copy constructor
-     */
     Room(const Room&) = delete;
 
+    Room(Room&&) = delete;
+
+    Room& operator=(const Room&) = delete;
+
+    Room& operator=(Room&&) = delete;
+
     /**
-     * @brief Default destructor
+     * @brief Destructor
      */
     ~Room() = default;
 

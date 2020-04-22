@@ -19,18 +19,6 @@ public:
     Field(Coords coords);
 
     /**
-     * @brief Constructor
-     * 
-     * @param r
-     */
-    Field(const Field& r);
-
-    /**
-     * @brief Default destructor
-     */
-    ~Field() = default;
-
-    /**
      * @brief Get the coordinates
      * 
      * @return Coords coordinates

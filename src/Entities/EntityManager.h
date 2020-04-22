@@ -27,13 +27,16 @@ public:
      */
     EntityManager(Worlds::WorldManager& worldManager, Player& player);
 
-    /**
-     * @brief Delete copy constructor
-     */
     EntityManager(const EntityManager&) = delete;
 
+    EntityManager(EntityManager&&) = delete;
+
+    EntityManager& operator=(const EntityManager&) = delete;
+
+    EntityManager& operator=(EntityManager&&) = delete;
+
     /**
-     * @brief Default destructor
+     * @brief Destructor
      */
     ~EntityManager() = default;
 

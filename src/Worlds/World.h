@@ -34,13 +34,16 @@ public:
      */
     World(WorldManager& worldManager, int worldNumber);
 
-    /**
-     * @brief Delete copy constructor
-     */
     World(const World&) = delete;
 
+    World(World&&) = delete;
+
+    World& operator=(const World&) = delete;
+
+    World& operator=(World&&) = delete;
+
     /**
-     * @brief Default destructor
+     * @brief Destructor
      */
     ~World() = default;
 

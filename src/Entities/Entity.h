@@ -23,13 +23,16 @@ public:
            char icon = 0,
            bool isBlocking = true);
 
-    /**
-     * @brief Delete copy constructor
-     */
     Entity(const Entity&) = delete;
 
+    Entity(Entity&&) = delete;
+
+    Entity& operator=(const Entity&) = delete;
+
+    Entity& operator=(Entity&&) = delete;
+
     /**
-     * @brief Default destructor
+     * @brief Destructor
      */
     virtual ~Entity() = default;
 
