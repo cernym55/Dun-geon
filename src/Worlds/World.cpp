@@ -13,12 +13,13 @@ namespace Worlds
 
 World::World(WorldManager& worldManager, int worldNumber)
     : m_WorldManager(worldManager),
+      m_RoomGenerator(*this),
       m_WorldNumber(worldNumber),
       m_NextRoomNumber(1)
 {
-    m_Rooms.resize(MaxSpan);
+    m_Rooms.resize(MaximumSpan);
     for (auto& vec : m_Rooms)
-        vec.resize(MaxSpan);
+        vec.resize(MaximumSpan);
     CreateRoomAt({ CenterPos, CenterPos });
 }
 
@@ -29,7 +30,7 @@ int World::GetWorldNumber() const
 
 Room& World::GetRoomAt(Coords coords)
 {
-    if (coords.GetX() >= MaxSpan || coords.GetY() >= MaxSpan)
+    if (coords.GetX() >= MaximumSpan || coords.GetY() >= MaximumSpan)
     {
         std::ostringstream errorMessage;
         errorMessage << "World grid position out of bounds: "
@@ -53,7 +54,7 @@ Room& World::GetRoomAt(Coords coords)
 
 const Room& World::GetRoomAt(Coords coords) const
 {
-    if (coords.GetX() >= MaxSpan || coords.GetY() >= MaxSpan)
+    if (coords.GetX() >= MaximumSpan || coords.GetY() >= MaximumSpan)
     {
         std::ostringstream errorMessage;
         errorMessage << "World grid position out of bounds: "
@@ -75,6 +76,23 @@ const Room& World::GetRoomAt(Coords coords) const
     return *m_Rooms[coords.GetX()][coords.GetY()];
 }
 
+bool World::IsPositionAtWorldGridEdge(Coords coords, Direction dir) const
+{
+    switch (dir())
+    {
+    case Direction::Value::Up:
+        return coords.GetY() == 0;
+    case Direction::Value::Right:
+        return coords.GetX() == MaximumSpan - 1;
+    case Direction::Value::Down:
+        return coords.GetY() == MaximumSpan - 1;
+    case Direction::Value::Left:
+        return coords.GetX() == 0;
+    default:
+        return false;
+    }
+}
+
 Room& World::GetStartingRoom()
 {
     return GetRoomAt({ CenterPos, CenterPos });
@@ -87,13 +105,14 @@ const Room& World::GetStartingRoom() const
 
 Room& World::CreateRoomAt(Coords coords)
 {
+    auto layout = m_RoomGenerator.CreateLayout(coords);
     m_Rooms[coords.GetX()][coords.GetY()] = std::make_unique<Room>(
         m_WorldManager,
         *this,
+        *layout,
         PopNextRoomNumber(),
         coords);
 
-    m_Rooms[coords.GetX()][coords.GetY()]->Generate(Layout::RandLayout);
     return *m_Rooms[coords.GetX()][coords.GetY()];
 }
 

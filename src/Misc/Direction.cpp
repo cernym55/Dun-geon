@@ -26,6 +26,11 @@ Direction::Value Direction::operator()() const
     return m_Value;
 }
 
+bool Direction::operator<(const Direction& r) const
+{
+    return static_cast<int>(m_Value) < static_cast<int>(r.m_Value);
+}
+
 Direction Direction::Opposite() const
 {
     switch (m_Value)

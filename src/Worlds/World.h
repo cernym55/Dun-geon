@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Misc/Coords.h"
+#include "Generation/RoomGenerator.h"
 #include "WorldManager.h"
 #include <memory>
 #include <vector>
@@ -19,12 +20,12 @@ public:
     /**
      * @brief Maximum span/width/height of a world grid
      */
-    constexpr static const size_t MaxSpan = 21;
+    constexpr static const size_t MaximumSpan = 21;
 
     /**
      * @brief Center position index on the world grid
      */
-    constexpr static const size_t CenterPos = MaxSpan / 2;
+    constexpr static const size_t CenterPos = MaximumSpan / 2;
 
     /**
      * @brief Constructor
@@ -71,6 +72,15 @@ public:
     const Room& GetRoomAt(Coords coords) const;
 
     /**
+     * @brief Check if the coords are at the world grid edge in the given direction
+     * 
+     * @param coords coordinates
+     * @param dir direction
+     * @return true if at world grid edge
+     */
+    bool IsPositionAtWorldGridEdge(Coords coords, Direction dir) const;
+
+    /**
      * @brief Get the starting room of this world
      * 
      * @return Room& starting room
@@ -101,17 +111,18 @@ public:
     bool RoomExistsAt(Coords coords) const;
 
 private:
+    WorldManager& m_WorldManager;
+    Generation::RoomGenerator m_RoomGenerator;
+    int m_WorldNumber;
+    int m_NextRoomNumber;
+    std::vector<std::vector<std::unique_ptr<Room>>> m_Rooms;
+
     /**
      * @brief Return the next room number and increment the counter
      * 
      * @return int next room number
      */
     int PopNextRoomNumber();
-
-    WorldManager& m_WorldManager;
-    int m_WorldNumber;
-    int m_NextRoomNumber;
-    std::vector<std::vector<std::unique_ptr<Room>>> m_Rooms;
 };
 
 } /* namespace Worlds */

@@ -73,6 +73,11 @@ public:
     Room& SwitchCurrentRoom(Direction dir);
 
 private:
+    std::vector<std::unique_ptr<World>> m_Worlds;
+    int m_NextWorldNumber;
+    World* m_CurrentWorld;
+    Coords m_CurrentRoomCoords;
+
     /**
      * @brief Get the world where the player is present
      * 
@@ -93,11 +98,6 @@ private:
      * @return int next world number
      */
     int PopNextWorldNumber();
-
-    std::vector<std::unique_ptr<World>> m_Worlds;
-    int m_NextWorldNumber;
-    World* m_CurrentWorld;
-    Coords m_CurrentRoomCoords;
 };
 
 } /* namespace Worlds */

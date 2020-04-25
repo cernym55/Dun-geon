@@ -79,6 +79,14 @@ public:
     Value operator()() const;
 
     /**
+     * @brief Operator< overload
+     * 
+     * @param r
+     * @return true if (int)(*this)() < (int)r()
+     */
+    bool operator<(const Direction& r) const;
+
+    /**
      * @brief Get the opposite direction
      * 
      * @return Direction opposite direction

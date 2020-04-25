@@ -2,6 +2,7 @@
 
 #include "Entities/Entity.h"
 #include "Field.h"
+#include "Generation/RoomLayout.h"
 #include "Misc/Coords.h"
 #include "Misc/Direction.h"
 #include "World.h"
@@ -11,12 +12,6 @@
 
 namespace Worlds
 {
-
-enum class Layout
-{
-    RandLayout = -1,
-    Box = 0,
-};
 
 /**
  * @brief A room is the smallest map unit that the player can move around in
@@ -29,10 +24,15 @@ public:
      * 
      * @param worldManager world manager
      * @param world world
+     * @param layout layout
      * @param roomNumber room number
      * @param coords coordinates
      */
-    Room(WorldManager& worldManager, World& world, int roomNumber, Coords coords);
+    Room(WorldManager& worldManager,
+         World& world,
+         const Generation::RoomLayout& layout,
+         int roomNumber,
+         Coords coords);
 
     Room(const Room&) = delete;
 
@@ -83,14 +83,6 @@ public:
     int GetRoomNumber() const;
 
     /**
-     * @brief Check if the room is at the edge of the world grid in the given direction
-     * 
-     * @param dir direction
-     * @return true if at the edge
-     */
-    bool IsAtWorldGridEdge(Direction dir) const;
-
-    /**
      * @brief Get the entrance field in the given direction
      * 
      * @param dir direction
@@ -129,14 +121,6 @@ public:
      * @return const Field& target field
      */
     const Field& GetFieldAt(Coords coords) const;
-
-    /**
-     * @brief Generate the layout of the room
-     * 
-     * @param layout layout type
-     * @param forcedEntrances whether or not to force generating an entrance if possible (for each side)
-     */
-    void Generate(Layout layout, std::array<bool, 4> forceEntrances = { false, false, false, false });
 
 protected:
     WorldManager& m_WorldManager;

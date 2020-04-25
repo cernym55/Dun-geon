@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Entity.h"
 #include "Character.h"
+#include "Entity.h"
 #include "Misc/Direction.h"
 #include "Player.h"
 #include "Worlds/Room.h"
@@ -72,6 +72,10 @@ public:
     const Entity* GetApproachedEntity(const Character& character) const;
 
 private:
+    Worlds::WorldManager& m_WorldManager;
+    Player& m_Player;
+    std::unordered_map<Worlds::Room*, std::vector<std::unique_ptr<Entities::Entity>>> m_EntityStorage;
+
     /**
      * @brief Check if the character will leave the room if it moves in the given direction
      * 
@@ -130,10 +134,6 @@ private:
      * @param room room
      */
     void VacateEntityFieldInRoom(Entity& entity, Worlds::Room& room);
-
-    Worlds::WorldManager& m_WorldManager;
-    Player& m_Player;
-    std::unordered_map<Worlds::Room*, std::vector<std::unique_ptr<Entities::Entity>>> m_EntityStorage;
 };
 
 } /* namespace Entities */
