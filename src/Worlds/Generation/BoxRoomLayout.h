@@ -36,7 +36,7 @@ public:
      */
     virtual ~BoxRoomLayout() = default;
 
-protected:
+private:
     constexpr static const size_t MaximumWidth = 40;
     constexpr static const size_t MaximumHeight = 20;
     constexpr static const size_t MinimumWidth = 20;
@@ -45,9 +45,8 @@ protected:
     /**
      * @brief Generate the layout
      */
-    virtual void Generate() override;
+    void Generate() override;
 
-private:
     /**
      * @brief Generate coordinates of an entrance in the given direction
      * 
