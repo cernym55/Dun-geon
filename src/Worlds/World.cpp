@@ -1,6 +1,8 @@
 #include "World.h"
 #include "Misc/Coords.h"
 #include "Misc/RNG.h"
+#include "Generation/RoomGenerator.h"
+#include "Generation/RoomLayout.h"
 #include "Room.h"
 #include "WorldManager.h"
 #include <array>
@@ -20,7 +22,7 @@ World::World(WorldManager& worldManager, int worldNumber)
     m_Rooms.resize(MaximumSpan);
     for (auto& vec : m_Rooms)
         vec.resize(MaximumSpan);
-    CreateRoomAt({ CenterPos, CenterPos });
+    CreateStartingRoom();
 }
 
 int World::GetWorldNumber() const
@@ -124,6 +126,18 @@ bool World::RoomExistsAt(Coords coords) const
 int World::PopNextRoomNumber()
 {
     return m_NextRoomNumber++;
+}
+
+void World::CreateStartingRoom()
+{
+    Coords coords = { CenterPos, CenterPos };
+    auto layout = m_RoomGenerator.CreateLayout(Generation::RoomLayout::Type::Box, coords);
+    m_Rooms[CenterPos][CenterPos] = std::make_unique<Room>(
+        m_WorldManager,
+        *this,
+        *layout,
+        PopNextRoomNumber(),
+        coords);
 }
 
 } /* namespace Worlds */

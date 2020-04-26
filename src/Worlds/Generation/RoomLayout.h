@@ -27,13 +27,18 @@ public:
         /**
          * @brief Rectangular layout with straight walls and up to 4 entrances
          */
-        Box = 0
+        Box = 0,
+
+        /**
+         * @brief Hallway leading from one entrance to another, can branch
+         */
+        Hallway = 1
     };
 
     /**
      * @brief How many layout types there are
      */
-    constexpr static const int NumberOfTypes = 1;
+    constexpr static const int NumberOfTypes = 2;
 
     /**
      * @brief Radius around an entrance field which should be kept empty
@@ -85,6 +90,33 @@ protected:
      * @brief Generate the layout
      */
     virtual void Generate() = 0;
+
+
+    /**
+     * @brief Generate coordinates of an entrance in the given direction
+     * 
+     * @param dir direction
+     * @return Coords entrance coords
+     */
+    Coords GenerateEntranceCoords(Direction dir);
+
+    /**
+     * @brief Draw a line of fields at and between the two given positions in the same line
+     * 
+     * @param from first position
+     * @param to second position
+     * @param value value to apply (default: true)
+     */
+    void DrawMapLine(Coords from, Coords to, bool value = true);
+
+    /**
+     * @brief Draw a box of fields centered at the given coords
+     * 
+     * @param center center
+     * @param radius distance from the center to the edge
+     * @param value value to apply (default: true)
+     */
+    void DrawMapBox(Coords center, size_t radius, bool value = true);
 };
 
 } /* namespace Generation */

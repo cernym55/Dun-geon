@@ -123,6 +123,11 @@ private:
      * @return int next room number
      */
     int PopNextRoomNumber();
+
+    /**
+     * @brief Create the starting room for this world
+     */
+    void CreateStartingRoom();
 };
 
 } /* namespace Worlds */

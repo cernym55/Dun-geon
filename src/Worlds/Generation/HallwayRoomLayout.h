@@ -11,9 +11,9 @@ namespace Generation
 {
 
 /**
- * @brief Rectangular layout with straight walls and up to 4 entrances
+ * @brief Hallway leading from one entrance to another, can branch
  */
-class BoxRoomLayout : public RoomLayout
+class HallwayRoomLayout : public RoomLayout
 {
 public:
     /**
@@ -21,26 +21,28 @@ public:
      * 
      * @param entranceInfo entrance info
      */
-    BoxRoomLayout(const std::map<Direction, bool>& entranceInfo);
+    HallwayRoomLayout(const std::map<Direction, bool>& entranceInfo);
 
-    BoxRoomLayout(const BoxRoomLayout&) = delete;
+    HallwayRoomLayout(const HallwayRoomLayout&) = delete;
 
-    BoxRoomLayout(BoxRoomLayout&&) = delete;
+    HallwayRoomLayout(HallwayRoomLayout&&) = delete;
 
-    BoxRoomLayout& operator=(const BoxRoomLayout&) = delete;
+    HallwayRoomLayout& operator=(const HallwayRoomLayout&) = delete;
 
-    BoxRoomLayout& operator=(BoxRoomLayout&&) = delete;
+    HallwayRoomLayout& operator=(HallwayRoomLayout&&) = delete;
 
     /**
      * @brief Destructor
      */
-    virtual ~BoxRoomLayout() = default;
+    virtual ~HallwayRoomLayout() = default;
 
 private:
     constexpr static const size_t MaximumWidth = 40;
     constexpr static const size_t MaximumHeight = 20;
     constexpr static const size_t MinimumWidth = 20;
     constexpr static const size_t MinimumHeight = 12;
+    constexpr static const size_t HallwayWidth = 3;
+    constexpr static const size_t MinimumCornerDistance = 2;
 
     /**
      * @brief Generate the layout

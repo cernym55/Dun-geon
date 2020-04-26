@@ -1,7 +1,6 @@
 #include "BoxRoomLayout.h"
 #include "Misc/Coords.h"
 #include "Misc/Direction.h"
-#include "Misc/Exceptions.h"
 #include "Misc/RNG.h"
 #include "Misc/Utils.h"
 #include <algorithm>
@@ -77,24 +76,6 @@ void BoxRoomLayout::Generate()
 
             m_Map[col][row] = true;
         }
-    }
-}
-
-Coords BoxRoomLayout::GenerateEntranceCoords(Direction dir)
-{
-    constexpr static const int MinimumCornerDistance = 3;
-    switch (dir())
-    {
-    case Direction::Value::Up:
-        return Coords(RNG::RandomInt(MinimumCornerDistance, m_Width - MinimumCornerDistance), 0);
-    case Direction::Value::Right:
-        return Coords(m_Width - 1, RNG::RandomInt(MinimumCornerDistance, m_Height - MinimumCornerDistance));
-    case Direction::Value::Down:
-        return Coords(RNG::RandomInt(MinimumCornerDistance, m_Width - MinimumCornerDistance), m_Height - 1);
-    case Direction::Value::Left:
-        return Coords(0, RNG::RandomInt(MinimumCornerDistance, m_Height - MinimumCornerDistance));
-    default:
-        throw InvalidPositionException("Attempted to generate entrance coords for direction None");
     }
 }
 

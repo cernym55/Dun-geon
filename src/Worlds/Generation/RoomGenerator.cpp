@@ -2,6 +2,7 @@
 #include "../Room.h"
 #include "../World.h"
 #include "BoxRoomLayout.h"
+#include "HallwayRoomLayout.h"
 #include "Misc/Coords.h"
 #include "Misc/RNG.h"
 #include "RoomLayout.h"
@@ -33,6 +34,10 @@ std::unique_ptr<RoomLayout> RoomGenerator::CreateLayout(RoomLayout::Type layoutT
     {
     case RoomLayout::Type::Box:
         layout = std::make_unique<BoxRoomLayout>(entranceInfo);
+        break;
+    case RoomLayout::Type::Hallway:
+        layout = std::make_unique<HallwayRoomLayout>(entranceInfo);
+        break;
     }
 
     return layout;
