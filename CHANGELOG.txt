@@ -3,7 +3,12 @@
 /  https://github.com/cernym55/Dun-geon )
 
 
---- v0.2.0 | 04/20/2020 --- (latest)
+
+--- v0.2.1 | 04/26/2020 --- (latest)
+ - Added Hallway rooms
+
+
+--- v0.2.0 | 04/20/2020 ---
  - Most parts of the game have been completely rewritten. In this version,
      the original functionality found in v0.1.0 has been replicated.
      More cool stuff coming soon!
