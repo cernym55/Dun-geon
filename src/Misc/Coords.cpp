@@ -2,7 +2,10 @@
 #include "Direction.h"
 #include "Entities/Character.h"
 #include "Exceptions.h"
+#include "Utils.h"
 #include <iostream>
+#include <sstream>
+#include <vector>
 
 Coords::Coords()
     : m_XCoord(0), m_YCoord(0)
@@ -72,6 +75,38 @@ Coords& Coords::MoveInDirection(Direction dir)
     m_YCoord = adjacentCoords.m_YCoord;
 
     return *this;
+}
+
+std::vector<Coords> Coords::StraightPathTo(Coords there) const
+{
+    std::vector<Coords> path;
+    if (m_XCoord == there.m_XCoord)
+    {
+        for (size_t y = m_YCoord; y != there.m_YCoord; m_YCoord < there.m_YCoord ? y++ : y--)
+        {
+            path.push_back({ m_XCoord, y });
+        }
+    }
+    else if (m_YCoord == there.m_YCoord)
+    {
+        for (size_t x = m_XCoord; x != there.m_XCoord; m_XCoord < there.m_XCoord ? x++ : x--)
+        {
+            path.push_back({ x, m_YCoord });
+        }
+    }
+    else
+    {
+        std::ostringstream errorMessage;
+        errorMessage
+            << "No straight path exists from "
+            << *this
+            << " to "
+            << there;
+        throw InvalidPositionException(errorMessage.str());
+    }
+    path.push_back(there);
+
+    return path;
 }
 
 std::ostream& operator<<(std::ostream& os, const Coords& coords)

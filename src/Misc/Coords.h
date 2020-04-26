@@ -2,6 +2,7 @@
 
 #include "Direction.h"
 #include <iostream>
+#include <vector>
 
 /**
  * @brief Helper class for storing 2D coordinates
@@ -73,6 +74,14 @@ public:
      * @return Coords& this
      */
     Coords& MoveInDirection(Direction dir);
+
+    /**
+     * @brief Return a vector of coords in a straight line from here to there
+     * 
+     * @param there target coords
+     * @return std::vector<Coords> coords forming path
+     */
+    std::vector<Coords> StraightPathTo(Coords there) const;
 
     /**
      * @brief Operator << overload
