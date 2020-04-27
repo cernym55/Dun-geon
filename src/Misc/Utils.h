@@ -3,6 +3,11 @@
 #include <string>
 
 /**
+ * @brief Current game version string
+ */
+static const std::string GameVersionString = "v0.3.0";
+
+/**
  * @brief Checks whether the file with the given filename exists
  * 
  * @param filename filename
@@ -45,3 +50,12 @@ const T& Max(const T& first, const T& second)
 {
     return first < second ? second : first;
 }
+
+/**
+ * @brief Shorten the string if it is above the maximum length
+ * 
+ * @param str string
+ * @param maxLength maximum length
+ * @return std::string shortened string
+ */
+std::string ShortenString(const std::string& str, size_t maxLength);

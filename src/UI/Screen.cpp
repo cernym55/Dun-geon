@@ -3,6 +3,7 @@
 #include "Entities/EntityManager.h"
 #include "Entities/Player.h"
 #include "Misc/Coords.h"
+#include "Misc/Exceptions.h"
 #include "Misc/RNG.h"
 #include "Misc/Utils.h"
 #include "Parser.h"
@@ -11,12 +12,14 @@
 #include "Worlds/World.h"
 #include "Worlds/WorldManager.h"
 #include <cmath>
+#include <iostream>
 #include <limits>
+#include <map>
+#include <menu.h>
+#include <ncurses.h>
+#include <sstream>
+#include <string>
 
-#define WINDOW_WIDTH 80
-#define WINDOW_HEIGHT 24
-#define MAP_PANEL_SIZE 50
-#define HUD_PANEL_SIZE 30
 #define PLAYER_HEALTH_PC std::lround(m_Player.GetStats().health / 1.0 / m_Player.GetStats().healthMax * 100)
 #define PLAYER_MANA_PC std::lround(m_Player.GetStats().mana / 1.0 / m_Player.GetStats().manaMax * 100)
 
@@ -32,6 +35,12 @@ Screen::Screen(Parser& parser,
       m_EntityManager(entityManager),
       m_Player(player)
 {
+    Init();
+}
+
+Screen::~Screen()
+{
+    Terminate();
 }
 
 Parser& Screen::GetParser()
@@ -52,21 +61,21 @@ void Screen::PrintCenter(std::string str, int spaceWidth, bool secondPad)
     }
     for (int i = 0; i < pad1; i++)
     {
-        std::cout << ' ';
+        addch(' ');
     }
-    std::cout << str;
+    addstr(str.c_str());
     if (secondPad)
     {
         for (int i = 0; i < pad; i++)
         {
-            std::cout << ' ';
+            addch(' ');
         }
     }
 }
 
 void Screen::MainMenu()
 {
-    std::vector<std::string> splashMsg = {
+    static const std::vector<std::string> splashMsg = {
         "Speakest not of it.",
         "And you thought you'd seen it all...",
         "Enough dun for everyone.",
@@ -78,40 +87,26 @@ void Screen::MainMenu()
         "Your dun is no longer your own.",
         "I dun my robe and wizard hat."
     };
-    std::cout << "\n\n\n\n\n           "
-              << "_____\n           "
-              << "|    \\   _   _   _  __         ____   ____   ____   _  __\n           "
-              << "| /\\  \\ / \\ / \\ | |/  \\  ___  /    \\ / __ \\ /    \\ | |/  \\\n           "
-              << "| \\/  / | |_| | |  _  | |___| | () | | ___/ | () | |  _  |\n           "
-              << "\\____/  \\_____| \\_/ \\_|       \\__  | \\____/ \\____/ \\_/ \\_|\n           "
-              << "                               __| |\n           "
-              << "                              |____/\t  by Matt Black\n\n\n";
+    DrawLogo();
     int splashNumber = RNG::RandomInt(splashMsg.size());
-    PrintCenter(splashMsg[splashNumber], WINDOW_WIDTH, false);
-    std::cout << "\n\n\n";
-    PrintCenter("Select an option:", WINDOW_WIDTH, false);
-    std::cout << std::endl;
-    PrintCenter("b - [b]egin", WINDOW_WIDTH, false);
-    std::cout << std::endl;
-    PrintCenter("h - [h]elp", WINDOW_WIDTH, false);
-    std::cout << std::endl;
-    PrintCenter("q - [q]uit", WINDOW_WIDTH, false);
-    std::cout << "\n\n\n\t\t\t> ";
-    char select;
-    std::cin >> select;
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    switch (select)
+    PrintCenterAt(splashMsg[splashNumber], 13);
+
+    refresh();
+
+    std::map<int, std::string> options = {
+        { 0, "Start Game" },
+        { 1, "Help" },
+        { 2, "Quit" }
+    };
+    static const int menuWidth = 20;
+    static const int menuHeight = 9;
+    int choice = SelectViaMenu(options, { (ScreenWidth - menuWidth) / 2 - 1, 15 }, menuWidth, menuHeight, false, 2, 1, "", true);
+    switch (choice)
     {
-    case 'b':
-    case 'B':
+    case 0:
         // begin game
         break;
-    case 'h':
-    case 'H':
-        // help
-        break;
-    case 'q':
-    case 'Q':
+    case 2:
         GetParser().setQuit();
         break;
     }
@@ -165,7 +160,7 @@ void Screen::PrintHUDRow(int rowNumber)
     case 18:
     case 21:
         std::cout << '+';
-        for (i = 0; i < HUD_PANEL_SIZE - 2; i++)
+        for (i = 0; i < HUDPanelWidth - 2; i++)
         {
             std::cout << '-';
         }
@@ -179,7 +174,7 @@ void Screen::PrintHUDRow(int rowNumber)
     case 13:
     case 17:
         std::cout << '|';
-        for (i = 0; i < HUD_PANEL_SIZE - 2; i++)
+        for (i = 0; i < HUDPanelWidth - 2; i++)
         {
             std::cout << ' ';
         }
@@ -195,7 +190,7 @@ void Screen::PrintHUDRow(int rowNumber)
         break;
     case 4:
         std::cout << '|';
-        PrintCenter(m_Player.GetName(), HUD_PANEL_SIZE - 2, true);
+        PrintCenter(m_Player.GetName(), HUDPanelWidth - 2, true);
         std::cout << "|\n";
         break;
     case 5:
@@ -242,35 +237,35 @@ void Screen::PrintHUDRow(int rowNumber)
         break;
     case 12:
         std::cout << '|';
-        PrintCenter("Wealth: " + std::to_string(stats.dun) + " dun", HUD_PANEL_SIZE - 2, true);
+        PrintCenter("Wealth: " + std::to_string(stats.dun) + " dun", HUDPanelWidth - 2, true);
         std::cout << "|\n";
         break;
     case 14:
         std::cout << '|';
-        PrintCenter("[i]tems", HUD_PANEL_SIZE / 2 - 1, true);
-        PrintCenter("[s]kills", HUD_PANEL_SIZE / 2 - 1, true);
+        PrintCenter("[i]tems", HUDPanelWidth / 2 - 1, true);
+        PrintCenter("[s]kills", HUDPanelWidth / 2 - 1, true);
         std::cout << "|\n";
         break;
     case 15:
         std::cout << '|';
-        PrintCenter("[m]ap ", HUD_PANEL_SIZE / 2 - 1, true);
-        PrintCenter("[h]elp  ", HUD_PANEL_SIZE / 2 - 1, true);
+        PrintCenter("[m]ap ", HUDPanelWidth / 2 - 1, true);
+        PrintCenter("[h]elp  ", HUDPanelWidth / 2 - 1, true);
         std::cout << "|\n";
         break;
     case 16:
         std::cout << '|';
-        PrintCenter("[q]uit", HUD_PANEL_SIZE - 2, true);
+        PrintCenter("[q]uit", HUDPanelWidth - 2, true);
         std::cout << "|\n";
         break;
     case 19:
         std::cout << '|';
         if (m_EntityManager.GetApproachedEntity(m_Player) != nullptr)
         {
-            PrintCenter(m_EntityManager.GetApproachedEntity(m_Player)->GetName(), HUD_PANEL_SIZE - 2, true);
+            PrintCenter(m_EntityManager.GetApproachedEntity(m_Player)->GetName(), HUDPanelWidth - 2, true);
         }
         else
         {
-            for (int i = 0; i < HUD_PANEL_SIZE - 2; i++)
+            for (int i = 0; i < HUDPanelWidth - 2; i++)
             {
                 std::cout << ' ';
             }
@@ -281,11 +276,11 @@ void Screen::PrintHUDRow(int rowNumber)
         std::cout << '|';
         if (m_EntityManager.GetApproachedEntity(m_Player) != nullptr)
         {
-            PrintCenter(m_EntityManager.GetApproachedEntity(m_Player)->GetDescription(), HUD_PANEL_SIZE - 2, true);
+            PrintCenter(m_EntityManager.GetApproachedEntity(m_Player)->GetDescription(), HUDPanelWidth - 2, true);
         }
         else
         {
-            for (int i = 0; i < HUD_PANEL_SIZE - 2; i++)
+            for (int i = 0; i < HUDPanelWidth - 2; i++)
             {
                 std::cout << ' ';
             }
@@ -299,7 +294,7 @@ void Screen::Draw()
 {
     // line 1
     Clear();
-    for (int i = 0; i < MAP_PANEL_SIZE; i++)
+    for (int i = 0; i < MapPanelWidth; i++)
     {
         std::cout << ' ';
     }
@@ -308,13 +303,13 @@ void Screen::Draw()
     // ...and the rest (getMapRow returns blank string if passed invalid row)
     for (int i = 1; i < 22; i++)
     {
-        PrintCenter(GetMapRow(i - 1), MAP_PANEL_SIZE, true);
+        PrintCenter(GetMapRow(i - 1), MapPanelWidth, true);
         PrintHUDRow(i);
     }
 
     // prompt separator
     std::cout << '+';
-    for (int i = 0; i < WINDOW_WIDTH - 2; i++)
+    for (int i = 0; i < ScreenWidth - 2; i++)
     {
         std::cout << '-';
     }
@@ -337,6 +332,143 @@ void Screen::SetView(View m)
 void Screen::Clear()
 {
     std::cout << "\033[2J\033[;H";
+}
+
+void Screen::Init()
+{
+    initscr();
+    //start_color();
+    cbreak();
+    keypad(stdscr, true);
+    noecho();
+    curs_set(0);
+}
+
+void Screen::Terminate()
+{
+    endwin();
+}
+
+void Screen::PrintCenterAt(const std::string& str, int yPos)
+{
+    int xPos = (ScreenWidth - str.size()) / 2;
+    xPos += xPos % 2;
+    mvaddstr(yPos, xPos, str.c_str());
+    refresh();
+}
+
+void Screen::PrintCenterAt(WINDOW* window, const std::string& str, int yPos)
+{
+    int xPos = (getmaxx(window) - str.size()) / 2;
+    xPos += xPos % 2;
+    mvwaddstr(window, yPos, xPos, str.c_str());
+    wrefresh(window);
+}
+
+void Screen::DrawLogo(int xPos, int yPos)
+{
+    mvaddstr(++yPos, xPos, "_____");
+    mvaddstr(++yPos, xPos, "|    \\   _   _   _  __         ____   ____   ____   _  __");
+    mvaddstr(++yPos, xPos, "| /\\  \\ / \\ / \\ | |/  \\  ___  /    \\ / __ \\ /    \\ | |/  \\");
+    mvaddstr(++yPos, xPos, "| \\/  / | |_| | |  _  | |___| | () | | ___/ | () | |  _  |");
+    mvaddstr(++yPos, xPos, "\\____/  \\_____| \\_/ \\_|       \\__  | \\____/ \\____/ \\_/ \\_|");
+    mvaddstr(++yPos, xPos + 31, "__| |");
+    mvprintw(++yPos, xPos + 30, "|____/  %s",
+             GameVersionString.c_str());
+}
+
+int Screen::SelectViaMenu(std::map<int, std::string> options, Coords position, int width, int height, bool drawBorder, int padX, int padY, const std::string& title, bool spaceOptions)
+{
+    if (options.empty())
+    {
+        std::ostringstream errorMessage;
+        errorMessage << "Attempted display of empty "
+                     << width << 'x' << height
+                     << " menu at "
+                     << position;
+        if (!title.empty()) errorMessage << " (\"" << title << "\")";
+        throw DisplayException(errorMessage.str());
+    }
+
+    const size_t subWidth = width - 2 - 2 * padX;
+
+    std::vector<ITEM*> items;
+    for (auto& pair : options)
+    {
+        if (pair.second.size() + 4 > subWidth)
+        {
+            ShortenString(pair.second, subWidth - 4);
+        }
+        pair.second = std::string("  ") + pair.second + "  ";
+        items.push_back(new_item(pair.second.c_str(), pair.second.c_str()));
+    }
+    items.push_back(nullptr);
+    MENU* menu = new_menu(items.data());
+    WINDOW* menuWindow = newwin(height,
+                                width,
+                                position.GetY(),
+                                position.GetX());
+    WINDOW* menuSub = derwin(menuWindow,
+                             height - 2 - 2 * padY,
+                             subWidth,
+                             1 + padY,
+                             1 + padX);
+    keypad(menuWindow, true);
+    set_menu_win(menu, menuWindow);
+    set_menu_sub(menu, menuSub);
+
+    menu_opts_off(menu, O_SHOWDESC);
+    set_menu_mark(menu, "");
+    if (spaceOptions) set_menu_spacing(menu, 1, 2, 1);
+    if (drawBorder) box(menuWindow, 0, 0);
+    if (!title.empty()) PrintCenterAt(menuWindow, title, 0);
+
+    post_menu(menu);
+    wrefresh(menuWindow);
+
+    auto it = options.begin();
+    bool selected = false;
+    int key;
+    while (!selected)
+    {
+        key = wgetch(menuWindow);
+        switch (key)
+        {
+        case KEY_DOWN:
+        case 's':
+            menu_driver(menu, REQ_DOWN_ITEM);
+            if (++it == options.end())
+            {
+                menu_driver(menu, REQ_FIRST_ITEM);
+                it = options.begin();
+            }
+            break;
+        case KEY_UP:
+        case 'w':
+            menu_driver(menu, REQ_UP_ITEM);
+            if (it == options.begin())
+            {
+                menu_driver(menu, REQ_LAST_ITEM);
+                it = options.end();
+            }
+            it--;
+            break;
+        case KEY_ENTER:
+        case 10:
+            selected = true;
+            break;
+        }
+        wrefresh(menuWindow);
+    }
+
+    unpost_menu(menu);
+    delwin(menuSub);
+    delwin(menuWindow);
+    free_menu(menu);
+    for (auto& item : items)
+        free_item(item);
+
+    return it->first;
 }
 
 } /* namespace UI */

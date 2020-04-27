@@ -7,6 +7,7 @@ DATADIR = data
 CXX = g++
 INCDIRS = $(shell find $(SRCDIR) -type d)
 INCFLAGS = $(addprefix -I,$(INCDIRS))
+LDFLAGS = -lncurses -lmenu
 CXXFLAGS = -g -O2 -std=c++14 -Wall -pedantic $(INCFLAGS) $(DEPFLAGS)
 DEPFLAGS = -MMD -MP
 SRCS = $(shell find $(SRCDIR) -name *.cpp)
@@ -16,7 +17,7 @@ DEPS = $(OBJS:.o=.d)
 all: $(PROG)
 
 $(PROG): $(OBJS) $(DATADIR)
-	$(CXX) -o $(PROG) $(OBJS)
+	$(CXX) $(LDFLAGS) -o $(PROG) $(OBJS)
 
 $(OBJDIR) $(DATADIR):
 	@mkdir -p $@

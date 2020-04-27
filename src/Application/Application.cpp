@@ -24,7 +24,6 @@ Application::Application()
 
 void Application::Run()
 {
-    m_Screen.Clear();
     m_Screen.MainMenu();
     const Worlds::World& world = const_cast<const Worlds::WorldManager&>(m_WorldManager).GetCurrentWorld();
     //TODO: move Player initialization out
@@ -55,7 +54,6 @@ void Application::Run()
         }
         m_Parser.execCommand();
     }
-    m_Screen.Clear();
 }
 
 } /* namespace Application */
