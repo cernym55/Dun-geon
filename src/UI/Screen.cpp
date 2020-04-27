@@ -95,7 +95,6 @@ void Screen::MainMenu()
 
     std::map<int, std::string> options = {
         { 0, "Start Game" },
-        { 1, "Help" },
         { 2, "Quit" }
     };
     static const int menuWidth = 20;
@@ -337,7 +336,8 @@ void Screen::Clear()
 void Screen::Init()
 {
     initscr();
-    //start_color();
+    start_color();
+    use_default_colors();
     cbreak();
     keypad(stdscr, true);
     noecho();
