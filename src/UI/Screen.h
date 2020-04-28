@@ -2,8 +2,8 @@
 
 #include "Entities/EntityManager.h"
 #include "Entities/Player.h"
+#include "InputHandler.h"
 #include "Misc/Coords.h"
-#include "Parser.h"
 #include "Worlds/Field.h"
 #include "Worlds/Room.h"
 #include <iostream>
@@ -75,12 +75,12 @@ public:
     /**
      * @brief Constructor
      * 
-     * @param parser parser
+     * @param inputHandler input handler
      * @param worldManager world manager
      * @param entityManager entity manager
      * @param player player entity
      */
-    Screen(Parser& parser,
+    Screen(InputHandler& inputHandler,
            const Worlds::WorldManager& worldManager,
            const Entities::EntityManager& entityManager,
            const Entities::Player& player);
@@ -97,13 +97,6 @@ public:
      * @brief Destructor
      */
     ~Screen();
-
-    /**
-     * @brief Get the Parser object
-     * 
-     * @return Parser& parser
-     */
-    Parser& GetParser();
 
     /**
      * @brief Display the main menu
@@ -123,7 +116,7 @@ public:
     View GetView() const;
 
 private:
-    Parser& m_Parser;
+    InputHandler& m_InputHandler;
     const Worlds::WorldManager& m_WorldManager;
     const Entities::EntityManager& m_EntityManager;
     const Entities::Player& m_Player;

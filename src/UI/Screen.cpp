@@ -5,7 +5,7 @@
 #include "Misc/Exceptions.h"
 #include "Misc/RNG.h"
 #include "Misc/Utils.h"
-#include "Parser.h"
+#include "InputHandler.h"
 #include "Worlds/Field.h"
 #include "Worlds/Room.h"
 #include "Worlds/World.h"
@@ -25,11 +25,11 @@
 namespace UI
 {
 
-Screen::Screen(Parser& parser,
+Screen::Screen(InputHandler& inputHandler,
                const Worlds::WorldManager& worldManager,
                const Entities::EntityManager& entityManager,
                const Entities::Player& player)
-    : m_Parser(parser),
+    : m_InputHandler(inputHandler),
       m_WorldManager(worldManager),
       m_EntityManager(entityManager),
       m_Player(player),
@@ -44,11 +44,6 @@ Screen::Screen(Parser& parser,
 Screen::~Screen()
 {
     Terminate();
-}
-
-Parser& Screen::GetParser()
-{
-    return m_Parser;
 }
 
 void Screen::MainMenu()
@@ -87,7 +82,7 @@ void Screen::MainMenu()
         StartGame();
         break;
     case 2:
-        GetParser().setQuit();
+        m_InputHandler.setQuit();
         break;
     }
 }
@@ -174,7 +169,7 @@ void Screen::Draw()
     //wrefresh(m_GameHUDWindow);
 
     wborder(m_GameMessageWindow, 0, 0, 0, 0, 0, ACS_PLUS, 0, ACS_BTEE);
-    mvwaddstr(m_GameMessageWindow, 1, 1, GetParser().getMessage().c_str());
+    mvwaddstr(m_GameMessageWindow, 1, 1, m_InputHandler.getMessage().c_str());
     wrefresh(m_GameMessageWindow);
 }
 

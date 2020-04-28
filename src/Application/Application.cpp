@@ -3,7 +3,7 @@
 #include "Entities/Player.h"
 #include "Misc/Direction.h"
 #include "Player/Controller.h"
-#include "UI/Parser.h"
+#include "UI/InputHandler.h"
 #include "UI/Screen.h"
 #include "Worlds/World.h"
 #include "Worlds/WorldManager.h"
@@ -12,9 +12,8 @@ namespace Application
 {
 
 Application::Application()
-    : m_State(State::Initial),
-      m_Parser(m_Screen, m_PlayerController),
-      m_Screen(m_Parser, m_WorldManager, m_EntityManager, m_Player),
+    : m_InputHandler(m_Screen, m_PlayerController),
+      m_Screen(m_InputHandler, m_WorldManager, m_EntityManager, m_Player),
       m_WorldManager(),
       m_Player("Gref"),
       m_EntityManager(m_WorldManager, m_Player),
@@ -42,16 +41,16 @@ void Application::Run()
     m_Player.GetStats().haste = 5;
     m_Player.GetStats().magic = 10;
     m_EntityManager.TryMovePlayerEntity(Direction::None());
-    while (!m_Parser.quit())
+    while (!m_InputHandler.quit())
     {
-        if (m_Parser.getCmdQueue().empty())
+        if (m_InputHandler.getCmdQueue().empty())
         {
             m_Screen.Draw();
-            m_Parser.readInput();
-            m_Parser.parse();
-            m_Parser.eval();
+            m_InputHandler.readInput();
+            m_InputHandler.parse();
+            m_InputHandler.eval();
         }
-        m_Parser.execCommand();
+        m_InputHandler.execCommand();
     }
 }
 

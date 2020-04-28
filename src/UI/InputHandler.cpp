@@ -1,4 +1,4 @@
-#include "Parser.h"
+#include "InputHandler.h"
 #include "Misc/Direction.h"
 #include "Misc/Utils.h"
 #include "Player/Controller.h"
@@ -16,7 +16,7 @@
 namespace UI
 {
 
-Parser::Parser(Screen& screen, Player::Controller& playerController)
+InputHandler::InputHandler(Screen& screen, Player::Controller& playerController)
     : m_Screen(screen), m_PlayerController(playerController)
 {
     quitCommand = false;
@@ -79,7 +79,7 @@ Parser::Parser(Screen& screen, Player::Controller& playerController)
     last.rep = 1;
 }
 
-void Parser::evalWorld()
+void InputHandler::evalWorld()
 {
     if (words.empty())
     {
@@ -154,12 +154,12 @@ void Parser::evalWorld()
     }
 }
 
-std::deque<Command>& Parser::getCmdQueue()
+std::deque<Command>& InputHandler::getCmdQueue()
 {
     return cmdQueue;
 }
 
-void Parser::execCommand()
+void InputHandler::execCommand()
 {
     if (cmdQueue.empty())
     {
@@ -231,7 +231,7 @@ void Parser::execCommand()
     message = messageStream.str();
 }
 
-Direction Parser::findDir(std::string input)
+Direction InputHandler::findDir(std::string input)
 {
     if (dirDict.find(input) != dirDict.end())
     {
@@ -243,7 +243,7 @@ Direction Parser::findDir(std::string input)
     }
 }
 
-CmdType Parser::findCmdType(std::string input)
+CmdType InputHandler::findCmdType(std::string input)
 {
     if (cmdDict.find(input) != cmdDict.end())
     {
@@ -255,13 +255,13 @@ CmdType Parser::findCmdType(std::string input)
     }
 }
 
-void Parser::readInput()
+void InputHandler::readInput()
 {
     std::cin.clear();
     std::getline(std::cin, input);
 }
 
-void Parser::parse()
+void InputHandler::parse()
 {
     words.clear();
     std::string wordBuffer = "";
@@ -287,7 +287,7 @@ void Parser::parse()
     }
 }
 
-void Parser::eval()
+void InputHandler::eval()
 {
     switch (m_Screen.GetView())
     {
@@ -304,27 +304,27 @@ void Parser::eval()
     }
 }
 
-bool Parser::quit()
+bool InputHandler::quit()
 {
     return quitCommand;
 }
 
-void Parser::setQuit()
+void InputHandler::setQuit()
 {
     quitCommand = true;
 }
 
-std::string Parser::getMessage()
+std::string InputHandler::getMessage()
 {
     return message;
 }
 
-void Parser::setMessage(std::string value)
+void InputHandler::setMessage(std::string value)
 {
     message = value;
 }
 
-void Parser::makeKeyConf()
+void InputHandler::makeKeyConf()
 {
     if (fileExists(KEY_CONF_FILENAME))
     {
@@ -380,7 +380,7 @@ void Parser::makeKeyConf()
     }
 }
 
-void Parser::loadKeyConf()
+void InputHandler::loadKeyConf()
 {
     if (!fileExists(KEY_CONF_FILENAME))
     {

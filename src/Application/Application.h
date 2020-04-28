@@ -3,7 +3,7 @@
 #include "Entities/EntityManager.h"
 #include "Entities/Player.h"
 #include "Player/Controller.h"
-#include "UI/Parser.h"
+#include "UI/InputHandler.h"
 #include "UI/Screen.h"
 #include "Worlds/WorldManager.h"
 
@@ -40,28 +40,7 @@ public:
     void Run();
 
 private:
-    /**
-     * @brief Application state
-     */
-    enum class State
-    {
-        /**
-         * @brief Initial state assigned to the application by default
-         */
-        Initial = 0,
-
-        /**
-         * @brief Main menu is active
-         */
-        InMainMenu,
-
-        /**
-         * @brief A game is running
-         */
-        InGame
-    } m_State;
-
-    UI::Parser m_Parser;
+    UI::InputHandler m_InputHandler;
     UI::Screen m_Screen;
     Worlds::WorldManager m_WorldManager;
     Entities::Player m_Player;

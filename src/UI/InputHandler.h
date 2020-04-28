@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Entities/Character.h"
-#include "Player/Controller.h"
 #include "Misc/Direction.h"
+#include "Player/Controller.h"
 #include <deque>
 #include <iostream>
 #include <map>
@@ -36,30 +36,15 @@ struct Command
 
 class Screen;
 
-class Parser
+class InputHandler
 {
-private:
-    Screen& m_Screen;
-    Player::Controller& m_PlayerController;
-    std::string input;
-    std::vector<std::string> words;
-    std::string message;
-    Command last;
-    std::deque<Command> cmdQueue;
-    std::map<std::string, Direction> dirDict;
-    std::map<std::string, CmdType> cmdDict;
-    std::vector<std::string> andKeywords;
-    std::vector<std::string> lastKeywords;
-    bool quitCommand;
-    void evalWorld();
-
 public:
-    Parser(Screen& screen, Player::Controller& playerController);
-    Parser(const Parser&) = delete;
-    Parser(Parser&&) = delete;
-    Parser& operator=(const Parser&) = delete;
-    Parser& operator=(Parser&&) = delete;
-    ~Parser() = default;
+    InputHandler(Screen& screen, Player::Controller& playerController);
+    InputHandler(const InputHandler&) = delete;
+    InputHandler(InputHandler&&) = delete;
+    InputHandler& operator=(const InputHandler&) = delete;
+    InputHandler& operator=(InputHandler&&) = delete;
+    ~InputHandler() = default;
     std::deque<Command>& getCmdQueue();
     void execCommand();
     Direction findDir(std::string input);
@@ -73,6 +58,22 @@ public:
     void setMessage(std::string value);
     void makeKeyConf();
     void loadKeyConf();
+
+private:
+    Screen& m_Screen;
+    Player::Controller& m_PlayerController;
+    std::string input;
+    std::vector<std::string> words;
+    std::string message;
+    Command last;
+    std::deque<Command> cmdQueue;
+    std::map<std::string, Direction> dirDict;
+    std::map<std::string, CmdType> cmdDict;
+    std::vector<std::string> andKeywords;
+    std::vector<std::string> lastKeywords;
+    bool quitCommand;
+
+    void evalWorld();
 };
 
 } /* namespace UI */
