@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Application/Application_forward.h"
 #include "Entities/EntityManager.h"
 #include "Entities/Player.h"
 #include "Misc/Coords.h"
@@ -28,6 +27,11 @@ public:
     enum class View
     {
         /**
+         * @brief Main menu view
+         */
+        MainMenu,
+
+        /**
          * @brief View of the game world
          */
         World,
@@ -51,17 +55,22 @@ public:
     /**
      * @brief Height of the screen
      */
-    constexpr static const int ScreenHeight = 24;
+    constexpr static const int ScreenHeight = 25;
 
     /**
-     * @brief Width of the map panel
+     * @brief Width of the world panel
      */
-    constexpr static const int MapPanelWidth = 50;
+    constexpr static const int WorldPanelWidth = 46;
+
+    /**
+     * @brief Height of the world panel
+     */
+    constexpr static const int WorldPanelHeight = 21;
 
     /**
      * @brief Width of the HUD panel
      */
-    constexpr static const int HUDPanelWidth = ScreenWidth - MapPanelWidth;
+    constexpr static const int HUDPanelWidth = ScreenWidth - WorldPanelWidth;
 
     /**
      * @brief Constructor
@@ -95,14 +104,23 @@ public:
      * @return Parser& parser
      */
     Parser& GetParser();
-    void MainMenu();
-    void PrintCenter(std::string str, int spaceWidth, bool secondPad);
 
+    /**
+     * @brief Display the main menu
+     */
+    void MainMenu();
+
+    /**
+     * @brief Draw the game screen
+     */
     void Draw();
-    void Prompt();
-    void Clear();
-    View GetView();
-    void SetView(View m);
+
+    /**
+     * @brief Get the view
+     * 
+     * @return View view
+     */
+    View GetView() const;
 
 private:
     Parser& m_Parser;
@@ -110,6 +128,9 @@ private:
     const Entities::EntityManager& m_EntityManager;
     const Entities::Player& m_Player;
     View m_View;
+    WINDOW* m_GameWorldWindow;
+    WINDOW* m_GameHUDWindow;
+    WINDOW* m_GameMessageWindow;
 
     /**
      * @brief Initialize the screen
@@ -162,9 +183,35 @@ private:
      */
     int SelectViaMenu(std::map<int, std::string> options, Coords position, int width, int height, bool drawBorder = true, int padX = 0, int padY = 0, const std::string& title = "", bool spaceOptions = false);
 
-    std::string GetMapRow(int rowNumber);
-    void PrintHUDRow(int rowNumber);
+    /**
+     * @brief Initialize to display the game screen
+     */
+    void StartGame();
+
+    /**
+     * @brief Resize and reposition the world window according to current room dimensions
+     */
+    void ResizeAndRepositionWorldWindow();
+
+    /**
+     * @brief Draw the HUD
+     */
+    void DrawHUD();
+
+    /**
+     * @brief Get the icon for the given field
+     * 
+     * @param field field
+     * @return char icon
+     */
     char GetFieldIcon(const Worlds::Field& field) const;
+
+    /**
+     * @brief Get the icon for the field at the given coords
+     * 
+     * @param coords coords
+     * @return char icon
+     */
     char GetFieldIcon(Coords coords) const;
 };
 

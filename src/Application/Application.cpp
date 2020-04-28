@@ -31,7 +31,7 @@ void Application::Run()
                          world.GetStartingRoom().GetHeight() / 2 });
     m_Player.GetStats().level = 1;
     m_Player.GetStats().XP = 0;
-    m_Player.GetStats().XPToNextLevel = 0;
+    m_Player.GetStats().XPToNextLevel = 1;
     m_Player.GetStats().dun = 0;
     m_Player.GetStats().health = 10;
     m_Player.GetStats().healthMax = 10;
@@ -41,7 +41,6 @@ void Application::Run()
     m_Player.GetStats().valor = 5;
     m_Player.GetStats().haste = 5;
     m_Player.GetStats().magic = 10;
-    m_Screen.SetView(UI::Screen::View::World);
     m_EntityManager.TryMovePlayerEntity(Direction::None());
     while (!m_Parser.quit())
     {

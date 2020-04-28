@@ -1,5 +1,4 @@
 #include "Screen.h"
-#include "Application/Application.h"
 #include "Entities/EntityManager.h"
 #include "Entities/Player.h"
 #include "Misc/Coords.h"
@@ -33,7 +32,11 @@ Screen::Screen(Parser& parser,
     : m_Parser(parser),
       m_WorldManager(worldManager),
       m_EntityManager(entityManager),
-      m_Player(player)
+      m_Player(player),
+      m_View(View::MainMenu),
+      m_GameWorldWindow(nullptr),
+      m_GameHUDWindow(nullptr),
+      m_GameMessageWindow(nullptr)
 {
     Init();
 }
@@ -48,33 +51,9 @@ Parser& Screen::GetParser()
     return m_Parser;
 }
 
-void Screen::PrintCenter(std::string str, int spaceWidth, bool secondPad)
-{
-    int pad = (spaceWidth - str.size());
-    pad = (pad - pad % 2) / 2;
-    int pad1 = pad;
-
-    // if result width and desired width are off by 1, extend first pad
-    if ((pad * 2 + str.size()) % 2 != spaceWidth % 2)
-    {
-        pad1++;
-    }
-    for (int i = 0; i < pad1; i++)
-    {
-        addch(' ');
-    }
-    addstr(str.c_str());
-    if (secondPad)
-    {
-        for (int i = 0; i < pad; i++)
-        {
-            addch(' ');
-        }
-    }
-}
-
 void Screen::MainMenu()
 {
+    m_View = View::MainMenu;
     static const std::vector<std::string> splashMsg = {
         "Speakest not of it.",
         "And you thought you'd seen it all...",
@@ -103,7 +82,9 @@ void Screen::MainMenu()
     switch (choice)
     {
     case 0:
-        // begin game
+        erase();
+        refresh();
+        StartGame();
         break;
     case 2:
         GetParser().setQuit();
@@ -132,205 +113,74 @@ char Screen::GetFieldIcon(Coords coords) const
     return GetFieldIcon(m_WorldManager.GetCurrentRoom().GetFieldAt(coords));
 }
 
-std::string Screen::GetMapRow(int rowNumber)
-{
-    if (rowNumber > m_WorldManager.GetCurrentRoom().GetHeight() - 1)
-    {
-        return "";
-    }
-    else
-    {
-        std::string mapRow = "";
-        for (int i = 0; i < m_WorldManager.GetCurrentRoom().GetWidth(); i++)
-        {
-            mapRow += GetFieldIcon({ i, rowNumber });
-        }
-        return mapRow;
-    }
-}
-
-void Screen::PrintHUDRow(int rowNumber)
+void Screen::DrawHUD()
 {
     const auto& stats = m_Player.GetStats();
-    int i;
-    switch (rowNumber)
+    mvwprintw(m_GameHUDWindow, 2, 4, "World %d", m_WorldManager.GetCurrentWorld().GetWorldNumber());
+    mvwprintw(m_GameHUDWindow, 2, HUDPanelWidth - 10, "Room %d", m_WorldManager.GetCurrentRoom().GetRoomNumber());
+
+    PrintCenterAt(m_GameHUDWindow, m_Player.GetName(), 4);
+
+    mvwprintw(m_GameHUDWindow, 6, 4, "Level %d", stats.level);
+    mvwprintw(m_GameHUDWindow, 6, HUDPanelWidth - 11, "XP: %3d%%", stats.XP / stats.XPToNextLevel * 100);
+
+    mvwprintw(m_GameHUDWindow, 8, 4, "HP:  %d/%d", stats.health, stats.healthMax);
+    mvwprintw(m_GameHUDWindow, 8, HUDPanelWidth - 11, "(%3d%%)", PLAYER_HEALTH_PC);
+
+    mvwprintw(m_GameHUDWindow, 9, 4, "MP:  %d/%d", stats.mana, stats.manaMax);
+    mvwprintw(m_GameHUDWindow, 9, HUDPanelWidth - 11, "(%3d%%)", PLAYER_MANA_PC);
+
+    mvwprintw(m_GameHUDWindow, 11, 4, "Str: %3d", stats.vigor);
+    mvwprintw(m_GameHUDWindow, 11, HUDPanelWidth - 11, "Def: %3d", stats.valor);
+
+    mvwprintw(m_GameHUDWindow, 12, 4, "Agi: %3d", stats.haste);
+    mvwprintw(m_GameHUDWindow, 12, HUDPanelWidth - 11, "Int: %3d", stats.magic);
+
+    PrintCenterAt(m_GameHUDWindow, "Wealth: " + std::to_string(stats.dun) + " dun", 14);
+
+    mvwaddstr(m_GameHUDWindow, 16, 5, "[i]tems");
+    mvwaddstr(m_GameHUDWindow, 16, HUDPanelWidth - 12, "[s]kills");
+
+    mvwaddstr(m_GameHUDWindow, 17, 5, "[m]ap");
+    mvwaddstr(m_GameHUDWindow, 17, HUDPanelWidth - 12, "[h]elp");
+
+    PrintCenterAt(m_GameHUDWindow, "[q]uit", 18);
+
+    if (m_EntityManager.GetApproachedEntity(m_Player) != nullptr)
     {
-    case 0:
-    case 18:
-    case 21:
-        std::cout << '+';
-        for (i = 0; i < HUDPanelWidth - 2; i++)
-        {
-            std::cout << '-';
-        }
-        std::cout << "+\n";
-        break;
-    // blank line
-    case 1:
-    case 3:
-    case 8:
-    case 11:
-    case 13:
-    case 17:
-        std::cout << '|';
-        for (i = 0; i < HUDPanelWidth - 2; i++)
-        {
-            std::cout << ' ';
-        }
-        std::cout << "|\n";
-        break;
-    case 2:
-        std::cout << "|   World " << m_WorldManager.GetCurrentWorld().GetWorldNumber();
-        for (i = 0; i < 10 - std::to_string(m_WorldManager.GetCurrentRoom().GetRoomNumber()).size(); i++)
-        {
-            std::cout << ' ';
-        }
-        std::cout << "Room " << m_WorldManager.GetCurrentRoom().GetRoomNumber() << "   |\n";
-        break;
-    case 4:
-        std::cout << '|';
-        PrintCenter(m_Player.GetName(), HUDPanelWidth - 2, true);
-        std::cout << "|\n";
-        break;
-    case 5:
-        std::cout << "|   Level " << stats.level;
-        for (i = 0; i < 11 - std::to_string(stats.level).size() - std::to_string(stats.XP).size() - std::to_string(stats.XPToNextLevel).size(); i++)
-        {
-            std::cout << ' ';
-        }
-        std::cout << "XP: " << stats.XP << '/' << stats.XPToNextLevel << "   |\n";
-        break;
-    case 6:
-        std::cout << "|   HP: " << stats.health << '/' << stats.healthMax << " ("
-                  << PLAYER_HEALTH_PC << "%)";
-        for (i = 0; i < 16 - std::to_string(stats.health).size() - std::to_string(stats.healthMax).size() - std::to_string(PLAYER_HEALTH_PC).size(); i++)
-        {
-            std::cout << ' ';
-        }
-        std::cout << "|\n";
-        break;
-    case 7:
-        std::cout << "|   MP: " << stats.mana << '/' << stats.manaMax << " ("
-                  << PLAYER_MANA_PC << "%)";
-        for (i = 0; i < 16 - std::to_string(stats.mana).size() - std::to_string(stats.manaMax).size() - std::to_string(PLAYER_MANA_PC).size(); i++)
-        {
-            std::cout << ' ';
-        }
-        std::cout << "|\n";
-        break;
-    case 9:
-        std::cout << "|   Vigor: " << stats.vigor;
-        for (i = 0; i < 8 - std::to_string(stats.vigor).size() - std::to_string(stats.valor).size(); i++)
-        {
-            std::cout << ' ';
-        }
-        std::cout << "Valor: " << stats.valor << "   |\n";
-        break;
-    case 10:
-        std::cout << "|   Haste: " << stats.haste;
-        for (i = 0; i < 8 - std::to_string(stats.haste).size() - std::to_string(stats.magic).size(); i++)
-        {
-            std::cout << ' ';
-        }
-        std::cout << "Magic: " << stats.magic << "   |\n";
-        break;
-    case 12:
-        std::cout << '|';
-        PrintCenter("Wealth: " + std::to_string(stats.dun) + " dun", HUDPanelWidth - 2, true);
-        std::cout << "|\n";
-        break;
-    case 14:
-        std::cout << '|';
-        PrintCenter("[i]tems", HUDPanelWidth / 2 - 1, true);
-        PrintCenter("[s]kills", HUDPanelWidth / 2 - 1, true);
-        std::cout << "|\n";
-        break;
-    case 15:
-        std::cout << '|';
-        PrintCenter("[m]ap ", HUDPanelWidth / 2 - 1, true);
-        PrintCenter("[h]elp  ", HUDPanelWidth / 2 - 1, true);
-        std::cout << "|\n";
-        break;
-    case 16:
-        std::cout << '|';
-        PrintCenter("[q]uit", HUDPanelWidth - 2, true);
-        std::cout << "|\n";
-        break;
-    case 19:
-        std::cout << '|';
-        if (m_EntityManager.GetApproachedEntity(m_Player) != nullptr)
-        {
-            PrintCenter(m_EntityManager.GetApproachedEntity(m_Player)->GetName(), HUDPanelWidth - 2, true);
-        }
-        else
-        {
-            for (int i = 0; i < HUDPanelWidth - 2; i++)
-            {
-                std::cout << ' ';
-            }
-        }
-        std::cout << "|\n";
-        break;
-    case 20:
-        std::cout << '|';
-        if (m_EntityManager.GetApproachedEntity(m_Player) != nullptr)
-        {
-            PrintCenter(m_EntityManager.GetApproachedEntity(m_Player)->GetDescription(), HUDPanelWidth - 2, true);
-        }
-        else
-        {
-            for (int i = 0; i < HUDPanelWidth - 2; i++)
-            {
-                std::cout << ' ';
-            }
-        }
-        std::cout << "|\n";
-        break;
+        PrintCenterAt(m_GameHUDWindow, m_EntityManager.GetApproachedEntity(m_Player)->GetName(), WorldPanelHeight + 1);
+        PrintCenterAt(m_GameHUDWindow, m_EntityManager.GetApproachedEntity(m_Player)->GetDescription(), WorldPanelHeight + 2);
     }
 }
 
 void Screen::Draw()
 {
-    // line 1
-    Clear();
-    for (int i = 0; i < MapPanelWidth; i++)
+    size_t worldY, worldX;
+    getmaxyx(m_GameWorldWindow, worldY, worldX);
+    for (size_t i = 1; i < worldX - 1; i++)
     {
-        std::cout << ' ';
+        for (size_t j = 1; j < worldY - 1; j++)
+        {
+            mvwaddch(m_GameWorldWindow, j, i, GetFieldIcon({ i - 1, j - 1 }));
+        }
     }
-    PrintHUDRow(0);
+    //wborder(m_GameWorldWindow, '|', '|', '-', '-', '+', '+', '+', '+');
+    wrefresh(m_GameWorldWindow);
 
-    // ...and the rest (getMapRow returns blank string if passed invalid row)
-    for (int i = 1; i < 22; i++)
-    {
-        PrintCenter(GetMapRow(i - 1), MapPanelWidth, true);
-        PrintHUDRow(i);
-    }
+    box(m_GameHUDWindow, 0, 0);
+    mvwhline(m_GameHUDWindow, WorldPanelHeight, 1, 0, HUDPanelWidth - 2);
+    mvwaddch(m_GameHUDWindow, WorldPanelHeight, HUDPanelWidth - 1, ACS_RTEE);
+    DrawHUD();
+    //wrefresh(m_GameHUDWindow);
 
-    // prompt separator
-    std::cout << '+';
-    for (int i = 0; i < ScreenWidth - 2; i++)
-    {
-        std::cout << '-';
-    }
-    std::cout << "+\n";
-
-    // message + prompt
-    std::cout << "  " << GetParser().getMessage() << "\n  > ";
+    wborder(m_GameMessageWindow, 0, 0, 0, 0, 0, ACS_PLUS, 0, ACS_BTEE);
+    mvwaddstr(m_GameMessageWindow, 1, 1, GetParser().getMessage().c_str());
+    wrefresh(m_GameMessageWindow);
 }
 
-Screen::View Screen::GetView()
+Screen::View Screen::GetView() const
 {
     return m_View;
-}
-
-void Screen::SetView(View m)
-{
-    m_View = m;
-}
-
-void Screen::Clear()
-{
-    std::cout << "\033[2J\033[;H";
 }
 
 void Screen::Init()
@@ -346,6 +196,9 @@ void Screen::Init()
 
 void Screen::Terminate()
 {
+    if (m_GameWorldWindow != nullptr) delwin(m_GameWorldWindow);
+    if (m_GameHUDWindow != nullptr) delwin(m_GameHUDWindow);
+    if (m_GameMessageWindow != nullptr) delwin(m_GameMessageWindow);
     endwin();
 }
 
@@ -469,6 +322,24 @@ int Screen::SelectViaMenu(std::map<int, std::string> options, Coords position, i
         free_item(item);
 
     return it->first;
+}
+
+void Screen::StartGame()
+{
+    m_View = View::World;
+    m_GameWorldWindow = newwin(1, 1, 0, 0);
+    ResizeAndRepositionWorldWindow();
+    m_GameHUDWindow = newwin(ScreenHeight, HUDPanelWidth, 0, WorldPanelWidth);
+    m_GameMessageWindow = newwin(ScreenHeight - WorldPanelHeight, WorldPanelWidth + 1, WorldPanelHeight, 0);
+}
+
+void Screen::ResizeAndRepositionWorldWindow()
+{
+    const Worlds::Room& currentRoom = m_WorldManager.GetCurrentRoom();
+    const Coords WorldWindowPos = { (WorldPanelWidth - currentRoom.GetWidth() - 2) / 2 - 1,
+                                    (WorldPanelHeight - currentRoom.GetHeight() - 2) / 2 };
+    wresize(m_GameWorldWindow, currentRoom.GetHeight() + 2, currentRoom.GetWidth() + 2);
+    mvwin(m_GameWorldWindow, WorldWindowPos.GetY(), WorldWindowPos.GetX());
 }
 
 } /* namespace UI */
