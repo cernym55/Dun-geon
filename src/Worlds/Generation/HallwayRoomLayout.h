@@ -37,8 +37,8 @@ public:
     virtual ~HallwayRoomLayout() = default;
 
 private:
-    constexpr static const size_t MaximumWidth = 40;
-    constexpr static const size_t MaximumHeight = 20;
+    constexpr static const size_t MaximumWidth = 30;
+    constexpr static const size_t MaximumHeight = 16;
     constexpr static const size_t MinimumWidth = 20;
     constexpr static const size_t MinimumHeight = 12;
     constexpr static const size_t HallwayWidth = 3;
