@@ -5,6 +5,7 @@
 #include "Worlds/Field.h"
 #include "Worlds/Room.h"
 #include <array>
+#include <ncurses.h>
 #include <vector>
 
 namespace Entities
@@ -30,9 +31,9 @@ public:
      */
     Character(const std::string& name,
               const std::string& description = "",
-              char icon = 0,
+              chtype icon = 0,
               bool isBlocking = true);
-    
+
     Character(const Character&) = delete;
 
     Character(Character&&) = delete;

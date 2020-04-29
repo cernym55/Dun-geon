@@ -196,17 +196,17 @@ private:
      * @brief Get the icon for the given field
      * 
      * @param field field
-     * @return char icon
+     * @return chtype icon
      */
-    char GetFieldIcon(const Worlds::Field& field) const;
+    chtype GetFieldIcon(const Worlds::Field& field) const;
 
     /**
      * @brief Get the icon for the field at the given coords
      * 
      * @param coords coords
-     * @return char icon
+     * @return chtype icon
      */
-    char GetFieldIcon(Coords coords) const;
+    chtype GetFieldIcon(Coords coords) const;
 };
 
 } /* namespace UI */

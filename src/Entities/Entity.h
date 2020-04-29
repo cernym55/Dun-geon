@@ -2,6 +2,7 @@
 
 #include "Misc/Coords.h"
 #include <iostream>
+#include <ncurses.h>
 #include <string>
 
 namespace Entities
@@ -20,7 +21,7 @@ public:
      */
     Entity(const std::string& name,
            const std::string& description = "",
-           char icon = 0,
+           chtype icon = 0,
            bool isBlocking = true);
 
     Entity(const Entity&) = delete;
@@ -62,7 +63,7 @@ public:
      * 
      * @return char icon
      */
-    char GetIcon() const;
+    chtype GetIcon() const;
 
     /**
      * @brief Get the name
@@ -81,7 +82,7 @@ public:
 protected:
     std::string m_Name;
     std::string m_Description;
-    char m_Icon;
+    chtype m_Icon;
     bool m_Blocking;
     Coords m_Coords;
 };

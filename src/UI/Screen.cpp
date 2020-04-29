@@ -1,4 +1,5 @@
 #include "Screen.h"
+#include "ColorPairs.h"
 #include "Entities/EntityManager.h"
 #include "Entities/Player.h"
 #include "Misc/Coords.h"
@@ -87,7 +88,7 @@ void Screen::MainMenu()
     }
 }
 
-char Screen::GetFieldIcon(const Worlds::Field& field) const
+chtype Screen::GetFieldIcon(const Worlds::Field& field) const
 {
     if (field.TryGetForegroundEntity() != nullptr)
     {
@@ -103,7 +104,7 @@ char Screen::GetFieldIcon(const Worlds::Field& field) const
     }
 }
 
-char Screen::GetFieldIcon(Coords coords) const
+chtype Screen::GetFieldIcon(Coords coords) const
 {
     return GetFieldIcon(m_WorldManager.GetCurrentRoom().GetFieldAt(coords));
 }
@@ -194,6 +195,10 @@ void Screen::Init()
     keypad(stdscr, true);
     noecho();
     curs_set(0);
+
+    // Default color pairs
+    init_pair(ColorPairs::Wall, -1, COLOR_WHITE);
+    init_pair(ColorPairs::PlayerEntityIcon, COLOR_MAGENTA, -1);
 }
 
 void Screen::Terminate()

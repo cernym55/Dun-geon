@@ -1,6 +1,7 @@
 #include "Character.h"
 #include "Misc/Direction.h"
 #include "Worlds/Room.h"
+#include <ncurses.h>
 #include <string>
 
 namespace Entities
@@ -8,7 +9,7 @@ namespace Entities
 
 Character::Character(const std::string& name,
                      const std::string& description,
-                     char icon,
+                     chtype icon,
                      bool isBlocking)
     : Entity(name, description, icon, isBlocking),
       m_LastMoveDirection(Direction::None())

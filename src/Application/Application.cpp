@@ -3,10 +3,12 @@
 #include "Entities/Player.h"
 #include "Misc/Direction.h"
 #include "Player/Controller.h"
+#include "UI/ColorPairs.h"
 #include "UI/InputHandler.h"
 #include "UI/Screen.h"
 #include "Worlds/World.h"
 #include "Worlds/WorldManager.h"
+#include <ncurses.h>
 
 namespace Application
 {
@@ -15,7 +17,7 @@ Application::Application()
     : m_InputHandler(m_Screen, m_PlayerController),
       m_Screen(m_InputHandler, m_WorldManager, m_EntityManager, m_Player),
       m_WorldManager(),
-      m_Player("Gref"),
+      m_Player("Gref", 'G' | A_BOLD | COLOR_PAIR(UI::ColorPairs::PlayerEntityIcon)),
       m_EntityManager(m_WorldManager, m_Player),
       m_PlayerController(m_EntityManager, m_WorldManager, m_Player)
 {

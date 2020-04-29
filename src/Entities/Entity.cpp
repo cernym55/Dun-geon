@@ -1,12 +1,13 @@
 #include "Entity.h"
 #include "Misc/Coords.h"
+#include <ncurses.h>
 
 namespace Entities
 {
 
 Entity::Entity(const std::string& name,
                const std::string& description,
-               char icon,
+               chtype icon,
                bool isBlocking)
     : m_Name(name),
       m_Description(description),
@@ -30,7 +31,7 @@ bool Entity::IsBlocking() const
     return m_Blocking;
 }
 
-char Entity::GetIcon() const
+chtype Entity::GetIcon() const
 {
     return m_Icon;
 }
