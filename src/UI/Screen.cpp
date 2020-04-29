@@ -133,7 +133,14 @@ void Screen::DrawHUD()
     mvwprintw(m_GameHUDWindow, 12, 4, "Agi: %3d", stats.haste);
     mvwprintw(m_GameHUDWindow, 12, HUDPanelWidth - 11, "Int: %3d", stats.magic);
 
-    PrintCenterAt(m_GameHUDWindow, "Wealth: " + std::to_string(stats.dun) + " dun", 14);
+    std::string wealthAmountStr = std::to_string(stats.dun);
+    int xPos = (HUDPanelWidth - wealthAmountStr.size() - 12) / 2;
+    xPos += xPos % 2;
+    mvwaddstr(m_GameHUDWindow, 14, xPos, "Wealth: ");
+    wattron(m_GameHUDWindow, COLOR_PAIR(ColorPairs::YellowText) | A_BOLD);
+    wprintw(m_GameHUDWindow, "%d", stats.dun);
+    wattroff(m_GameHUDWindow, A_COLOR | A_BOLD);
+    waddstr(m_GameHUDWindow, " dun");
 
     mvwaddstr(m_GameHUDWindow, 16, 5, "[i]tems");
     mvwaddstr(m_GameHUDWindow, 16, HUDPanelWidth - 12, "[s]kills");
@@ -199,6 +206,7 @@ void Screen::Init()
     // Default color pairs
     init_pair(ColorPairs::Wall, -1, COLOR_WHITE);
     init_pair(ColorPairs::PlayerEntityIcon, COLOR_MAGENTA, -1);
+    init_pair(ColorPairs::YellowText, COLOR_YELLOW, -1);
 }
 
 void Screen::Terminate()

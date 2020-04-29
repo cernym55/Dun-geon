@@ -16,6 +16,11 @@ constexpr const short Wall = 1;
  */
 constexpr const short PlayerEntityIcon = 2;
 
+/**
+ * @brief Used for yellow text
+ */
+constexpr const short YellowText = 3;
+
 } /* namespace ColorPairs */
 
 } /* namespace UI */
