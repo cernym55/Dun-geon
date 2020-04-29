@@ -559,4 +559,37 @@ void InputHandler::loadKeyConf()
     }
 }
 
+void InputHandler::HandleNextKeyInput()
+{
+    int key = getch();
+    bool res = true;
+    switch (key)
+    {
+    case 'w':
+    case KEY_UP:
+        res = m_PlayerController.TryMovePlayer(Direction::Up());
+        break;
+    case 'd':
+    case KEY_RIGHT:
+        res = m_PlayerController.TryMovePlayer(Direction::Right());
+        break;
+    case 's':
+    case KEY_DOWN:
+        res = m_PlayerController.TryMovePlayer(Direction::Down());
+        break;
+    case 'a':
+    case KEY_LEFT:
+        res = m_PlayerController.TryMovePlayer(Direction::Left());
+        break;
+    case 'q':
+        quitCommand = true;
+        break;
+    }
+
+    if (!res)
+        message = "Cannot move there.";
+    else
+        message.clear();
+}
+
 } /* namespace UI */

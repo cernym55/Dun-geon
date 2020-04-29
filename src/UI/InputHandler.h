@@ -59,6 +59,11 @@ public:
     void makeKeyConf();
     void loadKeyConf();
 
+    /**
+     * @brief Handle the next key input
+     */
+    void HandleNextKeyInput();
+
 private:
     Screen& m_Screen;
     Player::Controller& m_PlayerController;

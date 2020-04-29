@@ -43,14 +43,16 @@ void Application::Run()
     m_EntityManager.TryMovePlayerEntity(Direction::None());
     while (!m_InputHandler.quit())
     {
-        if (m_InputHandler.getCmdQueue().empty())
-        {
-            m_Screen.Draw();
-            m_InputHandler.readInput();
-            m_InputHandler.parse();
-            m_InputHandler.eval();
-        }
-        m_InputHandler.execCommand();
+        // if (m_InputHandler.getCmdQueue().empty())
+        // {
+        //     m_Screen.Draw();
+        //     m_InputHandler.readInput();
+        //     m_InputHandler.parse();
+        //     m_InputHandler.eval();
+        // }
+        // m_InputHandler.execCommand();
+        m_Screen.Draw();
+        m_InputHandler.HandleNextKeyInput();
     }
 }
 

@@ -60,7 +60,7 @@ public:
     /**
      * @brief Width of the world panel
      */
-    constexpr static const int WorldPanelWidth = 46;
+    constexpr static const int WorldPanelWidth = 50;
 
     /**
      * @brief Height of the world panel
