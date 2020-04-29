@@ -110,6 +110,7 @@ char Screen::GetFieldIcon(Coords coords) const
 
 void Screen::DrawHUD()
 {
+    wclear(m_GameHUDWindow);
     const auto& stats = m_Player.GetStats();
     mvwprintw(m_GameHUDWindow, 2, 4, "World %d", m_WorldManager.GetCurrentWorld().GetWorldNumber());
     mvwprintw(m_GameHUDWindow, 2, HUDPanelWidth - 10, "Room %d", m_WorldManager.GetCurrentRoom().GetRoomNumber());
@@ -150,6 +151,11 @@ void Screen::DrawHUD()
 
 void Screen::Draw()
 {
+    if (m_CurrentRoom != &m_WorldManager.GetCurrentRoom())
+    {
+        m_CurrentRoom = &m_WorldManager.GetCurrentRoom();
+        ResizeAndRepositionWorldWindow();
+    }
     size_t worldY, worldX;
     getmaxyx(m_GameWorldWindow, worldY, worldX);
     for (size_t i = 1; i < worldX - 1; i++)
@@ -162,12 +168,13 @@ void Screen::Draw()
     //wborder(m_GameWorldWindow, '|', '|', '-', '-', '+', '+', '+', '+');
     wrefresh(m_GameWorldWindow);
 
+    DrawHUD();
     box(m_GameHUDWindow, 0, 0);
     mvwhline(m_GameHUDWindow, WorldPanelHeight, 1, 0, HUDPanelWidth - 2);
     mvwaddch(m_GameHUDWindow, WorldPanelHeight, HUDPanelWidth - 1, ACS_RTEE);
-    DrawHUD();
-    //wrefresh(m_GameHUDWindow);
+    wrefresh(m_GameHUDWindow);
 
+    wclear(m_GameMessageWindow);
     wborder(m_GameMessageWindow, 0, 0, 0, 0, 0, ACS_PLUS, 0, ACS_BTEE);
     mvwaddstr(m_GameMessageWindow, 1, 1, m_InputHandler.getMessage().c_str());
     wrefresh(m_GameMessageWindow);
@@ -330,6 +337,8 @@ void Screen::StartGame()
 
 void Screen::ResizeAndRepositionWorldWindow()
 {
+    wclear(m_GameWorldWindow);
+    wrefresh(m_GameWorldWindow);
     const Worlds::Room& currentRoom = m_WorldManager.GetCurrentRoom();
     const Coords WorldWindowPos = { (WorldPanelWidth - currentRoom.GetWidth() - 2) / 2 - 1,
                                     (WorldPanelHeight - currentRoom.GetHeight() - 2) / 2 };

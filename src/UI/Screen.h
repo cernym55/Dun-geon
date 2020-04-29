@@ -124,6 +124,7 @@ private:
     WINDOW* m_GameWorldWindow;
     WINDOW* m_GameHUDWindow;
     WINDOW* m_GameMessageWindow;
+    const Worlds::Room* m_CurrentRoom;
 
     /**
      * @brief Initialize the screen
