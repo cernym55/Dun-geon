@@ -2,18 +2,17 @@
 #include "ColorPairs.h"
 #include "Entities/EntityManager.h"
 #include "Entities/Player.h"
+#include "InputHandler.h"
 #include "Misc/Coords.h"
 #include "Misc/Exceptions.h"
 #include "Misc/RNG.h"
 #include "Misc/Utils.h"
-#include "InputHandler.h"
 #include "Worlds/Field.h"
 #include "Worlds/Room.h"
 #include "Worlds/World.h"
 #include "Worlds/WorldManager.h"
 #include <cmath>
 #include <iostream>
-#include <limits>
 #include <map>
 #include <menu.h>
 #include <ncurses.h>
@@ -159,6 +158,7 @@ void Screen::DrawHUD()
 
 void Screen::Draw()
 {
+    // Draw the world
     if (m_CurrentRoom != &m_WorldManager.GetCurrentRoom())
     {
         m_CurrentRoom = &m_WorldManager.GetCurrentRoom();
@@ -173,18 +173,33 @@ void Screen::Draw()
             mvwaddch(m_GameWorldWindow, j, i, GetFieldIcon({ i - 1, j - 1 }));
         }
     }
-    //wborder(m_GameWorldWindow, '|', '|', '-', '-', '+', '+', '+', '+');
     wrefresh(m_GameWorldWindow);
 
+    // Draw the HUD
     DrawHUD();
     box(m_GameHUDWindow, 0, 0);
     mvwhline(m_GameHUDWindow, WorldPanelHeight, 1, 0, HUDPanelWidth - 2);
     mvwaddch(m_GameHUDWindow, WorldPanelHeight, HUDPanelWidth - 1, ACS_RTEE);
     wrefresh(m_GameHUDWindow);
 
+    // Draw the message window
     wclear(m_GameMessageWindow);
     wborder(m_GameMessageWindow, 0, 0, 0, 0, 0, ACS_PLUS, 0, ACS_BTEE);
-    mvwaddstr(m_GameMessageWindow, 1, 1, m_Message.c_str());
+    // Post the current message
+    if (m_Message.size() > WorldPanelWidth - 4)
+    {
+        size_t pos = WorldPanelWidth - 5;
+        while (m_Message[pos] != ' ' && pos > 0)
+            pos--;
+        std::string secondLine = m_Message.substr(pos > 0 ? pos + 1 : WorldPanelWidth - 4);
+        m_Message = m_Message.substr(0, pos > 0 ? pos : WorldPanelWidth - 4);
+        mvwaddstr(m_GameMessageWindow, 1, 2, m_Message.c_str());
+        mvwaddstr(m_GameMessageWindow, 2, 2, secondLine.c_str());
+    }
+    else
+    {
+        mvwaddstr(m_GameMessageWindow, 1, 2, m_Message.c_str());
+    }
     m_Message.clear();
     wrefresh(m_GameMessageWindow);
 }
