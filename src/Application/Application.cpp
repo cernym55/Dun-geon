@@ -43,16 +43,8 @@ void Application::Run()
     m_Player.GetStats().haste = 5;
     m_Player.GetStats().magic = 10;
     m_EntityManager.TryMovePlayerEntity(Direction::None());
-    while (!m_InputHandler.quit())
+    while (!m_InputHandler.ShouldQuit())
     {
-        // if (m_InputHandler.getCmdQueue().empty())
-        // {
-        //     m_Screen.Draw();
-        //     m_InputHandler.readInput();
-        //     m_InputHandler.parse();
-        //     m_InputHandler.eval();
-        // }
-        // m_InputHandler.execCommand();
         m_Screen.Draw();
         m_InputHandler.HandleNextKeyInput();
     }

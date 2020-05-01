@@ -1,4 +1,5 @@
 #include "InputHandler.h"
+#include "ColorPairs.h"
 #include "Misc/Direction.h"
 #include "Misc/Utils.h"
 #include "Player/Controller.h"
@@ -9,331 +10,179 @@
 #include <cctype>
 #include <cstdlib>
 #include <fstream>
+#include <ncurses.h>
 #include <sstream>
-
-#define KEY_CONF_FILENAME "data/controls.conf"
 
 namespace UI
 {
 
 InputHandler::InputHandler(Screen& screen, Player::Controller& playerController)
-    : m_Screen(screen), m_PlayerController(playerController)
+    : m_Screen(screen), m_PlayerController(playerController), m_ShouldQuit(false)
 {
-    quitCommand = false;
-    cmdDict["wait"] = NIL;
-    cmdDict["nil"] = NIL;
-    cmdDict["go"] = MOVE;
-    cmdDict["move"] = MOVE;
-    cmdDict["walk"] = MOVE;
-    cmdDict["g"] = MOVE;
-    cmdDict["get"] = GET;
-    cmdDict["grab"] = GET;
-    cmdDict["take"] = GET;
-    cmdDict["loot"] = GET;
-    cmdDict["acquire"] = GET;
-    cmdDict["break"] = BREAK;
-    cmdDict["smash"] = BREAK;
-    cmdDict["destroy"] = BREAK;
-    cmdDict["battle"] = BATTLE;
-    cmdDict["fight"] = BATTLE;
-    cmdDict["duel"] = BATTLE;
-    cmdDict["challenge"] = BATTLE;
-    cmdDict["speak"] = TALK;
-    cmdDict["talk"] = TALK;
-    cmdDict["hail"] = TALK;
-    cmdDict["trade"] = TRADE;
-    cmdDict["buy"] = TRADE;
-    cmdDict["sell"] = TRADE;
-    cmdDict["i"] = OPEN_INV;
-    cmdDict["inv"] = OPEN_INV;
-    cmdDict["inventory"] = OPEN_INV;
-    cmdDict["items"] = OPEN_INV;
-    cmdDict["bag"] = OPEN_INV;
-    cmdDict["backpack"] = OPEN_INV;
-    cmdDict["s"] = OPEN_SKILLS;
-    cmdDict["skills"] = OPEN_SKILLS;
-    cmdDict["abilities"] = OPEN_SKILLS;
-    cmdDict["m"] = OPEN_MAP;
-    cmdDict["map"] = OPEN_MAP;
-    cmdDict["h"] = OPEN_HELP;
-    cmdDict["help"] = OPEN_HELP;
-    cmdDict["helpscreen"] = OPEN_HELP;
-    cmdDict["f1"] = OPEN_HELP;
-    cmdDict["q"] = QUIT;
-    cmdDict["quit"] = QUIT;
-    cmdDict["exit"] = QUIT;
-    dirDict["u"] = Direction::Up();
-    dirDict["up"] = Direction::Up();
-    dirDict["r"] = Direction::Right();
-    dirDict["right"] = Direction::Right();
-    dirDict["d"] = Direction::Down();
-    dirDict["down"] = Direction::Down();
-    dirDict["l"] = Direction::Left();
-    dirDict["left"] = Direction::Left();
-    andKeywords = { "and", "&", "then" };
-    lastKeywords = { "a", "last", "repeat", "again" };
+    m_ShouldQuit = false;
+    m_CmdDict["wait"] = CommandType::None;
+    m_CmdDict["nil"] = CommandType::None;
+    m_CmdDict["go"] = CommandType::Move;
+    m_CmdDict["move"] = CommandType::Move;
+    m_CmdDict["walk"] = CommandType::Move;
+    m_CmdDict["g"] = CommandType::Move;
+    m_CmdDict["get"] = CommandType::Get;
+    m_CmdDict["grab"] = CommandType::Get;
+    m_CmdDict["take"] = CommandType::Get;
+    m_CmdDict["loot"] = CommandType::Get;
+    m_CmdDict["acquire"] = CommandType::Get;
+    m_CmdDict["break"] = CommandType::Break;
+    m_CmdDict["smash"] = CommandType::Break;
+    m_CmdDict["destroy"] = CommandType::Break;
+    m_CmdDict["battle"] = CommandType::Battle;
+    m_CmdDict["fight"] = CommandType::Battle;
+    m_CmdDict["duel"] = CommandType::Battle;
+    m_CmdDict["challenge"] = CommandType::Battle;
+    m_CmdDict["speak"] = CommandType::Talk;
+    m_CmdDict["talk"] = CommandType::Talk;
+    m_CmdDict["hail"] = CommandType::Talk;
+    m_CmdDict["trade"] = CommandType::Trade;
+    m_CmdDict["buy"] = CommandType::Trade;
+    m_CmdDict["sell"] = CommandType::Trade;
+    m_CmdDict["i"] = CommandType::OpenInventory;
+    m_CmdDict["inv"] = CommandType::OpenInventory;
+    m_CmdDict["inventory"] = CommandType::OpenInventory;
+    m_CmdDict["items"] = CommandType::OpenInventory;
+    m_CmdDict["bag"] = CommandType::OpenInventory;
+    m_CmdDict["backpack"] = CommandType::OpenInventory;
+    m_CmdDict["s"] = CommandType::OpenSkills;
+    m_CmdDict["skills"] = CommandType::OpenSkills;
+    m_CmdDict["abilities"] = CommandType::OpenSkills;
+    m_CmdDict["m"] = CommandType::OpenMap;
+    m_CmdDict["map"] = CommandType::OpenMap;
+    m_CmdDict["h"] = CommandType::OpenHelp;
+    m_CmdDict["help"] = CommandType::OpenHelp;
+    m_CmdDict["helpscreen"] = CommandType::OpenHelp;
+    m_CmdDict["f1"] = CommandType::OpenHelp;
+    m_CmdDict["q"] = CommandType::Quit;
+    m_CmdDict["quit"] = CommandType::Quit;
+    m_CmdDict["exit"] = CommandType::Quit;
+    m_DirDict["u"] = Direction::Up();
+    m_DirDict["up"] = Direction::Up();
+    m_DirDict["r"] = Direction::Right();
+    m_DirDict["right"] = Direction::Right();
+    m_DirDict["d"] = Direction::Down();
+    m_DirDict["down"] = Direction::Down();
+    m_DirDict["l"] = Direction::Left();
+    m_DirDict["left"] = Direction::Left();
+    m_AndKeywords = { "and", "&", "then" };
+    m_LastKeywords = { "a", "last", "repeat", "again" };
     makeKeyConf();
     loadKeyConf();
-    last.type = NIL;
-    last.dir = Direction::None();
-    last.rep = 1;
 }
 
-void InputHandler::evalWorld()
+void InputHandler::ExecCommandQueue()
 {
-    if (words.empty())
+    while (!m_CommandQueue.empty())
     {
-        message = "Command not understood.";
-        return;
-    }
-    Command cmd;
-    cmd.type = NIL;
-    cmd.dir = Direction::None();
-    cmd.rep = 1;
-    int andLoc = -1;
-    bool lastCalled = false;
-    // look for AND keyword
-    for (int i = 0; i < words.size(); i++)
-    {
-        if (i < words.size() - 1 && std::find(andKeywords.begin(), andKeywords.end(), words[i]) != andKeywords.end())
+        Command cmd = m_CommandQueue.front();
+        m_CommandQueue.pop();
+        std::ostringstream messageStream;
+        switch (cmd.type)
         {
-            andLoc = i;
+        case CommandType::None:
             break;
-        }
-    }
-    // only read up to AND if found
-    int workingLength = (andLoc == -1) ? words.size() : andLoc;
-    // look for command keywords
-    for (int i = 0; i < workingLength; i++)
-    {
-        if (cmdDict.find(words[i]) != cmdDict.end())
-        {
-            cmd.type = cmdDict.find(words[i])->second;
-            break;
-        }
-        else if (std::find(lastKeywords.begin(), lastKeywords.end(), words[i]) != lastKeywords.end())
-        {
-            // look for LAST
-            cmd = last;
-            lastCalled = true;
-            break;
-        }
-        else
-        {
-            message = "Command not understood.";
-        }
-    }
-    // look for numbers
-    for (int i = 0; i < workingLength; i++)
-    {
-        if (std::atoi(words[i].c_str()) > 0)
-        {
-            cmd.rep = lastCalled ? last.rep * std::atoi(words[i].c_str()) : std::atoi(words[i].c_str());
-            break;
-        }
-    }
-    // look for direction keywords if command is not being repeated
-    for (int i = 0; i < workingLength; i++)
-    {
-        if (dirDict.find(words[i]) != dirDict.end())
-        {
-            cmd.dir = dirDict.find(words[i])->second;
-            break;
-        }
-    }
-    // push command to queue cmd.rep times
-    for (int i = 0; i < cmd.rep; i++)
-    {
-        cmdQueue.push_back(cmd);
-    }
-    last = cmd;
-    if (andLoc >= 0)
-    {
-        words.erase(words.begin(), words.begin() + andLoc + 1);
-        eval();
-    }
-}
-
-std::deque<Command>& InputHandler::getCmdQueue()
-{
-    return cmdQueue;
-}
-
-void InputHandler::execCommand()
-{
-    if (cmdQueue.empty())
-    {
-        return;
-    }
-    // exec & pop the command in front of queue
-    CmdType type = cmdQueue.front().type;
-    Direction dir = cmdQueue.front().dir;
-    int rep = cmdQueue.front().rep;
-    std::ostringstream messageStream;
-    switch (type)
-    {
-    case NIL:
-        // drop through to move command if dir given
-        if (dir == Direction::None())
-        {
-            break;
-        }
-    case MOVE:
-        if (dir == Direction::None())
-        {
-            messageStream << "No direction given.";
-        }
-        else if (!m_PlayerController.TryMovePlayer(dir))
-        {
-            messageStream << "Cannot move there.";
-        }
-        else
-        {
-            messageStream
-                << "Moved " << dir << " " << rep
-                << ((rep == 1)
-                        ? " field."
-                        : " fields.");
-        }
-        break;
-    case GET:
-        // TODO: add
-        break;
-    case BREAK:
-        // TODO: add
-        break;
-    case BATTLE:
-        // TODO: add
-        break;
-    case TALK:
-        // TODO: add
-        break;
-    case TRADE:
-        // TODO: add
-        break;
-    case OPEN_INV:
-        // TODO: add
-        break;
-    case OPEN_SKILLS:
-        // TODO: add
-        break;
-    case OPEN_MAP:
-        // TODO: add
-        break;
-    case OPEN_HELP:
-        // TODO: add
-        break;
-    case QUIT:
-        setQuit();
-        break;
-    }
-    cmdQueue.pop_front();
-    message = messageStream.str();
-}
-
-Direction InputHandler::findDir(std::string input)
-{
-    if (dirDict.find(input) != dirDict.end())
-    {
-        return dirDict.find(input)->second;
-    }
-    else
-    {
-        return Direction::None();
-    }
-}
-
-CmdType InputHandler::findCmdType(std::string input)
-{
-    if (cmdDict.find(input) != cmdDict.end())
-    {
-        return cmdDict.find(input)->second;
-    }
-    else
-    {
-        return NIL;
-    }
-}
-
-void InputHandler::readInput()
-{
-    std::cin.clear();
-    std::getline(std::cin, input);
-}
-
-void InputHandler::parse()
-{
-    words.clear();
-    std::string wordBuffer = "";
-    // append a space for parsing purposes
-    input += " ";
-    for (int i = 0; i < input.size(); i++)
-    {
-        if (input[i] != ' ' && input[i] != '\t' && input[i] != '\n')
-        {
-            if (std::isalnum(input[i]) || input[i] == '&')
+        case CommandType::Move:
+            if (cmd.dir == Direction::None())
             {
-                wordBuffer += std::tolower(input[i]);
+                messageStream << "No direction given.";
             }
-        }
-        else
-        {
-            if (!wordBuffer.empty())
+            else if (!m_PlayerController.TryMovePlayer(cmd.dir))
             {
-                words.push_back(wordBuffer);
-                wordBuffer = "";
+                messageStream << "Cannot move there.";
+                if (!m_CommandQueue.empty())
+                {
+                    messageStream << " Subsequent commands canceled.";
+                    while (!m_CommandQueue.empty())
+                        m_CommandQueue.pop();
+                }
             }
+            break;
+        case CommandType::Get:
+            // TODO: add
+            break;
+        case CommandType::Break:
+            // TODO: add
+            break;
+        case CommandType::Battle:
+            // TODO: add
+            break;
+        case CommandType::Talk:
+            // TODO: add
+            break;
+        case CommandType::Trade:
+            // TODO: add
+            break;
+        case CommandType::OpenInventory:
+            // TODO: add
+            break;
+        case CommandType::OpenSkills:
+            // TODO: add
+            break;
+        case CommandType::OpenMap:
+            // TODO: add
+            break;
+        case CommandType::OpenHelp:
+            // TODO: add
+            break;
+        case CommandType::Quit:
+            SetQuit();
+            break;
+        }
+
+        std::string message = messageStream.str();
+        if (!message.empty())
+        {
+            m_Screen.PostMessage(messageStream.str());
         }
     }
 }
 
-void InputHandler::eval()
+void InputHandler::Eval(const std::string& input)
 {
+    std::vector<std::string> words;
+    std::istringstream iss(input);
+    std::string buffer;
+    while (iss >> buffer)
+        words.push_back(std::move(buffer));
+
     switch (m_Screen.GetView())
     {
     case Screen::View::World:
-        evalWorld();
+        EvalWorld(words);
         break;
-    case Screen::View::Test:
-        message = "";
-        for (int i = 0; i < words.size(); i++)
-        {
-            message += words[i];
-        }
-        break;
+    default:
+        return;
     }
+
+    ExecCommandQueue();
 }
 
-bool InputHandler::quit()
+bool InputHandler::ShouldQuit() const
 {
-    return quitCommand;
+    return m_ShouldQuit;
 }
 
-void InputHandler::setQuit()
+void InputHandler::SetQuit()
 {
-    quitCommand = true;
+    m_ShouldQuit = true;
 }
 
-std::string InputHandler::getMessage()
+void InputHandler::makeKeyConf() const
 {
-    return message;
-}
-
-void InputHandler::setMessage(std::string value)
-{
-    message = value;
-}
-
-void InputHandler::makeKeyConf()
-{
-    if (fileExists(KEY_CONF_FILENAME))
+    if (fileExists("data/controls.conf"))
     {
         return;
     }
     else
     {
         std::ofstream file;
-        file.open(KEY_CONF_FILENAME);
+        file.open("data/controls.conf");
         file << "# Dun-geon command keyword configuration file\n\n"
              << "# This file is auto-generated if missing. To reset your controls to default, simply delete it.\n"
              << "# A line consists of a \"KEYWORD_CODE\" followed by space-separated keywords (aliases) for that command.\n"
@@ -382,18 +231,18 @@ void InputHandler::makeKeyConf()
 
 void InputHandler::loadKeyConf()
 {
-    if (!fileExists(KEY_CONF_FILENAME))
+    if (!fileExists("data/controls.conf"))
     {
-        message = "Could not read file \"controls.conf\". Controls set to default.";
+        m_Screen.PostMessage("Could not read file \"controls.conf\". Controls set to default.");
         return;
     }
     else
     {
-        cmdDict.clear();
-        dirDict.clear();
-        andKeywords.clear();
-        lastKeywords.clear();
-        std::ifstream file(KEY_CONF_FILENAME);
+        m_CmdDict.clear();
+        m_DirDict.clear();
+        m_AndKeywords.clear();
+        m_LastKeywords.clear();
+        std::ifstream file("data/controls.conf");
         std::string line;
         std::vector<std::string> wordVec;
         std::string buffer;
@@ -405,7 +254,7 @@ void InputHandler::loadKeyConf()
             line.clear();
             std::getline(file, line);
             line += " ";
-            for (int i = 0; i < line.size(); i++)
+            for (size_t i = 0; i < line.size(); i++)
             {
                 if (std::isalpha(line[i]) || line[i] == '_' || line[i] == '&')
                 {
@@ -428,130 +277,130 @@ void InputHandler::loadKeyConf()
             {
                 // Whoever is reading this, forgive me
                 // TODO: correct this heresy
-                if (wordVec[0] == "NIL")
+                if (wordVec[0] == "CommandType::NIL")
                 {
-                    for (int i = 1; i < wordVec.size(); i++)
+                    for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        cmdDict[wordVec[i]] = NIL;
+                        m_CmdDict[wordVec[i]] = CommandType::None;
                     }
                 }
                 else if (wordVec[0] == "MOVE")
                 {
-                    for (int i = 1; i < wordVec.size(); i++)
+                    for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        cmdDict[wordVec[i]] = MOVE;
+                        m_CmdDict[wordVec[i]] = CommandType::Move;
                     }
                 }
                 else if (wordVec[0] == "GET")
                 {
-                    for (int i = 1; i < wordVec.size(); i++)
+                    for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        cmdDict[wordVec[i]] = GET;
+                        m_CmdDict[wordVec[i]] = CommandType::Get;
                     }
                 }
                 else if (wordVec[0] == "BREAK")
                 {
-                    for (int i = 1; i < wordVec.size(); i++)
+                    for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        cmdDict[wordVec[i]] = BREAK;
+                        m_CmdDict[wordVec[i]] = CommandType::Break;
                     }
                 }
                 else if (wordVec[0] == "BATTLE")
                 {
-                    for (int i = 1; i < wordVec.size(); i++)
+                    for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        cmdDict[wordVec[i]] = BATTLE;
+                        m_CmdDict[wordVec[i]] = CommandType::Battle;
                     }
                 }
                 else if (wordVec[0] == "TALK")
                 {
-                    for (int i = 1; i < wordVec.size(); i++)
+                    for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        cmdDict[wordVec[i]] = TALK;
+                        m_CmdDict[wordVec[i]] = CommandType::Talk;
                     }
                 }
                 else if (wordVec[0] == "TRADE")
                 {
-                    for (int i = 1; i < wordVec.size(); i++)
+                    for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        cmdDict[wordVec[i]] = TRADE;
+                        m_CmdDict[wordVec[i]] = CommandType::Trade;
                     }
                 }
                 else if (wordVec[0] == "OPEN_INV")
                 {
-                    for (int i = 1; i < wordVec.size(); i++)
+                    for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        cmdDict[wordVec[i]] = OPEN_INV;
+                        m_CmdDict[wordVec[i]] = CommandType::OpenInventory;
                     }
                 }
                 else if (wordVec[0] == "OPEN_SKILLS")
                 {
-                    for (int i = 1; i < wordVec.size(); i++)
+                    for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        cmdDict[wordVec[i]] = OPEN_SKILLS;
+                        m_CmdDict[wordVec[i]] = CommandType::OpenSkills;
                     }
                 }
                 else if (wordVec[0] == "OPEN_MAP")
                 {
-                    for (int i = 1; i < wordVec.size(); i++)
+                    for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        cmdDict[wordVec[i]] = OPEN_MAP;
+                        m_CmdDict[wordVec[i]] = CommandType::OpenMap;
                     }
                 }
                 else if (wordVec[0] == "OPEN_HELP")
                 {
-                    for (int i = 1; i < wordVec.size(); i++)
+                    for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        cmdDict[wordVec[i]] = OPEN_HELP;
+                        m_CmdDict[wordVec[i]] = CommandType::OpenHelp;
                     }
                 }
                 else if (wordVec[0] == "QUIT")
                 {
-                    for (int i = 1; i < wordVec.size(); i++)
+                    for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        cmdDict[wordVec[i]] = QUIT;
+                        m_CmdDict[wordVec[i]] = CommandType::Quit;
                     }
                 }
                 else if (wordVec[0] == "UP")
                 {
-                    for (int i = 1; i < wordVec.size(); i++)
+                    for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        dirDict[wordVec[i]] = Direction::Up();
+                        m_DirDict[wordVec[i]] = Direction::Up();
                     }
                 }
                 else if (wordVec[0] == "RIGHT")
                 {
-                    for (int i = 1; i < wordVec.size(); i++)
+                    for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        dirDict[wordVec[i]] = Direction::Right();
+                        m_DirDict[wordVec[i]] = Direction::Right();
                     }
                 }
                 else if (wordVec[0] == "DOWN")
                 {
-                    for (int i = 1; i < wordVec.size(); i++)
+                    for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        dirDict[wordVec[i]] = Direction::Down();
+                        m_DirDict[wordVec[i]] = Direction::Down();
                     }
                 }
                 else if (wordVec[0] == "LEFT")
                 {
-                    for (int i = 1; i < wordVec.size(); i++)
+                    for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        dirDict[wordVec[i]] = Direction::Left();
+                        m_DirDict[wordVec[i]] = Direction::Left();
                     }
                 }
                 else if (wordVec[0] == "AND")
                 {
-                    for (int i = 1; i < wordVec.size(); i++)
+                    for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        andKeywords.push_back(wordVec[i]);
+                        m_AndKeywords.push_back(wordVec[i]);
                     }
                 }
                 else if (wordVec[0] == "LAST")
                 {
-                    for (int i = 1; i < wordVec.size(); i++)
+                    for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        lastKeywords.push_back(wordVec[i]);
+                        m_LastKeywords.push_back(wordVec[i]);
                     }
                 }
             }
@@ -561,35 +410,180 @@ void InputHandler::loadKeyConf()
 
 void InputHandler::HandleNextKeyInput()
 {
+    static const std::string CannotMoveMessage = "Cannot move there.";
     int key = getch();
-    bool res = true;
     switch (key)
     {
     case 'w':
     case KEY_UP:
-        res = m_PlayerController.TryMovePlayer(Direction::Up());
+        if (!m_PlayerController.TryMovePlayer(Direction::Up()))
+        {
+            m_Screen.PostMessage(CannotMoveMessage);
+        }
         break;
     case 'd':
     case KEY_RIGHT:
-        res = m_PlayerController.TryMovePlayer(Direction::Right());
+        if (!m_PlayerController.TryMovePlayer(Direction::Right()))
+        {
+            m_Screen.PostMessage(CannotMoveMessage);
+        }
         break;
     case 's':
     case KEY_DOWN:
-        res = m_PlayerController.TryMovePlayer(Direction::Down());
+        if (!m_PlayerController.TryMovePlayer(Direction::Down()))
+        {
+            m_Screen.PostMessage(CannotMoveMessage);
+        }
         break;
     case 'a':
     case KEY_LEFT:
-        res = m_PlayerController.TryMovePlayer(Direction::Left());
+        if (!m_PlayerController.TryMovePlayer(Direction::Left()))
+        {
+            m_Screen.PostMessage(CannotMoveMessage);
+        }
         break;
-    case 'q':
-        quitCommand = true;
+    case ' ': {
+        std::string input = GetTextInputFromPrompt();
+        if (!input.empty())
+        {
+            Eval(input);
+        }
         break;
     }
+    case 'q':
+        m_ShouldQuit = true; //TODO: add a confirmation box call to Screen
+        break;
+    }
+}
 
-    if (!res)
-        message = "Cannot move there.";
+void InputHandler::EvalWorld(std::vector<std::string>& words)
+{
+    static const std::string CommandNotUnderstoodMessage = "Command not understood.";
+    if (words.empty())
+    {
+        m_Screen.PostMessage(CommandNotUnderstoodMessage);
+        return;
+    }
+
+    auto nextAndKeyword = words.begin();
+
+    do
+    {
+        Command cmd;
+        bool lastCalled = false;
+        nextAndKeyword = std::find_if(words.begin(),
+                                      words.end(),
+                                      [&, words, this](const std::string& candidate) {
+                                          return std::find(m_AndKeywords.begin(), m_AndKeywords.end(), candidate) != m_AndKeywords.end();
+                                      });
+        // Look for command keywords
+        for (auto it = words.begin(); it != nextAndKeyword; it++)
+        {
+            if (m_CmdDict.count(*it) > 0)
+            {
+                cmd.type = m_CmdDict[*it];
+                break;
+            }
+            else if (std::find(m_LastKeywords.begin(), m_LastKeywords.end(), *it) != m_LastKeywords.end())
+            {
+                // look for LAST
+                cmd = m_LastCommand;
+                lastCalled = true;
+                break;
+            }
+            else
+            {
+                m_Screen.PostMessage("Command not understood.");
+            }
+        }
+        for (auto it = words.begin(); it != nextAndKeyword; it++)
+        {
+            // look for numbers
+            int repeats = std::atoi(it->c_str());
+            if (repeats > 0)
+            {
+                cmd.repeats = repeats;
+                if (lastCalled)
+                {
+                    repeats *= m_LastCommand.repeats;
+                }
+            }
+
+            // look for direction keywords
+            if (m_DirDict.count(*it) > 0)
+            {
+                cmd.dir = m_DirDict[*it];
+            }
+        }
+
+        for (int i = 0; i < cmd.repeats; i++)
+        {
+            m_CommandQueue.push(cmd);
+        }
+
+        m_LastCommand = cmd;
+
+        if (nextAndKeyword != words.end())
+        {
+            words.erase(words.begin(), nextAndKeyword + 1);
+            nextAndKeyword = words.begin();
+        }
+    } while (nextAndKeyword != words.end());
+}
+
+std::string InputHandler::GetTextInputFromPrompt()
+{
+    WINDOW* inputWindow = newwin(3,
+                                 Screen::ScreenWidth - 20,
+                                 Screen::ScreenHeight - 3,
+                                 10);
+    // Draw borders and prompt
+    wborder(inputWindow, 0, 0, 0, 0, 0, 0, ACS_BTEE, ACS_BTEE);
+    mvwaddch(inputWindow, 0, Screen::WorldPanelWidth - 10, ACS_BTEE);
+    wattron(inputWindow, A_REVERSE);
+    mvwaddstr(inputWindow, 0, (Screen::ScreenWidth - 20 - 14) / 2, " Command Input ");
+    wattroff(inputWindow, A_REVERSE);
+    mvwaddstr(inputWindow, 1, 2, "> ");
+    wrefresh(inputWindow);
+
+    // We have to handle the line input ourselves in order to allow the ESC cancel
+    curs_set(1);
+    wattron(inputWindow, COLOR_PAIR(ColorPairs::YellowText));
+    std::string input;
+    input.resize(Screen::ScreenWidth - 25, 0);
+    int ch;
+    size_t pos = 0;
+    while ((ch = wgetch(inputWindow)) != '\n' && ch != 27)
+    {
+        if (pos > 0 && (ch == KEY_BACKSPACE || ch == 127 || ch == '\b'))
+        {
+            input[pos] = 0;
+            pos--;
+            mvwaddch(inputWindow, 1, 4 + pos, ' ');
+        }
+        else if (pos < Screen::ScreenWidth - 26 && ch != KEY_BACKSPACE && ch != 127 && ch != '\b')
+        {
+            input[pos] = ch;
+            waddch(inputWindow, ch);
+            pos++;
+        }
+        wmove(inputWindow, 1, 4 + pos);
+        wrefresh(inputWindow);
+    }
+    if (ch == 27)
+    {
+        input.clear();
+    }
     else
-        message.clear();
+    {
+        input.resize(input.find_first_of('\0'));
+    }
+
+    wattroff(inputWindow, A_COLOR);
+    curs_set(0);
+
+    delwin(inputWindow);
+    return input;
 }
 
 } /* namespace UI */

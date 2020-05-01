@@ -37,11 +37,6 @@ public:
         World,
 
         /**
-         * @brief Test
-         */
-        Test,
-
-        /**
          * @brief View of the player's inventory
          */
         Inventory
@@ -115,6 +110,11 @@ public:
      */
     View GetView() const;
 
+    /**
+     * @brief Set the message to display the next time the screen is drawn
+     */
+    void PostMessage(const std::string& message);
+
 private:
     InputHandler& m_InputHandler;
     const Worlds::WorldManager& m_WorldManager;
@@ -125,6 +125,7 @@ private:
     WINDOW* m_GameHUDWindow;
     WINDOW* m_GameMessageWindow;
     const Worlds::Room* m_CurrentRoom;
+    std::string m_Message;
 
     /**
      * @brief Initialize the screen

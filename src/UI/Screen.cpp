@@ -83,7 +83,7 @@ void Screen::MainMenu()
         StartGame();
         break;
     case 2:
-        m_InputHandler.setQuit();
+        m_InputHandler.SetQuit();
         break;
     }
 }
@@ -184,7 +184,8 @@ void Screen::Draw()
 
     wclear(m_GameMessageWindow);
     wborder(m_GameMessageWindow, 0, 0, 0, 0, 0, ACS_PLUS, 0, ACS_BTEE);
-    mvwaddstr(m_GameMessageWindow, 1, 1, m_InputHandler.getMessage().c_str());
+    mvwaddstr(m_GameMessageWindow, 1, 1, m_Message.c_str());
+    m_Message.clear();
     wrefresh(m_GameMessageWindow);
 }
 
@@ -193,12 +194,17 @@ Screen::View Screen::GetView() const
     return m_View;
 }
 
+void Screen::PostMessage(const std::string& message)
+{
+    m_Message = message;
+}
+
 void Screen::Init()
 {
     initscr();
     start_color();
     use_default_colors();
-    cbreak();
+    raw();
     keypad(stdscr, true);
     noecho();
     curs_set(0);
