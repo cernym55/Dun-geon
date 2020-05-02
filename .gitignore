@@ -3,7 +3,7 @@
 obj/
 deps/
 .#*
-TODO
+TODO*
 data/
 dun-geon
 .vscode
