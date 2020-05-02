@@ -480,12 +480,14 @@ void InputHandler::EvalWorld(std::vector<std::string>& words)
                                       [&, words, this](const std::string& candidate) {
                                           return std::find(m_AndKeywords.begin(), m_AndKeywords.end(), candidate) != m_AndKeywords.end();
                                       });
+        bool understood = false;
         // Look for command keywords
         for (auto it = words.begin(); it != nextAndKeyword; it++)
         {
             if (m_CmdDict.count(*it) > 0)
             {
                 cmd.type = m_CmdDict[*it];
+                understood = true;
                 break;
             }
             else if (std::find(m_LastKeywords.begin(), m_LastKeywords.end(), *it) != m_LastKeywords.end())
@@ -493,12 +495,14 @@ void InputHandler::EvalWorld(std::vector<std::string>& words)
                 // look for LAST
                 cmd = m_LastCommand;
                 lastCalled = true;
+                understood = true;
                 break;
             }
-            else
-            {
-                m_Screen.PostMessage("Command not understood.");
-            }
+        }
+        if (!understood)
+        {
+            m_Screen.PostMessage(CommandNotUnderstoodMessage);
+            break;
         }
         for (auto it = words.begin(); it != nextAndKeyword; it++)
         {
