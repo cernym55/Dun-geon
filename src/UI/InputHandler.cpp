@@ -131,7 +131,10 @@ void InputHandler::ExecCommandQueue()
             // TODO: add
             break;
         case CommandType::Quit:
-            SetQuit();
+            if (m_Screen.YesNoMessageBox("Are you sure you want to quit?"))
+            {
+                m_ShouldQuit = true;
+            }
             break;
         }
 
@@ -451,7 +454,8 @@ void InputHandler::HandleNextKeyInput()
         break;
     }
     case 'q':
-        m_ShouldQuit = true; //TODO: add a confirmation box call to Screen
+        m_CommandQueue.emplace(CommandType::Quit, Direction::None(), 1);
+        ExecCommandQueue();
         break;
     }
 }

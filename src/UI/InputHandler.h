@@ -103,6 +103,7 @@ private:
     {
         Command() : type(CommandType::None), dir(Direction::None()), repeats(1) {}
         Command(const Command& r) : type(r.type), dir(r.dir), repeats(r.repeats) {}
+        Command(CommandType type, Direction dir, int repeats) : type(type), dir(dir), repeats(repeats) {}
         CommandType type;
         Direction dir;
         int repeats;

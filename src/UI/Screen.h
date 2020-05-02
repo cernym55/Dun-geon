@@ -115,6 +115,18 @@ public:
      */
     void PostMessage(const std::string& message);
 
+    /**
+     * @brief Show a centered message box with two menu-like option buttons and a variable prompt
+     * 
+     * @param prompt prompt text (may contain newlines, message box will be adjusted)
+     * @param leftOption left button option (default: "Yes")
+     * @param rightOption right button option (default: "No")
+     * @param title window title (default: blank)
+     * @return true if left option was picked
+     * @return false if right option was picked
+     */
+    bool YesNoMessageBox(const std::string& prompt, const std::string& leftOption = "Yes", const std::string& rightOption = "No", const std::string& title = "");
+
 private:
     InputHandler& m_InputHandler;
     const Worlds::WorldManager& m_WorldManager;

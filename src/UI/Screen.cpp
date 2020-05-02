@@ -214,6 +214,93 @@ void Screen::PostMessage(const std::string& message)
     m_Message = message;
 }
 
+bool Screen::YesNoMessageBox(const std::string& prompt, const std::string& leftOption, const std::string& rightOption, const std::string& title)
+{
+    // Split the prompt into lines
+    std::vector<std::string> lines;
+    size_t neededWidth = 0;
+    std::string lineBuf;
+    std::istringstream iss(prompt);
+    while (std::getline(iss, lineBuf))
+    {
+        if (lineBuf.size() > neededWidth) neededWidth = lineBuf.size();
+        lines.push_back(std::move(lineBuf));
+    }
+
+    std::string left = "  " + leftOption + "  ";
+    std::string right = "  " + rightOption + "  ";
+
+    int height = lines.size() + 4;
+    int width = neededWidth + 4;
+
+    std::vector<ITEM*> items = { new_item(left.c_str(), left.c_str()),
+                                 new_item(right.c_str(), right.c_str()),
+                                 nullptr };
+
+    int subXPos = (width - (left.size() + right.size() + 4)) / 2;
+
+    WINDOW* boxWin = newwin(height, width, (ScreenHeight - height) / 2, (ScreenWidth - width) / 2);
+    WINDOW* boxSub = derwin(boxWin, 1, width - subXPos - 3, height - 2, subXPos);
+    MENU* menu = new_menu(items.data());
+
+    set_menu_win(menu, boxWin);
+    set_menu_sub(menu, boxSub);
+    keypad(boxWin, 1);
+    menu_opts_off(menu, O_SHOWDESC);
+    set_menu_mark(menu, "");
+    set_menu_format(menu, 1, 2);
+    set_menu_spacing(menu, 1, 1, 4);
+    box(boxWin, 0, 0);
+    if (!title.empty()) PrintCenterAt(boxWin, title, 0);
+    for (size_t i = 0; i < lines.size(); i++)
+    {
+        PrintCenterAt(boxWin, lines[i], i + 1);
+    }
+
+    post_menu(menu);
+    wrefresh(boxWin);
+    bool selectedLeft = true;
+
+    bool pressedEnter = false;
+    int key;
+    while (!pressedEnter)
+    {
+        key = wgetch(boxWin);
+        switch (key)
+        {
+        // In a 2-button message box, the behavior depends on the selected option and not the key pressed
+        case KEY_RIGHT:
+        case 'd':
+        case KEY_LEFT:
+        case 'a':
+            if (selectedLeft)
+                menu_driver(menu, REQ_RIGHT_ITEM);
+            else
+                menu_driver(menu, REQ_LEFT_ITEM);
+            selectedLeft = !selectedLeft;
+            break;
+        case KEY_ENTER:
+        case 10:
+            pressedEnter = true;
+            break;
+        }
+        wrefresh(boxWin);
+    }
+
+    unpost_menu(menu);
+    free_menu(menu);
+    wclear(boxWin);
+    wrefresh(boxWin);
+    delwin(boxSub);
+    delwin(boxWin);
+    for (auto& item : items)
+    {
+        free_item(item);
+    }
+
+    return selectedLeft;
+}
+
 void Screen::Init()
 {
     initscr();
@@ -302,9 +389,9 @@ int Screen::SelectViaMenu(std::map<int, std::string> options, Coords position, i
                              subWidth,
                              1 + padY,
                              1 + padX);
-    keypad(menuWindow, true);
     set_menu_win(menu, menuWindow);
     set_menu_sub(menu, menuSub);
+    keypad(menuWindow, 1);
 
     menu_opts_off(menu, O_SHOWDESC);
     set_menu_mark(menu, "");
@@ -351,6 +438,8 @@ int Screen::SelectViaMenu(std::map<int, std::string> options, Coords position, i
     }
 
     unpost_menu(menu);
+    wclear(menuWindow);
+    wrefresh(menuWindow);
     delwin(menuSub);
     delwin(menuWindow);
     free_menu(menu);
