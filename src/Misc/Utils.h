@@ -8,6 +8,21 @@
 static const std::string GameVersionString = "v0.3.0";
 
 /**
+ * @brief Major version number
+ */
+constexpr static const int GameVersionMajor = 0;
+
+/**
+ * @brief Minor version number
+ */
+constexpr static const int GameVersionMinor = 3;
+
+/**
+ * @brief Revision version number
+ */
+constexpr static const int GameVersionRevision = 0;
+
+/**
  * @brief Checks whether the file with the given filename exists
  * 
  * @param filename filename

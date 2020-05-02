@@ -59,7 +59,10 @@ void Screen::MainMenu()
         "Not to be confused with a Dun-gen.",
         "...Maybe this time they'll explain what dun is?",
         "Your dun is no longer your own.",
-        "I dun my robe and wizard hat."
+        "I dun my robe and wizard hat.",
+        "The dun shines brighter than ever before.",
+        "1500 dun well spent.",
+        "Hopefully it will have been worth the wait."
     };
     DrawLogo();
     int splashNumber = RNG::RandomInt(splashMsg.size());
@@ -229,6 +232,14 @@ bool Screen::YesNoMessageBox(const std::string& prompt, const std::string& leftO
 
     std::string left = "  " + leftOption + "  ";
     std::string right = "  " + rightOption + "  ";
+    // The ncurses menu forces all option boxes to be the same size.
+    // Thus we should give the shorter option some padding
+    std::string& longer = left.size() > right.size() ? left : right;
+    std::string& shorter = left.size() > right.size() ? right : left;
+    for (size_t i = 0; i < (longer.size() - shorter.size()) / 2; i++)
+    {
+        shorter.insert(shorter.begin(), ' ');
+    }
 
     int height = lines.size() + 4;
     int width = neededWidth + 4;
@@ -343,14 +354,24 @@ void Screen::PrintCenterAt(WINDOW* window, const std::string& str, int yPos)
 
 void Screen::DrawLogo(int xPos, int yPos)
 {
+    attron(A_BOLD);
     mvaddstr(++yPos, xPos, "_____");
     mvaddstr(++yPos, xPos, "|    \\   _   _   _  __         ____   ____   ____   _  __");
     mvaddstr(++yPos, xPos, "| /\\  \\ / \\ / \\ | |/  \\  ___  /    \\ / __ \\ /    \\ | |/  \\");
     mvaddstr(++yPos, xPos, "| \\/  / | |_| | |  _  | |___| | () | | ___/ | () | |  _  |");
     mvaddstr(++yPos, xPos, "\\____/  \\_____| \\_/ \\_|       \\__  | \\____/ \\____/ \\_/ \\_|");
     mvaddstr(++yPos, xPos + 31, "__| |");
-    mvprintw(++yPos, xPos + 30, "|____/  %s",
-             GameVersionString.c_str());
+    mvaddstr(++yPos, xPos + 30, "|____/  ");
+    // Print the flashy version string
+    addch('v');
+    printw("%d", GameVersionMajor);
+    addch('.');
+    attron(COLOR_PAIR(ColorPairs::YellowText));
+    printw("%d", GameVersionMinor);
+    attroff(A_COLOR);
+    addch('.');
+    printw("%d", GameVersionRevision);
+    attroff(A_BOLD);
 }
 
 int Screen::SelectViaMenu(std::map<int, std::string> options, Coords position, int width, int height, bool drawBorder, int padX, int padY, const std::string& title, bool spaceOptions)
@@ -456,6 +477,7 @@ void Screen::StartGame()
     ResizeAndRepositionWorldWindow();
     m_GameHUDWindow = newwin(ScreenHeight, HUDPanelWidth, 0, WorldPanelWidth);
     m_GameMessageWindow = newwin(ScreenHeight - WorldPanelHeight, WorldPanelWidth + 1, WorldPanelHeight, 0);
+    m_Message = "Welcome to the Dun-geon.";
 }
 
 void Screen::ResizeAndRepositionWorldWindow()
