@@ -4,8 +4,17 @@
 
 
 
---- v0.2.1 | 04/26/2020 --- (latest)
- - Added Hallway rooms
+--- v0.3.0 | 05/02/2020 ---
+ - Reworked the user interface entirely. The game now uses ncurses to provide
+     a polished and performant visual-textual experience.
+     The game can be controlled via WASD or the arrow keys, however the classic
+     text command system has not been done away with. Text commands can be
+     entered by pressing the spacebar to open up a prompt.
+ - Dun-geon has colors!
+
+
+--- v0.2.1 | 04/26/2020 ---
+ - Added Hallway rooms.
 
 
 --- v0.2.0 | 04/20/2020 ---
