@@ -82,66 +82,15 @@ void InputHandler::ExecCommandQueue()
     {
         Command cmd = m_CommandQueue.front();
         m_CommandQueue.pop();
-        std::ostringstream messageStream;
-        switch (cmd.type)
+        while (cmd.repeats > 0)
         {
-        case CommandType::None:
-            break;
-        case CommandType::Move:
-            if (cmd.dir == Direction::None())
+            // Empty queue on unsuccessful command
+            if (!ExecCommand(cmd))
             {
-                messageStream << "No direction given.";
+                while (!m_CommandQueue.empty())
+                    m_CommandQueue.pop();
+                break;
             }
-            else if (!m_PlayerController.TryMovePlayer(cmd.dir))
-            {
-                messageStream << "Cannot move there.";
-                if (!m_CommandQueue.empty())
-                {
-                    messageStream << " Subsequent commands canceled.";
-                    while (!m_CommandQueue.empty())
-                        m_CommandQueue.pop();
-                }
-            }
-            break;
-        case CommandType::Get:
-            // TODO: add
-            break;
-        case CommandType::Break:
-            // TODO: add
-            break;
-        case CommandType::Battle:
-            // TODO: add
-            break;
-        case CommandType::Talk:
-            // TODO: add
-            break;
-        case CommandType::Trade:
-            // TODO: add
-            break;
-        case CommandType::OpenInventory:
-            // TODO: add
-            break;
-        case CommandType::OpenSkills:
-            // TODO: add
-            break;
-        case CommandType::OpenMap:
-            // TODO: add
-            break;
-        case CommandType::OpenHelp:
-            // TODO: add
-            break;
-        case CommandType::Quit:
-            if (m_Screen.YesNoMessageBox("Are you sure you want to quit?"))
-            {
-                m_ShouldQuit = true;
-            }
-            break;
-        }
-
-        std::string message = messageStream.str();
-        if (!message.empty())
-        {
-            m_Screen.PostMessage(messageStream.str());
         }
     }
 }
@@ -152,7 +101,15 @@ void InputHandler::Eval(const std::string& input)
     std::istringstream iss(input);
     std::string buffer;
     while (iss >> buffer)
+    {
+        if (m_CmdDict.count(buffer) > 0 && m_CmdDict[buffer] == CommandType::Quit &&
+            m_Screen.YesNoMessageBox("Are you sure you want to quit?"))
+        {
+            SetQuit();
+            return;
+        }
         words.push_back(std::move(buffer));
+    }
 
     switch (m_Screen.GetView())
     {
@@ -454,10 +411,83 @@ void InputHandler::HandleNextKeyInput()
         break;
     }
     case 'q':
-        m_CommandQueue.emplace(CommandType::Quit, Direction::None(), 1);
-        ExecCommandQueue();
+        if (m_Screen.YesNoMessageBox("Are you sure you want to quit?"))
+        {
+            SetQuit();
+        }
         break;
     }
+}
+
+InputHandler::Command::Command()
+    : type(CommandType::None), dir(Direction::None()), repeats(1)
+{
+}
+
+InputHandler::Command::Command(InputHandler::CommandType type, Direction dir, int repeats)
+    : type(type), dir(dir), repeats(repeats)
+{
+}
+
+bool InputHandler::ExecCommand(Command& command)
+{
+    std::ostringstream messageStream;
+    bool result = true;
+    switch (command.type)
+    {
+    case CommandType::None:
+        break;
+    case CommandType::Move:
+        if (command.dir == Direction::None())
+        {
+            messageStream << "No direction given.";
+            result = false;
+        }
+        else if (!m_PlayerController.TryMovePlayer(command.dir))
+        {
+            messageStream << "Cannot move there.";
+            result = false;
+        }
+        break;
+    case CommandType::Get:
+        // TODO: add
+        break;
+    case CommandType::Break:
+        // TODO: add
+        break;
+    case CommandType::Battle:
+        // TODO: add
+        break;
+    case CommandType::Talk:
+        // TODO: add
+        break;
+    case CommandType::Trade:
+        // TODO: add
+        break;
+    case CommandType::OpenInventory:
+        // TODO: add
+        break;
+    case CommandType::OpenSkills:
+        // TODO: add
+        break;
+    case CommandType::OpenMap:
+        // TODO: add
+        break;
+    case CommandType::OpenHelp:
+        // TODO: add
+        break;
+    default:
+        break;
+    }
+
+    std::string message = messageStream.str();
+    if (!message.empty())
+    {
+        m_Screen.PostMessage(messageStream.str());
+    }
+
+    command.repeats--;
+    return result;
 }
 
 void InputHandler::EvalWorld(std::vector<std::string>& words)
@@ -513,7 +543,7 @@ void InputHandler::EvalWorld(std::vector<std::string>& words)
                 cmd.repeats = repeats;
                 if (lastCalled)
                 {
-                    repeats *= m_LastCommand.repeats;
+                    cmd.repeats *= m_LastCommand.repeats;
                 }
             }
 
@@ -524,10 +554,7 @@ void InputHandler::EvalWorld(std::vector<std::string>& words)
             }
         }
 
-        for (int i = 0; i < cmd.repeats; i++)
-        {
-            m_CommandQueue.push(cmd);
-        }
+        m_CommandQueue.push(cmd);
 
         m_LastCommand = cmd;
 
