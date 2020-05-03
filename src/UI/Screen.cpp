@@ -366,11 +366,11 @@ void Screen::DrawLogo(int xPos, int yPos)
     addch('v');
     printw("%d", GameVersionMajor);
     addch('.');
-    attron(COLOR_PAIR(ColorPairs::YellowText));
     printw("%d", GameVersionMinor);
-    attroff(A_COLOR);
     addch('.');
+    attron(COLOR_PAIR(ColorPairs::YellowText));
     printw("%d", GameVersionRevision);
+    attroff(A_COLOR);
     attroff(A_BOLD);
 }
 

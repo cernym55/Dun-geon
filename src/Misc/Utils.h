@@ -5,7 +5,7 @@
 /**
  * @brief Current game version string
  */
-static const std::string GameVersionString = "v0.3.0";
+static const std::string GameVersionString = "v0.3.1";
 
 /**
  * @brief Major version number
@@ -20,7 +20,7 @@ constexpr static const int GameVersionMinor = 3;
 /**
  * @brief Revision version number
  */
-constexpr static const int GameVersionRevision = 0;
+constexpr static const int GameVersionRevision = 1;
 
 /**
  * @brief Checks whether the file with the given filename exists
