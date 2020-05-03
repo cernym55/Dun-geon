@@ -580,8 +580,8 @@ std::string InputHandler::GetTextInputFromPrompt()
     {
         if (pos > 0 && (ch == KEY_BACKSPACE || ch == 127 || ch == '\b'))
         {
-            input[pos] = 0;
             pos--;
+            input[pos] = 0;
             mvwaddch(inputWindow, 1, 4 + pos, ' ');
         }
         else if (pos < Screen::ScreenWidth - 26 && ch != KEY_BACKSPACE && ch != 127 && ch != '\b')
