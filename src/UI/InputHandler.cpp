@@ -119,8 +119,6 @@ void InputHandler::Eval(const std::string& input)
     default:
         return;
     }
-
-    ExecCommandQueue();
 }
 
 bool InputHandler::ShouldQuit() const
@@ -376,31 +374,19 @@ void InputHandler::HandleNextKeyInput()
     {
     case 'w':
     case KEY_UP:
-        if (!m_PlayerController.TryMovePlayer(Direction::Up()))
-        {
-            m_Screen.PostMessage(CannotMoveMessage);
-        }
+        m_CommandQueue.emplace(CommandType::Move, Direction::Up(), 1);
         break;
     case 'd':
     case KEY_RIGHT:
-        if (!m_PlayerController.TryMovePlayer(Direction::Right()))
-        {
-            m_Screen.PostMessage(CannotMoveMessage);
-        }
+        m_CommandQueue.emplace(CommandType::Move, Direction::Right(), 1);
         break;
     case 's':
     case KEY_DOWN:
-        if (!m_PlayerController.TryMovePlayer(Direction::Down()))
-        {
-            m_Screen.PostMessage(CannotMoveMessage);
-        }
+        m_CommandQueue.emplace(CommandType::Move, Direction::Down(), 1);
         break;
     case 'a':
     case KEY_LEFT:
-        if (!m_PlayerController.TryMovePlayer(Direction::Left()))
-        {
-            m_Screen.PostMessage(CannotMoveMessage);
-        }
+        m_CommandQueue.emplace(CommandType::Move, Direction::Left(), 1);
         break;
     case ' ': {
         std::string input = GetTextInputFromPrompt();
@@ -417,6 +403,8 @@ void InputHandler::HandleNextKeyInput()
         }
         break;
     }
+
+    if (!m_ShouldQuit) ExecCommandQueue();
 }
 
 InputHandler::Command::Command()
