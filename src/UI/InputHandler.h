@@ -101,12 +101,23 @@ private:
      */
     struct Command
     {
-        Command() : type(CommandType::None), dir(Direction::None()), repeats(1) {}
-        Command(const Command& r) : type(r.type), dir(r.dir), repeats(r.repeats) {}
-        Command(CommandType type, Direction dir, int repeats) : type(type), dir(dir), repeats(repeats) {}
         CommandType type;
         Direction dir;
         int repeats;
+
+        /**
+         * @brief Constructor
+         */
+        Command();
+
+        /**
+         * @brief Constructor
+         * 
+         * @param type type
+         * @param dir 
+         * @param repeats 
+         */
+        Command(CommandType type, Direction dir, int repeats);
     };
 
     Screen& m_Screen;
@@ -119,6 +130,14 @@ private:
     std::vector<std::string> m_AndKeywords;
     std::vector<std::string> m_LastKeywords;
     bool m_ShouldQuit;
+
+    /**
+     * @brief Execute the given command
+     * 
+     * @param command command
+     * @return true if completed successfully
+     */
+    bool ExecCommand(Command& command);
 
     /**
      * @brief Evaluate input from the world view

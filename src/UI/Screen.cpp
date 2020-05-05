@@ -188,7 +188,7 @@ void Screen::Draw()
     // Draw the message window
     wclear(m_GameMessageWindow);
     wborder(m_GameMessageWindow, 0, 0, 0, 0, 0, ACS_PLUS, 0, ACS_BTEE);
-    // Post the current message
+    // Post the current message, split it into two lines if it's too long
     if (m_Message.size() > WorldPanelWidth - 4)
     {
         size_t pos = WorldPanelWidth - 5;
@@ -366,11 +366,11 @@ void Screen::DrawLogo(int xPos, int yPos)
     addch('v');
     printw("%d", GameVersionMajor);
     addch('.');
-    attron(COLOR_PAIR(ColorPairs::YellowText));
     printw("%d", GameVersionMinor);
-    attroff(A_COLOR);
     addch('.');
+    attron(COLOR_PAIR(ColorPairs::YellowText));
     printw("%d", GameVersionRevision);
+    attroff(A_COLOR);
     attroff(A_BOLD);
 }
 
