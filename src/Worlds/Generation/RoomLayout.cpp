@@ -18,6 +18,10 @@ RoomLayout::RoomLayout(const std::map<Direction, bool>& entranceInfo)
 {
 }
 
+void RoomLayout::GenerateAttributes()
+{
+}
+
 void RoomLayout::WriteToFields(std::vector<std::vector<Field>>& fields) const
 {
     fields.clear();
@@ -38,6 +42,11 @@ void RoomLayout::WriteToFields(std::vector<std::vector<Field>>& fields) const
 const std::map<Direction, Coords>& RoomLayout::GetEntrances() const
 {
     return m_Entrances;
+}
+
+RoomLayout::CameraStyle RoomLayout::GetCameraStyle() const
+{
+    return m_CameraStyle;
 }
 
 Coords RoomLayout::GenerateEntranceCoords(Direction dir)

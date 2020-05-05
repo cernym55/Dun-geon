@@ -16,6 +16,7 @@ BoxRoomLayout::BoxRoomLayout(const std::map<Direction, bool>& entranceInfo)
     : RoomLayout(entranceInfo)
 {
     Generate();
+    GenerateAttributes();
 }
 
 void BoxRoomLayout::Generate()
@@ -77,6 +78,12 @@ void BoxRoomLayout::Generate()
             m_Map[col][row] = true;
         }
     }
+}
+
+void BoxRoomLayout::GenerateAttributes()
+{
+    RoomLayout::GenerateAttributes();
+    m_CameraStyle = RNG::Chance(0.9) ? CameraStyle::Fixed : CameraStyle::PlayerCentered;
 }
 
 } /* namespace Generation */

@@ -21,6 +21,7 @@ Room::Room(WorldManager& worldManager,
            Coords coords)
     : m_WorldManager(worldManager),
       m_World(world),
+      m_CameraStyle(layout.GetCameraStyle()),
       m_RoomNumber(roomNumber),
       m_Coords(coords)
 {
@@ -52,6 +53,11 @@ size_t Room::GetWidth() const
 size_t Room::GetHeight() const
 {
     return m_Height;
+}
+
+Generation::RoomLayout::CameraStyle Room::GetCameraStyle() const
+{
+    return m_CameraStyle;
 }
 
 int Room::GetRoomNumber() const

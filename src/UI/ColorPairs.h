@@ -21,6 +21,11 @@ constexpr const short PlayerEntityIcon = 2;
  */
 constexpr const short YellowText = 3;
 
+/**
+ * @brief Used for the world display border
+ */
+constexpr const short WorldBorder = 4;
+
 } /* namespace ColorPairs */
 
 } /* namespace UI */

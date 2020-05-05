@@ -16,6 +16,7 @@ HallwayRoomLayout::HallwayRoomLayout(const std::map<Direction, bool>& entranceIn
     : RoomLayout(entranceInfo)
 {
     Generate();
+    GenerateAttributes();
 }
 
 void HallwayRoomLayout::Generate()
@@ -188,6 +189,12 @@ void HallwayRoomLayout::Generate()
             DrawMapBox(coords, HallwayWidth / 2, false);
         stagger = !stagger;
     }
+}
+
+void HallwayRoomLayout::GenerateAttributes()
+{
+    RoomLayout::GenerateAttributes();
+    m_CameraStyle = CameraStyle::PlayerCentered;
 }
 
 } /* namespace Generation */

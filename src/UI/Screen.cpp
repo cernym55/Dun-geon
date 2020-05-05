@@ -8,6 +8,7 @@
 #include "Misc/RNG.h"
 #include "Misc/Utils.h"
 #include "Worlds/Field.h"
+#include "Worlds/Generation/RoomLayout.h"
 #include "Worlds/Room.h"
 #include "Worlds/World.h"
 #include "Worlds/WorldManager.h"
@@ -216,6 +217,7 @@ void Screen::Init()
     init_pair(ColorPairs::Wall, -1, COLOR_WHITE);
     init_pair(ColorPairs::PlayerEntityIcon, COLOR_MAGENTA, -1);
     init_pair(ColorPairs::YellowText, COLOR_YELLOW, -1);
+    init_pair(ColorPairs::WorldBorder, COLOR_BLACK, COLOR_YELLOW);
 }
 
 void Screen::Terminate()
@@ -375,9 +377,28 @@ void Screen::ResizeAndRepositionWorldWindow()
     wclear(m_GameWorldWindow);
     wrefresh(m_GameWorldWindow);
     const Worlds::Room& currentRoom = m_WorldManager.GetCurrentRoom();
-    const Coords WorldWindowPos = { (WorldPanelWidth - currentRoom.GetWidth() - 2) / 2 - 1,
-                                    (WorldPanelHeight - currentRoom.GetHeight() - 2) / 2 };
-    wresize(m_GameWorldWindow, currentRoom.GetHeight() + 2, currentRoom.GetWidth() + 2);
+    size_t windowLines = 0, windowColumns = 0;
+
+    switch (currentRoom.GetCameraStyle())
+    {
+    case Worlds::Generation::RoomLayout::CameraStyle::Fixed:
+        windowLines = currentRoom.GetHeight() + 2;
+        windowColumns = currentRoom.GetWidth() + 2;
+        break;
+    case Worlds::Generation::RoomLayout::CameraStyle::PlayerCentered: {
+        auto shorterDimension = Min(currentRoom.GetWidth(), currentRoom.GetHeight());
+        if (shorterDimension % 2 == 0) shorterDimension--;
+        windowLines = shorterDimension;
+        windowColumns = shorterDimension * 1.25;
+        break;
+    }
+    default:
+        break;
+    }
+
+    const Coords WorldWindowPos = { (WorldPanelWidth - windowColumns) / 2 - 1,
+                                    (WorldPanelHeight - windowLines) / 2 };
+    wresize(m_GameWorldWindow, windowLines, windowColumns);
     mvwin(m_GameWorldWindow, WorldWindowPos.GetY(), WorldWindowPos.GetX());
 }
 
@@ -390,15 +411,46 @@ void Screen::DrawWorld()
         m_CurrentRoom = &m_WorldManager.GetCurrentRoom();
         ResizeAndRepositionWorldWindow();
     }
-    size_t worldY, worldX;
+    int worldY, worldX;
     getmaxyx(m_GameWorldWindow, worldY, worldX);
-    for (size_t i = 1; i < worldX - 1; i++)
+    // How far can we draw vertically or horizontally
+    size_t rangeX = worldX / 2 - (worldX % 2 ? 0 : 1) - 1;
+    size_t rangeY = worldY / 2 - (worldY % 2 ? 0 : 1) - 1;
+    auto playerCoords = m_Player.GetCoords();
+    for (int i = 1; i < worldX - 1; i++)
     {
-        for (size_t j = 1; j < worldY - 1; j++)
+        for (int j = 1; j < worldY - 1; j++)
         {
-            mvwaddch(m_GameWorldWindow, j, i, GetFieldIcon({ i - 1, j - 1 }));
+            int desiredFieldXPos = 0;
+            int desiredFieldYPos = 0;
+            switch (m_CurrentRoom->GetCameraStyle())
+            {
+            case Worlds::Generation::RoomLayout::CameraStyle::Fixed:
+                desiredFieldXPos = i - 1;
+                desiredFieldYPos = j - 1;
+                break;
+            case Worlds::Generation::RoomLayout::CameraStyle::PlayerCentered:
+                desiredFieldXPos = playerCoords.GetX() + (i - 1) - rangeX;
+                desiredFieldYPos = playerCoords.GetY() + (j - 1) - rangeY;
+                break;
+            }
+            if (desiredFieldXPos < 0 ||
+                desiredFieldXPos >= static_cast<int>(m_CurrentRoom->GetWidth()) ||
+                desiredFieldYPos < 0 ||
+                desiredFieldYPos >= static_cast<int>(m_CurrentRoom->GetHeight()))
+            {
+                mvwaddch(m_GameWorldWindow, j, i, DefaultFieldIcon);
+            }
+            else
+            {
+                mvwaddch(m_GameWorldWindow, j, i, GetFieldIcon({ static_cast<size_t>(desiredFieldXPos), static_cast<size_t>(desiredFieldYPos) }));
+            }
         }
     }
+    wattron(m_GameWorldWindow, COLOR_PAIR(ColorPairs::WorldBorder));
+    box(m_GameWorldWindow, 0, 0);
+    // wborder(m_GameWorldWindow, '|', '|', '-', '-', '+', '+', '+', '+');
+    wattroff(m_GameWorldWindow, A_COLOR);
     wrefresh(m_GameWorldWindow);
 }
 
@@ -490,7 +542,7 @@ chtype Screen::GetFieldIcon(const Worlds::Field& field) const
     }
     else
     {
-        return ' ';
+        return DefaultFieldIcon;
     }
 }
 

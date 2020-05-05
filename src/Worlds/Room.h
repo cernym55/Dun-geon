@@ -76,6 +76,13 @@ public:
     size_t GetHeight() const;
 
     /**
+     * @brief Get the camera style
+     * 
+     * @return CameraStyle camera style
+     */
+    Generation::RoomLayout::CameraStyle GetCameraStyle() const;
+
+    /**
      * @brief Get the room number
      * 
      * @return int room number
@@ -125,6 +132,7 @@ public:
 protected:
     WorldManager& m_WorldManager;
     World& m_World;
+    Generation::RoomLayout::CameraStyle m_CameraStyle;
     int m_RoomNumber;
     Coords m_Coords;
     size_t m_Width;

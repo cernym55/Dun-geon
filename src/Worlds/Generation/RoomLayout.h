@@ -36,6 +36,22 @@ public:
     };
 
     /**
+     * @brief Camera style used when viewing this room
+     */
+    enum class CameraStyle
+    {
+        /**
+         * @brief Fixed view of the entire room
+         */
+        Fixed,
+
+        /**
+         * @brief Player is kept in the center of the view
+         */
+        PlayerCentered
+    };
+
+    /**
      * @brief How many layout types there are
      */
     constexpr static const int NumberOfTypes = 2;
@@ -72,12 +88,20 @@ public:
      */
     const std::map<Direction, Coords>& GetEntrances() const;
 
+    /**
+     * @brief Get the camera style
+     * 
+     * @return CameraStyle camera style
+     */
+    CameraStyle GetCameraStyle() const;
+
 protected:
     size_t m_Width;
     size_t m_Height;
     std::vector<std::vector<bool>> m_Map;
     const std::map<Direction, bool>& m_EntranceInfo;
     std::map<Direction, Coords> m_Entrances;
+    CameraStyle m_CameraStyle;
 
     /**
      * @brief Constructor
@@ -91,6 +115,10 @@ protected:
      */
     virtual void Generate() = 0;
 
+    /**
+     * @brief Generate room attributes not related to the map layout
+     */
+    virtual void GenerateAttributes();
 
     /**
      * @brief Generate coordinates of an entrance in the given direction

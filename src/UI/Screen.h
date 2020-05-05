@@ -128,6 +128,11 @@ public:
     bool YesNoMessageBox(const std::string& prompt, const std::string& leftOption = "Yes", const std::string& rightOption = "No", const std::string& title = "");
 
 private:
+    /**
+     * @brief Default icon for empty fields
+     */
+    constexpr static const chtype DefaultFieldIcon = ' ';
+
     InputHandler& m_InputHandler;
     const Worlds::WorldManager& m_WorldManager;
     const Entities::EntityManager& m_EntityManager;
