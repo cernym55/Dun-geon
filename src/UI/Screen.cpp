@@ -90,121 +90,11 @@ void Screen::MainMenu()
     }
 }
 
-chtype Screen::GetFieldIcon(const Worlds::Field& field) const
-{
-    if (field.TryGetForegroundEntity() != nullptr)
-    {
-        return field.TryGetForegroundEntity()->GetIcon();
-    }
-    else if (field.TryGetBackgroundEntity() != nullptr)
-    {
-        return field.TryGetBackgroundEntity()->GetIcon();
-    }
-    else
-    {
-        return ' ';
-    }
-}
-
-chtype Screen::GetFieldIcon(Coords coords) const
-{
-    return GetFieldIcon(m_WorldManager.GetCurrentRoom().GetFieldAt(coords));
-}
-
-void Screen::DrawHUD()
-{
-    wclear(m_GameHUDWindow);
-    const auto& stats = m_Player.GetStats();
-    mvwprintw(m_GameHUDWindow, 2, 4, "World %d", m_WorldManager.GetCurrentWorld().GetWorldNumber());
-    mvwprintw(m_GameHUDWindow, 2, HUDPanelWidth - 10, "Room %d", m_WorldManager.GetCurrentRoom().GetRoomNumber());
-
-    PrintCenterAt(m_GameHUDWindow, m_Player.GetName(), 4);
-
-    mvwprintw(m_GameHUDWindow, 6, 4, "Level %d", stats.level);
-    mvwprintw(m_GameHUDWindow, 6, HUDPanelWidth - 11, "XP: %3d%%", stats.XP / stats.XPToNextLevel * 100);
-
-    mvwprintw(m_GameHUDWindow, 8, 4, "HP:  %d/%d", stats.health, stats.healthMax);
-    mvwprintw(m_GameHUDWindow, 8, HUDPanelWidth - 11, "(%3d%%)", PLAYER_HEALTH_PC);
-
-    mvwprintw(m_GameHUDWindow, 9, 4, "MP:  %d/%d", stats.mana, stats.manaMax);
-    mvwprintw(m_GameHUDWindow, 9, HUDPanelWidth - 11, "(%3d%%)", PLAYER_MANA_PC);
-
-    mvwprintw(m_GameHUDWindow, 11, 4, "Str: %3d", stats.vigor);
-    mvwprintw(m_GameHUDWindow, 11, HUDPanelWidth - 11, "Def: %3d", stats.valor);
-
-    mvwprintw(m_GameHUDWindow, 12, 4, "Agi: %3d", stats.haste);
-    mvwprintw(m_GameHUDWindow, 12, HUDPanelWidth - 11, "Int: %3d", stats.magic);
-
-    std::string wealthAmountStr = std::to_string(stats.dun);
-    int xPos = (HUDPanelWidth - wealthAmountStr.size() - 12) / 2;
-    xPos += xPos % 2;
-    mvwaddstr(m_GameHUDWindow, 14, xPos, "Wealth: ");
-    wattron(m_GameHUDWindow, COLOR_PAIR(ColorPairs::YellowText) | A_BOLD);
-    wprintw(m_GameHUDWindow, "%d", stats.dun);
-    wattroff(m_GameHUDWindow, A_COLOR | A_BOLD);
-    waddstr(m_GameHUDWindow, " dun");
-
-    mvwaddstr(m_GameHUDWindow, 16, 5, "[i]tems");
-    mvwaddstr(m_GameHUDWindow, 16, HUDPanelWidth - 12, "[s]kills");
-
-    mvwaddstr(m_GameHUDWindow, 17, 5, "[m]ap");
-    mvwaddstr(m_GameHUDWindow, 17, HUDPanelWidth - 12, "[h]elp");
-
-    PrintCenterAt(m_GameHUDWindow, "[q]uit", 18);
-
-    if (m_EntityManager.GetApproachedEntity(m_Player) != nullptr)
-    {
-        PrintCenterAt(m_GameHUDWindow, m_EntityManager.GetApproachedEntity(m_Player)->GetName(), WorldPanelHeight + 1);
-        PrintCenterAt(m_GameHUDWindow, m_EntityManager.GetApproachedEntity(m_Player)->GetDescription(), WorldPanelHeight + 2);
-    }
-}
-
 void Screen::Draw()
 {
-    // Draw the world
-    if (m_CurrentRoom != &m_WorldManager.GetCurrentRoom())
-    {
-        m_CurrentRoom = &m_WorldManager.GetCurrentRoom();
-        ResizeAndRepositionWorldWindow();
-    }
-    size_t worldY, worldX;
-    getmaxyx(m_GameWorldWindow, worldY, worldX);
-    for (size_t i = 1; i < worldX - 1; i++)
-    {
-        for (size_t j = 1; j < worldY - 1; j++)
-        {
-            mvwaddch(m_GameWorldWindow, j, i, GetFieldIcon({ i - 1, j - 1 }));
-        }
-    }
-    wrefresh(m_GameWorldWindow);
-
-    // Draw the HUD
+    DrawWorld();
     DrawHUD();
-    box(m_GameHUDWindow, 0, 0);
-    mvwhline(m_GameHUDWindow, WorldPanelHeight, 1, 0, HUDPanelWidth - 2);
-    mvwaddch(m_GameHUDWindow, WorldPanelHeight, HUDPanelWidth - 1, ACS_RTEE);
-    wrefresh(m_GameHUDWindow);
-
-    // Draw the message window
-    wclear(m_GameMessageWindow);
-    wborder(m_GameMessageWindow, 0, 0, 0, 0, 0, ACS_PLUS, 0, ACS_BTEE);
-    // Post the current message, split it into two lines if it's too long
-    if (m_Message.size() > WorldPanelWidth - 4)
-    {
-        size_t pos = WorldPanelWidth - 5;
-        while (m_Message[pos] != ' ' && pos > 0)
-            pos--;
-        std::string secondLine = m_Message.substr(pos > 0 ? pos + 1 : WorldPanelWidth - 4);
-        m_Message = m_Message.substr(0, pos > 0 ? pos : WorldPanelWidth - 4);
-        mvwaddstr(m_GameMessageWindow, 1, 2, m_Message.c_str());
-        mvwaddstr(m_GameMessageWindow, 2, 2, secondLine.c_str());
-    }
-    else
-    {
-        mvwaddstr(m_GameMessageWindow, 1, 2, m_Message.c_str());
-    }
-    m_Message.clear();
-    wrefresh(m_GameMessageWindow);
+    DrawMessageWindow();
 }
 
 Screen::View Screen::GetView() const
@@ -489,6 +379,124 @@ void Screen::ResizeAndRepositionWorldWindow()
                                     (WorldPanelHeight - currentRoom.GetHeight() - 2) / 2 };
     wresize(m_GameWorldWindow, currentRoom.GetHeight() + 2, currentRoom.GetWidth() + 2);
     mvwin(m_GameWorldWindow, WorldWindowPos.GetY(), WorldWindowPos.GetX());
+}
+
+void Screen::DrawWorld()
+{
+    wclear(m_GameWorldWindow);
+    // Draw the world
+    if (m_CurrentRoom != &m_WorldManager.GetCurrentRoom())
+    {
+        m_CurrentRoom = &m_WorldManager.GetCurrentRoom();
+        ResizeAndRepositionWorldWindow();
+    }
+    size_t worldY, worldX;
+    getmaxyx(m_GameWorldWindow, worldY, worldX);
+    for (size_t i = 1; i < worldX - 1; i++)
+    {
+        for (size_t j = 1; j < worldY - 1; j++)
+        {
+            mvwaddch(m_GameWorldWindow, j, i, GetFieldIcon({ i - 1, j - 1 }));
+        }
+    }
+    wrefresh(m_GameWorldWindow);
+}
+
+void Screen::DrawHUD()
+{
+    wclear(m_GameHUDWindow);
+    const auto& stats = m_Player.GetStats();
+    mvwprintw(m_GameHUDWindow, 2, 4, "World %d", m_WorldManager.GetCurrentWorld().GetWorldNumber());
+    mvwprintw(m_GameHUDWindow, 2, HUDPanelWidth - 10, "Room %d", m_WorldManager.GetCurrentRoom().GetRoomNumber());
+
+    PrintCenterAt(m_GameHUDWindow, m_Player.GetName(), 4);
+
+    mvwprintw(m_GameHUDWindow, 6, 4, "Level %d", stats.level);
+    mvwprintw(m_GameHUDWindow, 6, HUDPanelWidth - 11, "XP: %3d%%", stats.XP / stats.XPToNextLevel * 100);
+
+    mvwprintw(m_GameHUDWindow, 8, 4, "HP:  %d/%d", stats.health, stats.healthMax);
+    mvwprintw(m_GameHUDWindow, 8, HUDPanelWidth - 11, "(%3d%%)", PLAYER_HEALTH_PC);
+
+    mvwprintw(m_GameHUDWindow, 9, 4, "MP:  %d/%d", stats.mana, stats.manaMax);
+    mvwprintw(m_GameHUDWindow, 9, HUDPanelWidth - 11, "(%3d%%)", PLAYER_MANA_PC);
+
+    mvwprintw(m_GameHUDWindow, 11, 4, "Str: %3d", stats.vigor);
+    mvwprintw(m_GameHUDWindow, 11, HUDPanelWidth - 11, "Def: %3d", stats.valor);
+
+    mvwprintw(m_GameHUDWindow, 12, 4, "Agi: %3d", stats.haste);
+    mvwprintw(m_GameHUDWindow, 12, HUDPanelWidth - 11, "Int: %3d", stats.magic);
+
+    std::string wealthAmountStr = std::to_string(stats.dun);
+    int xPos = (HUDPanelWidth - wealthAmountStr.size() - 12) / 2;
+    xPos += xPos % 2;
+    mvwaddstr(m_GameHUDWindow, 14, xPos, "Wealth: ");
+    wattron(m_GameHUDWindow, COLOR_PAIR(ColorPairs::YellowText) | A_BOLD);
+    wprintw(m_GameHUDWindow, "%d", stats.dun);
+    wattroff(m_GameHUDWindow, A_COLOR | A_BOLD);
+    waddstr(m_GameHUDWindow, " dun");
+
+    mvwaddstr(m_GameHUDWindow, 16, 5, "[i]tems");
+    mvwaddstr(m_GameHUDWindow, 16, HUDPanelWidth - 12, "[s]kills");
+
+    mvwaddstr(m_GameHUDWindow, 17, 5, "[m]ap");
+    mvwaddstr(m_GameHUDWindow, 17, HUDPanelWidth - 12, "[h]elp");
+
+    PrintCenterAt(m_GameHUDWindow, "[q]uit", 18);
+
+    if (m_EntityManager.GetApproachedEntity(m_Player) != nullptr)
+    {
+        PrintCenterAt(m_GameHUDWindow, m_EntityManager.GetApproachedEntity(m_Player)->GetName(), WorldPanelHeight + 1);
+        PrintCenterAt(m_GameHUDWindow, m_EntityManager.GetApproachedEntity(m_Player)->GetDescription(), WorldPanelHeight + 2);
+    }
+
+    box(m_GameHUDWindow, 0, 0);
+    mvwhline(m_GameHUDWindow, WorldPanelHeight, 1, 0, HUDPanelWidth - 2);
+    mvwaddch(m_GameHUDWindow, WorldPanelHeight, HUDPanelWidth - 1, ACS_RTEE);
+    wrefresh(m_GameHUDWindow);
+}
+
+void Screen::DrawMessageWindow()
+{
+    wclear(m_GameMessageWindow);
+    wborder(m_GameMessageWindow, 0, 0, 0, 0, 0, ACS_PLUS, 0, ACS_BTEE);
+    // Post the current message, split it into two lines if it's too long
+    if (m_Message.size() > WorldPanelWidth - 4)
+    {
+        size_t pos = WorldPanelWidth - 5;
+        while (m_Message[pos] != ' ' && pos > 0)
+            pos--;
+        std::string secondLine = m_Message.substr(pos > 0 ? pos + 1 : WorldPanelWidth - 4);
+        m_Message = m_Message.substr(0, pos > 0 ? pos : WorldPanelWidth - 4);
+        mvwaddstr(m_GameMessageWindow, 1, 2, m_Message.c_str());
+        mvwaddstr(m_GameMessageWindow, 2, 2, secondLine.c_str());
+    }
+    else
+    {
+        mvwaddstr(m_GameMessageWindow, 1, 2, m_Message.c_str());
+    }
+    m_Message.clear();
+    wrefresh(m_GameMessageWindow);
+}
+
+chtype Screen::GetFieldIcon(const Worlds::Field& field) const
+{
+    if (field.TryGetForegroundEntity() != nullptr)
+    {
+        return field.TryGetForegroundEntity()->GetIcon();
+    }
+    else if (field.TryGetBackgroundEntity() != nullptr)
+    {
+        return field.TryGetBackgroundEntity()->GetIcon();
+    }
+    else
+    {
+        return ' ';
+    }
+}
+
+chtype Screen::GetFieldIcon(Coords coords) const
+{
+    return GetFieldIcon(m_WorldManager.GetCurrentRoom().GetFieldAt(coords));
 }
 
 } /* namespace UI */

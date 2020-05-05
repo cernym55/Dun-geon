@@ -201,9 +201,19 @@ private:
     void ResizeAndRepositionWorldWindow();
 
     /**
-     * @brief Draw the HUD
+     * @brief Draw the world window
+     */
+    void DrawWorld();
+
+    /**
+     * @brief Draw the HUD window
      */
     void DrawHUD();
+
+    /**
+     * @brief Draw the message window
+     */
+    void DrawMessageWindow();
 
     /**
      * @brief Get the icon for the given field
