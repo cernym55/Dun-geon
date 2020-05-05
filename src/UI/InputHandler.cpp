@@ -533,6 +533,7 @@ void InputHandler::EvalWorld(std::vector<std::string>& words)
                 {
                     cmd.repeats *= m_LastCommand.repeats;
                 }
+                if (cmd.repeats > 500) cmd.repeats = 500;
             }
 
             // look for direction keywords
