@@ -447,10 +447,12 @@ void Screen::DrawWorld()
             }
         }
     }
-    wattron(m_GameWorldWindow, COLOR_PAIR(ColorPairs::WorldBorder));
-    box(m_GameWorldWindow, 0, 0);
-    // wborder(m_GameWorldWindow, '|', '|', '-', '-', '+', '+', '+', '+');
-    wattroff(m_GameWorldWindow, A_COLOR);
+    if (m_CurrentRoom->GetCameraStyle() != Worlds::Generation::RoomLayout::CameraStyle::Fixed)
+    {
+        // wattron(m_GameWorldWindow, COLOR_PAIR(ColorPairs::WorldBorder));
+        box(m_GameWorldWindow, 0, 0);
+        // wattroff(m_GameWorldWindow, A_COLOR);
+    }
     wrefresh(m_GameWorldWindow);
 }
 
