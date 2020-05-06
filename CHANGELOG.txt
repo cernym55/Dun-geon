@@ -4,6 +4,20 @@
 
 
 
+--- v0.3.1 | 05/06/2020
+ - Added dark rooms.
+     In dark rooms you can only see things in a certain radius around
+     the player character.
+ - The camera is now centered on the player character in certain rooms.
+ - Fixed being able to repeat the quit command, which required confirming
+     all prompts before being able to continue.
+ - Fixed the multiplication of command repeats when performing the last command
+     multiple times.
+ - Limited the number of repeats of a command to 500.
+ - Fixed a bug when deleting characters from the command input where the text
+     displayed accurately while the input was being deleted off by one.
+
+
 --- v0.3.0 | 05/02/2020 ---
  - Reworked the user interface entirely. The game now uses ncurses to provide
      a polished and performant visual-textual experience.
