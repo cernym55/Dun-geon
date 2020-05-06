@@ -31,9 +31,16 @@ void RoomLayout::WriteToFields(std::vector<std::vector<Field>>& fields) const
         for (size_t j = 0; j < m_Height; j++)
         {
             fields[i].emplace_back(Coords(i, j));
-            if (m_Map[i][j] == true)
+            switch (m_Map[i][j])
             {
+            case FieldType::Accessible:
+                fields[i][j].MakeAccessible();
+                break;
+            case FieldType::Wall:
                 fields[i][j].PlaceEntity(Entities::Wall);
+                break;
+            default:
+                break;
             }
         }
     }
@@ -72,7 +79,7 @@ Coords RoomLayout::GenerateEntranceCoords(Direction dir)
     }
 }
 
-void RoomLayout::DrawMapLine(Coords from, Coords to, bool value)
+void RoomLayout::DrawMapLine(Coords from, Coords to, FieldType value)
 {
     for (const auto& pos : from.StraightPathTo(to))
     {
@@ -80,7 +87,7 @@ void RoomLayout::DrawMapLine(Coords from, Coords to, bool value)
     }
 }
 
-void RoomLayout::DrawMapBox(Coords center, size_t radius, bool value)
+void RoomLayout::DrawMapBox(Coords center, size_t radius, FieldType value)
 {
     for (size_t i = 0; i <= radius; i++)
     {

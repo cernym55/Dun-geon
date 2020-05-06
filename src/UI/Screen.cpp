@@ -217,7 +217,7 @@ void Screen::Init()
     init_pair(ColorPairs::Wall, -1, COLOR_WHITE);
     init_pair(ColorPairs::PlayerEntityIcon, COLOR_MAGENTA, -1);
     init_pair(ColorPairs::YellowText, COLOR_YELLOW, -1);
-    init_pair(ColorPairs::WorldAccessibleField, COLOR_BLACK, -1);
+    init_pair(ColorPairs::WorldAccessibleField, COLOR_WHITE, -1);
 }
 
 void Screen::Terminate()
@@ -421,6 +421,7 @@ void Screen::DrawWorld()
                 desiredFieldYPos = j - 1;
                 break;
             case Worlds::Generation::RoomLayout::CameraStyle::PlayerCentered:
+                // These coords are relative to the player's position
                 desiredFieldXPos = playerCoords.GetX() + (i - 1) - rangeX;
                 desiredFieldYPos = playerCoords.GetY() + (j - 1) - rangeY;
                 break;
@@ -544,9 +545,9 @@ chtype Screen::GetFieldIcon(const Worlds::Field& field) const
     {
         return field.TryGetBackgroundEntity()->GetIcon();
     }
-    else if (field.IsAccessible())
+    else if (field.IsAccessible() && m_CurrentRoom->GetVisionRadius() > 0)
     {
-        return '.' | COLOR_PAIR(ColorPairs::WorldAccessibleField) | A_BOLD;
+        return '.' | COLOR_PAIR(ColorPairs::WorldAccessibleField);
     }
     else
     {

@@ -53,6 +53,7 @@ void BoxRoomLayout::Generate()
     {
         for (size_t row = 0; row < m_Height; row++)
         {
+            m_Map[col][row] = FieldType::Accessible;
             if ((col > 0 && row > 0 && col < m_Width - 1 && row < m_Height - 1))
             {
                 continue;
@@ -75,7 +76,7 @@ void BoxRoomLayout::Generate()
                 continue;
             }
 
-            m_Map[col][row] = true;
+            m_Map[col][row] = FieldType::Wall;
         }
     }
 }

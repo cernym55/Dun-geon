@@ -68,6 +68,11 @@ public:
      */
     bool IsAccessible() const;
 
+    /**
+     * @brief Permanently make this field accessible
+     */
+    void MakeAccessible();
+
 private:
     Coords m_Coords;
     Entities::Entity* m_ForegroundEntity;

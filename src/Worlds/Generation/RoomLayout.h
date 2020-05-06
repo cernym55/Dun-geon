@@ -103,9 +103,30 @@ public:
     int GetVisionRadius() const;
 
 protected:
+    /**
+     * @brief Type of field for generation
+     */
+    enum class FieldType
+    {
+        /**
+         * @brief Empty inaccessible field
+         */
+        Inaccessible,
+
+        /**
+         * @brief Empty accessible field
+         */
+        Accessible,
+
+        /**
+         * @brief Wall
+         */
+        Wall
+    };
+
     size_t m_Width;
     size_t m_Height;
-    std::vector<std::vector<bool>> m_Map;
+    std::vector<std::vector<FieldType>> m_Map;
     const std::map<Direction, bool>& m_EntranceInfo;
     std::map<Direction, Coords> m_Entrances;
     CameraStyle m_CameraStyle;
@@ -141,18 +162,18 @@ protected:
      * 
      * @param from first position
      * @param to second position
-     * @param value value to apply (default: true)
+     * @param value value to apply (default: wall)
      */
-    void DrawMapLine(Coords from, Coords to, bool value = true);
+    void DrawMapLine(Coords from, Coords to, FieldType value = FieldType::Wall);
 
     /**
      * @brief Draw a box of fields centered at the given coords
      * 
      * @param center center
      * @param radius distance from the center to the edge
-     * @param value value to apply (default: true)
+     * @param value value to apply (default: wall)
      */
-    void DrawMapBox(Coords center, size_t radius, bool value = true);
+    void DrawMapBox(Coords center, size_t radius, FieldType value = FieldType::Wall);
 };
 
 } /* namespace Generation */

@@ -186,7 +186,7 @@ void HallwayRoomLayout::Generate()
     for (const auto& coords : path)
     {
         if (!stagger)
-            DrawMapBox(coords, HallwayWidth / 2, false);
+            DrawMapBox(coords, HallwayWidth / 2, FieldType::Accessible);
         stagger = !stagger;
     }
 }
