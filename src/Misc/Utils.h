@@ -3,11 +3,6 @@
 #include <string>
 
 /**
- * @brief Current game version string
- */
-static const std::string GameVersionString = "v0.3.1";
-
-/**
  * @brief Major version number
  */
 constexpr static const int GameVersionMajor = 0;
@@ -20,7 +15,18 @@ constexpr static const int GameVersionMinor = 3;
 /**
  * @brief Revision version number
  */
-constexpr static const int GameVersionRevision = 1;
+constexpr static const int GameVersionRevision = 2;
+
+/**
+ * @brief Current game version string
+ */
+static const std::string GameVersionString =
+    "v" +
+    std::to_string(GameVersionMajor) +
+    "." +
+    std::to_string(GameVersionMinor) +
+    "." +
+    std::to_string(GameVersionRevision);
 
 /**
  * @brief Checks whether the file with the given filename exists
@@ -46,7 +52,7 @@ int Abs(int x);
  * @param second second value
  * @return const T& the lower of the two
  */
-template<typename T>
+template <typename T>
 const T& Min(const T& first, const T& second)
 {
     return first < second ? first : second;
@@ -60,7 +66,7 @@ const T& Min(const T& first, const T& second)
  * @param second second value
  * @return const T& the higher of the two
  */
-template<typename T>
+template <typename T>
 const T& Max(const T& first, const T& second)
 {
     return first < second ? second : first;
