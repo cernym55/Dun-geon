@@ -76,6 +76,21 @@ public:
     size_t GetHeight() const;
 
     /**
+     * @brief Get the camera style
+     * 
+     * @return CameraStyle camera style
+     */
+    Generation::RoomLayout::CameraStyle GetCameraStyle() const;
+
+    /**
+     * @brief Get the vision radius
+     * Value 0 is considered a lit room.
+     * 
+     * @return int vision radius
+     */
+    int GetVisionRadius() const;
+
+    /**
      * @brief Get the room number
      * 
      * @return int room number
@@ -131,6 +146,8 @@ protected:
     size_t m_Height;
     std::array<Field*, 4> m_Entrances;
     std::vector<std::vector<Field>> m_Fields;
+    Generation::RoomLayout::CameraStyle m_CameraStyle;
+    int m_VisionRadius;
 };
 
 } /* namespace Worlds */

@@ -14,7 +14,11 @@ namespace Generation
 {
 
 RoomLayout::RoomLayout(const std::map<Direction, bool>& entranceInfo)
-    : m_EntranceInfo(entranceInfo)
+    : m_Width(0), m_Height(0), m_EntranceInfo(entranceInfo), m_VisionRadius(0)
+{
+}
+
+void RoomLayout::GenerateAttributes()
 {
 }
 
@@ -27,9 +31,16 @@ void RoomLayout::WriteToFields(std::vector<std::vector<Field>>& fields) const
         for (size_t j = 0; j < m_Height; j++)
         {
             fields[i].emplace_back(Coords(i, j));
-            if (m_Map[i][j] == true)
+            switch (m_Map[i][j])
             {
+            case FieldType::Accessible:
+                fields[i][j].MakeAccessible();
+                break;
+            case FieldType::Wall:
                 fields[i][j].PlaceEntity(Entities::Wall);
+                break;
+            default:
+                break;
             }
         }
     }
@@ -38,6 +49,16 @@ void RoomLayout::WriteToFields(std::vector<std::vector<Field>>& fields) const
 const std::map<Direction, Coords>& RoomLayout::GetEntrances() const
 {
     return m_Entrances;
+}
+
+RoomLayout::CameraStyle RoomLayout::GetCameraStyle() const
+{
+    return m_CameraStyle;
+}
+
+int RoomLayout::GetVisionRadius() const
+{
+    return m_VisionRadius;
 }
 
 Coords RoomLayout::GenerateEntranceCoords(Direction dir)
@@ -58,7 +79,7 @@ Coords RoomLayout::GenerateEntranceCoords(Direction dir)
     }
 }
 
-void RoomLayout::DrawMapLine(Coords from, Coords to, bool value)
+void RoomLayout::DrawMapLine(Coords from, Coords to, FieldType value)
 {
     for (const auto& pos : from.StraightPathTo(to))
     {
@@ -66,7 +87,7 @@ void RoomLayout::DrawMapLine(Coords from, Coords to, bool value)
     }
 }
 
-void RoomLayout::DrawMapBox(Coords center, size_t radius, bool value)
+void RoomLayout::DrawMapBox(Coords center, size_t radius, FieldType value)
 {
     for (size_t i = 0; i <= radius; i++)
     {

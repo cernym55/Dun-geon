@@ -77,8 +77,24 @@ Coords& Coords::MoveInDirection(Direction dir)
     return *this;
 }
 
+bool Coords::SharesAxisWith(Coords there) const
+{
+    return m_XCoord == there.m_XCoord || m_YCoord == there.m_YCoord;
+}
+
 std::vector<Coords> Coords::StraightPathTo(Coords there) const
 {
+    if (!SharesAxisWith(there))
+    {
+        std::ostringstream errorMessage;
+        errorMessage
+            << "No straight path exists from "
+            << *this
+            << " to "
+            << there;
+        throw InvalidPositionException(errorMessage.str());
+    }
+
     std::vector<Coords> path;
     if (m_XCoord == there.m_XCoord)
     {
@@ -94,19 +110,15 @@ std::vector<Coords> Coords::StraightPathTo(Coords there) const
             path.push_back({ x, m_YCoord });
         }
     }
-    else
-    {
-        std::ostringstream errorMessage;
-        errorMessage
-            << "No straight path exists from "
-            << *this
-            << " to "
-            << there;
-        throw InvalidPositionException(errorMessage.str());
-    }
     path.push_back(there);
 
     return path;
+}
+
+size_t Coords::CombinedDistanceFrom(Coords there) const
+{
+    return Abs(static_cast<int>(m_XCoord) - static_cast<int>(there.m_XCoord)) +
+           Abs(static_cast<int>(m_YCoord) - static_cast<int>(there.m_YCoord));
 }
 
 std::ostream& operator<<(std::ostream& os, const Coords& coords)

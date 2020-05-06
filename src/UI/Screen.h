@@ -128,6 +128,11 @@ public:
     bool YesNoMessageBox(const std::string& prompt, const std::string& leftOption = "Yes", const std::string& rightOption = "No", const std::string& title = "");
 
 private:
+    /**
+     * @brief Default icon for empty fields
+     */
+    constexpr static const chtype DefaultFieldIcon = ' ';
+
     InputHandler& m_InputHandler;
     const Worlds::WorldManager& m_WorldManager;
     const Entities::EntityManager& m_EntityManager;
@@ -201,9 +206,19 @@ private:
     void ResizeAndRepositionWorldWindow();
 
     /**
-     * @brief Draw the HUD
+     * @brief Draw the world window
+     */
+    void DrawWorld();
+
+    /**
+     * @brief Draw the HUD window
      */
     void DrawHUD();
+
+    /**
+     * @brief Draw the message window
+     */
+    void DrawMessageWindow();
 
     /**
      * @brief Get the icon for the given field

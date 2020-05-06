@@ -61,10 +61,23 @@ public:
      */
     Entities::Entity* VacateBackground();
 
+    /**
+     * @brief Check whether this field can be reached by the player
+     * 
+     * @return true if accessible
+     */
+    bool IsAccessible() const;
+
+    /**
+     * @brief Permanently make this field accessible
+     */
+    void MakeAccessible();
+
 private:
     Coords m_Coords;
     Entities::Entity* m_ForegroundEntity;
     Entities::Entity* m_BackgroundEntity;
+    bool m_Accessible;
     //std::vector<std::shared_ptr<Items::Item>> m_ContainedItems;
 };
 

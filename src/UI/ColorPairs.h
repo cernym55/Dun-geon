@@ -21,6 +21,11 @@ constexpr const short PlayerEntityIcon = 2;
  */
 constexpr const short YellowText = 3;
 
+/**
+ * @brief Used for accessible fields on the map
+ */
+constexpr const short WorldAccessibleField = 4;
+
 } /* namespace ColorPairs */
 
 } /* namespace UI */

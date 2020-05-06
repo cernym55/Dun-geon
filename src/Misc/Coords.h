@@ -76,12 +76,28 @@ public:
     Coords& MoveInDirection(Direction dir);
 
     /**
+     * @brief Check if these coords are on the same horizontal or vertical axis
+     * 
+     * @param there target coords
+     * @return true if shares axis
+     */
+    bool SharesAxisWith(Coords there) const;
+
+    /**
      * @brief Return a vector of coords in a straight line from here to there
      * 
      * @param there target coords
      * @return std::vector<Coords> coords forming path
      */
     std::vector<Coords> StraightPathTo(Coords there) const;
+
+    /**
+     * @brief Gets the combined X and Y distance from here to there
+     * 
+     * @param there target coords
+     * @return size_t distance
+     */
+    size_t CombinedDistanceFrom(Coords there) const;
 
     /**
      * @brief Operator << overload

@@ -16,6 +16,7 @@ BoxRoomLayout::BoxRoomLayout(const std::map<Direction, bool>& entranceInfo)
     : RoomLayout(entranceInfo)
 {
     Generate();
+    GenerateAttributes();
 }
 
 void BoxRoomLayout::Generate()
@@ -52,6 +53,7 @@ void BoxRoomLayout::Generate()
     {
         for (size_t row = 0; row < m_Height; row++)
         {
+            m_Map[col][row] = FieldType::Accessible;
             if ((col > 0 && row > 0 && col < m_Width - 1 && row < m_Height - 1))
             {
                 continue;
@@ -74,8 +76,19 @@ void BoxRoomLayout::Generate()
                 continue;
             }
 
-            m_Map[col][row] = true;
+            m_Map[col][row] = FieldType::Wall;
         }
+    }
+}
+
+void BoxRoomLayout::GenerateAttributes()
+{
+    RoomLayout::GenerateAttributes();
+    m_CameraStyle = CameraStyle::Fixed;
+    // Generate the lighting in the room; 95% chance to be lit, 5% chance to be dark
+    if (!RNG::Chance(0.95))
+    {
+        m_VisionRadius = RNG::RandomInt(5, 7);
     }
 }
 
