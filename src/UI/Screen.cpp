@@ -377,23 +377,15 @@ void Screen::ResizeAndRepositionWorldWindow()
     wclear(m_GameWorldWindow);
     wrefresh(m_GameWorldWindow);
     const Worlds::Room& currentRoom = m_WorldManager.GetCurrentRoom();
-    size_t windowLines = 0, windowColumns = 0;
 
-    switch (currentRoom.GetCameraStyle())
+    size_t windowLines = currentRoom.GetHeight() + 2;
+    size_t windowColumns = currentRoom.GetWidth() + 2;
+
+    if (currentRoom.GetCameraStyle() != Worlds::Generation::RoomLayout::CameraStyle::Fixed &&
+        currentRoom.GetVisionRadius() > 0)
     {
-    case Worlds::Generation::RoomLayout::CameraStyle::Fixed:
-        windowLines = currentRoom.GetHeight() + 2;
-        windowColumns = currentRoom.GetWidth() + 2;
-        break;
-    case Worlds::Generation::RoomLayout::CameraStyle::PlayerCentered: {
-        auto shorterDimension = Min(currentRoom.GetWidth(), currentRoom.GetHeight());
-        if (shorterDimension % 2 == 0) shorterDimension--;
-        windowLines = shorterDimension;
-        windowColumns = shorterDimension * 1.25;
-        break;
-    }
-    default:
-        break;
+        windowLines = currentRoom.GetVisionRadius() * 2 + 3;
+        windowColumns = windowLines;
     }
 
     const Coords WorldWindowPos = { (WorldPanelWidth - windowColumns) / 2 - 1,
@@ -405,7 +397,6 @@ void Screen::ResizeAndRepositionWorldWindow()
 void Screen::DrawWorld()
 {
     wclear(m_GameWorldWindow);
-    // Draw the world
     if (m_CurrentRoom != &m_WorldManager.GetCurrentRoom())
     {
         m_CurrentRoom = &m_WorldManager.GetCurrentRoom();
@@ -437,7 +428,9 @@ void Screen::DrawWorld()
             if (desiredFieldXPos < 0 ||
                 desiredFieldXPos >= static_cast<int>(m_CurrentRoom->GetWidth()) ||
                 desiredFieldYPos < 0 ||
-                desiredFieldYPos >= static_cast<int>(m_CurrentRoom->GetHeight()))
+                desiredFieldYPos >= static_cast<int>(m_CurrentRoom->GetHeight()) ||
+                (m_CurrentRoom->GetVisionRadius() > 0 &&
+                 playerCoords.CombinedDistanceFrom({ desiredFieldXPos, desiredFieldYPos }) > m_CurrentRoom->GetVisionRadius()))
             {
                 mvwaddch(m_GameWorldWindow, j, i, DefaultFieldIcon);
             }

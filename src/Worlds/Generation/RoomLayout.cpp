@@ -14,7 +14,7 @@ namespace Generation
 {
 
 RoomLayout::RoomLayout(const std::map<Direction, bool>& entranceInfo)
-    : m_EntranceInfo(entranceInfo)
+    : m_Width(0), m_Height(0), m_EntranceInfo(entranceInfo), m_VisionRadius(0)
 {
 }
 
@@ -47,6 +47,11 @@ const std::map<Direction, Coords>& RoomLayout::GetEntrances() const
 RoomLayout::CameraStyle RoomLayout::GetCameraStyle() const
 {
     return m_CameraStyle;
+}
+
+int RoomLayout::GetVisionRadius() const
+{
+    return m_VisionRadius;
 }
 
 Coords RoomLayout::GenerateEntranceCoords(Direction dir)

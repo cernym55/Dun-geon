@@ -195,6 +195,12 @@ void HallwayRoomLayout::GenerateAttributes()
 {
     RoomLayout::GenerateAttributes();
     m_CameraStyle = CameraStyle::PlayerCentered;
+    // Generate lighting attributes; 90% chance to be lit, 10% chance to be dark
+    // Lighting in dark hallways is sparser than in dark rooms
+    if (!RNG::Chance(0.90))
+    {
+        m_VisionRadius = RNG::RandomInt(4, 6);
+    }
 }
 
 } /* namespace Generation */

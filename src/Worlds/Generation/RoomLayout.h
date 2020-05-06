@@ -95,6 +95,13 @@ public:
      */
     CameraStyle GetCameraStyle() const;
 
+    /**
+     * @brief Get the vision radius
+     * 
+     * @return int vision radius
+     */
+    int GetVisionRadius() const;
+
 protected:
     size_t m_Width;
     size_t m_Height;
@@ -102,6 +109,7 @@ protected:
     const std::map<Direction, bool>& m_EntranceInfo;
     std::map<Direction, Coords> m_Entrances;
     CameraStyle m_CameraStyle;
+    int m_VisionRadius;
 
     /**
      * @brief Constructor

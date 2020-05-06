@@ -83,6 +83,14 @@ public:
     Generation::RoomLayout::CameraStyle GetCameraStyle() const;
 
     /**
+     * @brief Get the vision radius
+     * Value 0 is considered a lit room.
+     * 
+     * @return int vision radius
+     */
+    int GetVisionRadius() const;
+
+    /**
      * @brief Get the room number
      * 
      * @return int room number
@@ -132,13 +140,14 @@ public:
 protected:
     WorldManager& m_WorldManager;
     World& m_World;
-    Generation::RoomLayout::CameraStyle m_CameraStyle;
     int m_RoomNumber;
     Coords m_Coords;
     size_t m_Width;
     size_t m_Height;
     std::array<Field*, 4> m_Entrances;
     std::vector<std::vector<Field>> m_Fields;
+    Generation::RoomLayout::CameraStyle m_CameraStyle;
+    int m_VisionRadius;
 };
 
 } /* namespace Worlds */

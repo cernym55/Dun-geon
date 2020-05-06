@@ -109,6 +109,12 @@ std::vector<Coords> Coords::StraightPathTo(Coords there) const
     return path;
 }
 
+size_t Coords::CombinedDistanceFrom(Coords there) const
+{
+    return Abs(static_cast<int>(m_XCoord) - static_cast<int>(there.m_XCoord)) +
+           Abs(static_cast<int>(m_YCoord) - static_cast<int>(there.m_YCoord));
+}
+
 std::ostream& operator<<(std::ostream& os, const Coords& coords)
 {
     return os

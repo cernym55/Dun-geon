@@ -83,7 +83,12 @@ void BoxRoomLayout::Generate()
 void BoxRoomLayout::GenerateAttributes()
 {
     RoomLayout::GenerateAttributes();
-    m_CameraStyle = RNG::Chance(0.9) ? CameraStyle::Fixed : CameraStyle::PlayerCentered;
+    m_CameraStyle = CameraStyle::Fixed;
+    // Generate the lighting in the room; 95% chance to be lit, 5% chance to be dark
+    if (!RNG::Chance(0.95))
+    {
+        m_VisionRadius = RNG::RandomInt(5, 7);
+    }
 }
 
 } /* namespace Generation */

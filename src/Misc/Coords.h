@@ -84,6 +84,14 @@ public:
     std::vector<Coords> StraightPathTo(Coords there) const;
 
     /**
+     * @brief Gets the combined X and Y distance from here to there
+     * 
+     * @param there target coords
+     * @return size_t distance
+     */
+    size_t CombinedDistanceFrom(Coords there) const;
+
+    /**
      * @brief Operator << overload
      * 
      * @param os output stream
