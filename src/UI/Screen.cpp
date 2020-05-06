@@ -217,7 +217,7 @@ void Screen::Init()
     init_pair(ColorPairs::Wall, -1, COLOR_WHITE);
     init_pair(ColorPairs::PlayerEntityIcon, COLOR_MAGENTA, -1);
     init_pair(ColorPairs::YellowText, COLOR_YELLOW, -1);
-    init_pair(ColorPairs::WorldBorder, COLOR_BLACK, COLOR_YELLOW);
+    init_pair(ColorPairs::WorldAccessibleField, COLOR_BLACK, -1);
 }
 
 void Screen::Terminate()
@@ -428,23 +428,32 @@ void Screen::DrawWorld()
             if (desiredFieldXPos < 0 ||
                 desiredFieldXPos >= static_cast<int>(m_CurrentRoom->GetWidth()) ||
                 desiredFieldYPos < 0 ||
-                desiredFieldYPos >= static_cast<int>(m_CurrentRoom->GetHeight()) ||
-                (m_CurrentRoom->GetVisionRadius() > 0 &&
-                 playerCoords.CombinedDistanceFrom({ desiredFieldXPos, desiredFieldYPos }) > m_CurrentRoom->GetVisionRadius()))
+                desiredFieldYPos >= static_cast<int>(m_CurrentRoom->GetHeight()))
             {
                 mvwaddch(m_GameWorldWindow, j, i, DefaultFieldIcon);
             }
             else
             {
-                mvwaddch(m_GameWorldWindow, j, i, GetFieldIcon({ static_cast<size_t>(desiredFieldXPos), static_cast<size_t>(desiredFieldYPos) }));
+                auto radius = m_CurrentRoom->GetVisionRadius();
+                Coords targetCoords(static_cast<size_t>(desiredFieldXPos), static_cast<size_t>(desiredFieldYPos));
+                if (radius > 0 &&
+                    static_cast<int>(playerCoords.CombinedDistanceFrom(targetCoords)) >
+                        (playerCoords.SharesAxisWith(targetCoords)
+                             ? radius - 1
+                             : radius))
+                {
+                    mvwaddch(m_GameWorldWindow, j, i, DefaultFieldIcon);
+                }
+                else
+                {
+                    mvwaddch(m_GameWorldWindow, j, i, GetFieldIcon(targetCoords));
+                }
             }
         }
     }
     if (m_CurrentRoom->GetCameraStyle() != Worlds::Generation::RoomLayout::CameraStyle::Fixed)
     {
-        // wattron(m_GameWorldWindow, COLOR_PAIR(ColorPairs::WorldBorder));
         box(m_GameWorldWindow, 0, 0);
-        // wattroff(m_GameWorldWindow, A_COLOR);
     }
     wrefresh(m_GameWorldWindow);
 }
@@ -534,6 +543,10 @@ chtype Screen::GetFieldIcon(const Worlds::Field& field) const
     else if (field.TryGetBackgroundEntity() != nullptr)
     {
         return field.TryGetBackgroundEntity()->GetIcon();
+    }
+    else if (field.IsAccessible())
+    {
+        return '.' | COLOR_PAIR(ColorPairs::WorldAccessibleField) | A_BOLD;
     }
     else
     {

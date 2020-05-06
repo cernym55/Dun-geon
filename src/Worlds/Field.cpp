@@ -11,7 +11,8 @@ namespace Worlds
 Field::Field(Coords coords)
     : m_Coords(coords),
       m_ForegroundEntity(nullptr),
-      m_BackgroundEntity(nullptr)
+      m_BackgroundEntity(nullptr),
+      m_Accessible(true)
 {
 }
 
@@ -61,6 +62,11 @@ Entities::Entity* Field::VacateBackground()
     Entities::Entity* tmp = m_BackgroundEntity;
     m_BackgroundEntity = nullptr;
     return tmp;
+}
+
+bool Field::IsAccessible() const
+{
+    return m_Accessible;
 }
 
 } /* namespace Worlds */
