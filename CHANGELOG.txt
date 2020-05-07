@@ -4,6 +4,19 @@
 
 
 
+--- v0.3.2 | 05/08/2020
+ - Reworked procedural generation of rooms.
+     The generation algorithm is no longer purely random and now considers
+     factors such as how many rooms you've found or which world you are in.
+     There is also a limit to how many rooms can appear.
+ - Added a highlight effect to the field or entity you are touching.
+     This makes it easier to tell which way your character is facing and which
+     objects you can interact with.
+ - Separated handling of UI commands such as "quit".
+     UI commands no longer behave like ingame commands such as "move". They can
+     no longer be repeated or chained and take no arguments.
+
+
 --- v0.3.1 | 05/06/2020
  - Added dark rooms.
      In dark rooms you can only see things in a certain radius around
