@@ -5,6 +5,7 @@
 #include "Generation/RoomLayout.h"
 #include "Misc/Coords.h"
 #include "Misc/Direction.h"
+#include "UI/CameraStyle.h"
 #include "World.h"
 #include "WorldManager.h"
 #include <array>
@@ -80,7 +81,7 @@ public:
      * 
      * @return CameraStyle camera style
      */
-    Generation::RoomLayout::CameraStyle GetCameraStyle() const;
+    UI::CameraStyle GetCameraStyle() const;
 
     /**
      * @brief Get the vision radius
@@ -146,7 +147,7 @@ protected:
     size_t m_Height;
     std::array<Field*, 4> m_Entrances;
     std::vector<std::vector<Field>> m_Fields;
-    Generation::RoomLayout::CameraStyle m_CameraStyle;
+    UI::CameraStyle m_CameraStyle;
     int m_VisionRadius;
 };
 

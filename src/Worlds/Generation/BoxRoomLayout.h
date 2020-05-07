@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Misc/Direction.h"
+#include "RoomGenerationParameters.h"
 #include "RoomLayout.h"
-#include <map>
 
 namespace Worlds
 {
@@ -19,9 +18,9 @@ public:
     /**
      * @brief Constructor
      * 
-     * @param entranceInfo entrance info
+     * @param parameters parameters
      */
-    BoxRoomLayout(const std::map<Direction, bool>& entranceInfo);
+    BoxRoomLayout(const RoomGenerationParameters& parameters);
 
     BoxRoomLayout(const BoxRoomLayout&) = delete;
 
@@ -41,6 +40,7 @@ private:
     constexpr static const size_t MaximumHeight = 16;
     constexpr static const size_t MinimumWidth = 20;
     constexpr static const size_t MinimumHeight = 12;
+    constexpr static const int DarknessVisionRadius = 5;
 
     /**
      * @brief Generate the layout

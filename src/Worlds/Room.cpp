@@ -6,6 +6,7 @@
 #include "Misc/Coords.h"
 #include "Misc/Direction.h"
 #include "Misc/RNG.h"
+#include "UI/CameraStyle.h"
 #include "World.h"
 #include "WorldManager.h"
 #include <array>
@@ -56,7 +57,7 @@ size_t Room::GetHeight() const
     return m_Height;
 }
 
-Generation::RoomLayout::CameraStyle Room::GetCameraStyle() const
+UI::CameraStyle Room::GetCameraStyle() const
 {
     return m_CameraStyle;
 }

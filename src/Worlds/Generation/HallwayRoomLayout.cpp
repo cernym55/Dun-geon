@@ -3,8 +3,9 @@
 #include "Misc/Direction.h"
 #include "Misc/RNG.h"
 #include "Misc/Utils.h"
+#include "RoomGenerationParameters.h"
+#include "UI/CameraStyle.h"
 #include <map>
-#include <set>
 
 namespace Worlds
 {
@@ -12,41 +13,34 @@ namespace Worlds
 namespace Generation
 {
 
-HallwayRoomLayout::HallwayRoomLayout(const std::map<Direction, bool>& entranceInfo)
-    : RoomLayout(entranceInfo)
+HallwayRoomLayout::HallwayRoomLayout(const RoomGenerationParameters& parameters)
+    : RoomLayout(parameters)
 {
     Generate();
-    GenerateAttributes();
 }
 
 void HallwayRoomLayout::Generate()
 {
-    // Randomize dimensions, make sure they're an even number
-    m_Width = RNG::RandomInt(MinimumWidth, MaximumWidth);
-    m_Width += m_Width % 2;
-    m_Height = RNG::RandomInt(MinimumHeight, MaximumHeight);
-    m_Height += m_Height % 2;
+    GenerateAttributes();
+
     m_Map.resize(m_Width);
     for (auto& col : m_Map)
     {
         col.resize(m_Height);
     }
 
+    // Generate entrance positions
     std::map<Direction, Coords> allEntrances;
 
-    // Generate entrance positions
+    auto actualEntranceDirections = GenerateEntranceDirections();
+    for (const auto& dir : actualEntranceDirections)
+    {
+        m_Entrances[dir] = {};
+    }
+
     for (const auto& dir : Direction::All())
     {
         allEntrances[dir] = GenerateEntranceCoords(dir);
-
-        if (m_EntranceInfo.count(dir) > 0 && m_EntranceInfo.at(dir) == false)
-        {
-            continue;
-        }
-        else if ((m_EntranceInfo.count(dir) > 0 && m_EntranceInfo.at(dir) == true) || RNG::Chance(0.5))
-        {
-            m_Entrances[dir] = {};
-        }
     }
 
     // Wall positioning algorithm
@@ -194,12 +188,18 @@ void HallwayRoomLayout::Generate()
 void HallwayRoomLayout::GenerateAttributes()
 {
     RoomLayout::GenerateAttributes();
-    m_CameraStyle = CameraStyle::PlayerCentered;
-    // Generate lighting attributes; 90% chance to be lit, 10% chance to be dark
-    // Lighting in dark hallways is sparser than in dark rooms
-    if (!RNG::Chance(0.90))
+
+    // Randomize dimensions, make sure they're an even number
+    m_Width = RNG::RandomInt(MinimumWidth, MaximumWidth);
+    m_Width += m_Width % 2;
+    m_Height = RNG::RandomInt(MinimumHeight, MaximumHeight);
+    m_Height += m_Height % 2;
+
+    m_CameraStyle = UI::CameraStyle::PlayerCentered;
+    // Generate lighting
+    if (RNG::Chance(m_Parameters.DarknessChance))
     {
-        m_VisionRadius = RNG::RandomInt(4, 6);
+        m_VisionRadius = DarknessVisionRadius;
     }
 }
 

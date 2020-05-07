@@ -3,8 +3,9 @@
 #include "Field.h"
 #include "Misc/Coords.h"
 #include "Misc/Direction.h"
+#include "RoomGenerationParameters.h"
+#include "UI/CameraStyle.h"
 #include <map>
-#include <unordered_map>
 #include <vector>
 
 namespace Worlds
@@ -33,22 +34,6 @@ public:
          * @brief Hallway leading from one entrance to another, can branch
          */
         Hallway = 1
-    };
-
-    /**
-     * @brief Camera style used when viewing this room
-     */
-    enum class CameraStyle
-    {
-        /**
-         * @brief Fixed view of the entire room
-         */
-        Fixed,
-
-        /**
-         * @brief Player is kept in the center of the view
-         */
-        PlayerCentered
     };
 
     /**
@@ -91,9 +76,9 @@ public:
     /**
      * @brief Get the camera style
      * 
-     * @return CameraStyle camera style
+     * @return UI::CameraStyle camera style
      */
-    CameraStyle GetCameraStyle() const;
+    UI::CameraStyle GetCameraStyle() const;
 
     /**
      * @brief Get the vision radius
@@ -127,17 +112,17 @@ protected:
     size_t m_Width;
     size_t m_Height;
     std::vector<std::vector<FieldType>> m_Map;
-    const std::map<Direction, bool>& m_EntranceInfo;
+    const RoomGenerationParameters& m_Parameters;
     std::map<Direction, Coords> m_Entrances;
-    CameraStyle m_CameraStyle;
+    UI::CameraStyle m_CameraStyle;
     int m_VisionRadius;
 
     /**
      * @brief Constructor
      * 
-     * @param entranceInfo entrance info
+     * @param parameters parameters
      */
-    RoomLayout(const std::map<Direction, bool>& entranceInfo);
+    RoomLayout(const RoomGenerationParameters& parameters);
 
     /**
      * @brief Generate the layout
@@ -150,12 +135,20 @@ protected:
     virtual void GenerateAttributes();
 
     /**
+     * @brief Generate the directions to create entrances in
+     * Takes into account EntranceInfo and other Parameters.
+     * 
+     * @return std::vector<Direction> list of directions
+     */
+    virtual std::vector<Direction> GenerateEntranceDirections() const;
+
+    /**
      * @brief Generate coordinates of an entrance in the given direction
      * 
      * @param dir direction
      * @return Coords entrance coords
      */
-    Coords GenerateEntranceCoords(Direction dir);
+    virtual Coords GenerateEntranceCoords(Direction dir) const;
 
     /**
      * @brief Draw a line of fields at and between the two given positions in the same line
