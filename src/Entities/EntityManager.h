@@ -71,11 +71,6 @@ public:
      */
     const Entity* GetApproachedEntity(const Character& character) const;
 
-private:
-    Worlds::WorldManager& m_WorldManager;
-    Player& m_Player;
-    std::unordered_map<Worlds::Room*, std::vector<std::unique_ptr<Entities::Entity>>> m_EntityStorage;
-
     /**
      * @brief Check if the character will leave the room if it moves in the given direction
      * 
@@ -85,6 +80,11 @@ private:
      */
     bool IsCharacterAboutToLeaveRoom(const Character& character,
                                      Direction moveDirection) const;
+
+private:
+    Worlds::WorldManager& m_WorldManager;
+    Player& m_Player;
+    std::unordered_map<Worlds::Room*, std::vector<std::unique_ptr<Entities::Entity>>> m_EntityStorage;
 
     /**
      * @brief Check if the character can move in the given direction

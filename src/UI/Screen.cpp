@@ -218,6 +218,8 @@ void Screen::Init()
     init_pair(ColorPairs::PlayerEntityIcon, COLOR_MAGENTA, -1);
     init_pair(ColorPairs::YellowText, COLOR_YELLOW, -1);
     init_pair(ColorPairs::WorldAccessibleField, COLOR_WHITE, -1);
+    init_pair(ColorPairs::WorldTouchedField, COLOR_RED, COLOR_RED);
+    init_pair(ColorPairs::WorldTouchedFieldNoBg, COLOR_RED, -1);
 }
 
 void Screen::Terminate()
@@ -537,22 +539,46 @@ void Screen::DrawMessageWindow()
 
 chtype Screen::GetFieldIcon(const Worlds::Field& field) const
 {
+    chtype icon = 0;
+    bool canHaveHighlight = true;
     if (field.TryGetForegroundEntity() != nullptr)
     {
-        return field.TryGetForegroundEntity()->GetIcon();
+        icon = field.TryGetForegroundEntity()->GetIcon();
     }
     else if (field.TryGetBackgroundEntity() != nullptr)
     {
-        return field.TryGetBackgroundEntity()->GetIcon();
+        icon = field.TryGetBackgroundEntity()->GetIcon();
     }
     else if (field.IsAccessible() && m_CurrentRoom->GetVisionRadius() > 0)
     {
-        return '.' | COLOR_PAIR(ColorPairs::WorldAccessibleField);
+        icon = '.' | COLOR_PAIR(ColorPairs::WorldAccessibleField);
+        canHaveHighlight = false;
     }
     else
     {
-        return DefaultFieldIcon;
+        icon = DefaultFieldIcon;
+        canHaveHighlight = false;
     }
+
+    // Apply highlight if the player is touching this field
+    auto lmd = m_Player.GetLastMoveDirection();
+    if (canHaveHighlight &&
+        lmd != Direction::None() &&
+        !m_EntityManager.IsCharacterAboutToLeaveRoom(m_Player, lmd) &&
+        field.GetCoords() == m_Player.GetCoords().GetAdjacent(lmd))
+    {
+        short highlightPair;
+        // Highlight the background only if it was a non-default color
+        short bgColorPair = (icon & A_COLOR) >> 8;
+        short fg, bg;
+        pair_content(bgColorPair, &fg, &bg);
+        highlightPair = (bg > 0) ? ColorPairs::WorldTouchedField : ColorPairs::WorldTouchedFieldNoBg;
+
+        icon &= ~A_COLOR;
+        icon |= COLOR_PAIR(highlightPair) | A_BOLD;
+    }
+
+    return icon;
 }
 
 chtype Screen::GetFieldIcon(Coords coords) const

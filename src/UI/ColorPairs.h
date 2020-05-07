@@ -26,6 +26,16 @@ constexpr const short YellowText = 3;
  */
 constexpr const short WorldAccessibleField = 4;
 
+/**
+ * @brief Used to highlight the field being touched
+ */
+constexpr const short WorldTouchedField = 5;
+
+/**
+ * @brief Used to highlight the field being touched without a background
+ */
+constexpr const short WorldTouchedFieldNoBg = 6;
+
 } /* namespace ColorPairs */
 
 } /* namespace UI */
