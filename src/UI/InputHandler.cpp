@@ -44,24 +44,24 @@ InputHandler::InputHandler(Screen& screen, Player::Controller& playerController)
     m_CmdDict["trade"] = CommandType::Trade;
     m_CmdDict["buy"] = CommandType::Trade;
     m_CmdDict["sell"] = CommandType::Trade;
-    m_CmdDict["i"] = CommandType::OpenInventory;
-    m_CmdDict["inv"] = CommandType::OpenInventory;
-    m_CmdDict["inventory"] = CommandType::OpenInventory;
-    m_CmdDict["items"] = CommandType::OpenInventory;
-    m_CmdDict["bag"] = CommandType::OpenInventory;
-    m_CmdDict["backpack"] = CommandType::OpenInventory;
-    m_CmdDict["s"] = CommandType::OpenSkills;
-    m_CmdDict["skills"] = CommandType::OpenSkills;
-    m_CmdDict["abilities"] = CommandType::OpenSkills;
-    m_CmdDict["m"] = CommandType::OpenMap;
-    m_CmdDict["map"] = CommandType::OpenMap;
-    m_CmdDict["h"] = CommandType::OpenHelp;
-    m_CmdDict["help"] = CommandType::OpenHelp;
-    m_CmdDict["helpscreen"] = CommandType::OpenHelp;
-    m_CmdDict["f1"] = CommandType::OpenHelp;
-    m_CmdDict["q"] = CommandType::Quit;
-    m_CmdDict["quit"] = CommandType::Quit;
-    m_CmdDict["exit"] = CommandType::Quit;
+    m_UICmdDict["i"] = UICommandType::Inventory;
+    m_UICmdDict["inv"] = UICommandType::Inventory;
+    m_UICmdDict["inventory"] = UICommandType::Inventory;
+    m_UICmdDict["items"] = UICommandType::Inventory;
+    m_UICmdDict["bag"] = UICommandType::Inventory;
+    m_UICmdDict["backpack"] = UICommandType::Inventory;
+    m_UICmdDict["s"] = UICommandType::Skills;
+    m_UICmdDict["skills"] = UICommandType::Skills;
+    m_UICmdDict["abilities"] = UICommandType::Skills;
+    m_UICmdDict["m"] = UICommandType::Map;
+    m_UICmdDict["map"] = UICommandType::Map;
+    m_UICmdDict["h"] = UICommandType::Help;
+    m_UICmdDict["help"] = UICommandType::Help;
+    m_UICmdDict["helpscreen"] = UICommandType::Help;
+    m_UICmdDict["f1"] = UICommandType::Help;
+    m_UICmdDict["q"] = UICommandType::Quit;
+    m_UICmdDict["quit"] = UICommandType::Quit;
+    m_UICmdDict["exit"] = UICommandType::Quit;
     m_DirDict["u"] = Direction::Up();
     m_DirDict["up"] = Direction::Up();
     m_DirDict["r"] = Direction::Right();
@@ -102,10 +102,18 @@ void InputHandler::Eval(const std::string& input)
     std::string buffer;
     while (iss >> buffer)
     {
-        if (m_CmdDict.count(buffer) > 0 && m_CmdDict[buffer] == CommandType::Quit &&
-            m_Screen.YesNoMessageBox("Are you sure you want to quit?"))
+        // Interrupt if an UI command is detected
+        if (m_UICmdDict.count(buffer) > 0)
         {
-            SetQuit();
+            std::string next;
+            if (words.empty() && !(iss >> next))
+            {
+                ExecUICommand(m_UICmdDict.at(buffer));
+            }
+            else
+            {
+                m_Screen.PostMessage("User interface commands such as \"quit\" cannot be chained or have parameters.");
+            }
             return;
         }
         words.push_back(std::move(buffer));
@@ -288,35 +296,35 @@ void InputHandler::loadKeyConf()
                 {
                     for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        m_CmdDict[wordVec[i]] = CommandType::OpenInventory;
+                        m_UICmdDict[wordVec[i]] = UICommandType::Inventory;
                     }
                 }
                 else if (wordVec[0] == "OPEN_SKILLS")
                 {
                     for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        m_CmdDict[wordVec[i]] = CommandType::OpenSkills;
+                        m_UICmdDict[wordVec[i]] = UICommandType::Skills;
                     }
                 }
                 else if (wordVec[0] == "OPEN_MAP")
                 {
                     for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        m_CmdDict[wordVec[i]] = CommandType::OpenMap;
+                        m_UICmdDict[wordVec[i]] = UICommandType::Map;
                     }
                 }
                 else if (wordVec[0] == "OPEN_HELP")
                 {
                     for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        m_CmdDict[wordVec[i]] = CommandType::OpenHelp;
+                        m_UICmdDict[wordVec[i]] = UICommandType::Help;
                     }
                 }
                 else if (wordVec[0] == "QUIT")
                 {
                     for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        m_CmdDict[wordVec[i]] = CommandType::Quit;
+                        m_UICmdDict[wordVec[i]] = UICommandType::Quit;
                     }
                 }
                 else if (wordVec[0] == "UP")
@@ -452,18 +460,6 @@ bool InputHandler::ExecCommand(Command& command)
     case CommandType::Trade:
         // TODO: add
         break;
-    case CommandType::OpenInventory:
-        // TODO: add
-        break;
-    case CommandType::OpenSkills:
-        // TODO: add
-        break;
-    case CommandType::OpenMap:
-        // TODO: add
-        break;
-    case CommandType::OpenHelp:
-        // TODO: add
-        break;
     default:
         break;
     }
@@ -476,6 +472,21 @@ bool InputHandler::ExecCommand(Command& command)
 
     command.repeats--;
     return result;
+}
+
+void InputHandler::ExecUICommand(UICommandType type)
+{
+    switch (type)
+    {
+    case UICommandType::Quit:
+        if (m_Screen.YesNoMessageBox("Are you sure you want to quit?"))
+        {
+            SetQuit();
+        }
+        break;
+    default:
+        break;
+    }
 }
 
 void InputHandler::EvalWorld(std::vector<std::string>& words)
