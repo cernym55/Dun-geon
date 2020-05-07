@@ -18,7 +18,7 @@ class InputHandler
 {
 public:
     /**
-     * @brief The type of a command/what it does
+     * @brief Types of ingame commands
      */
     enum class CommandType
     {
@@ -28,11 +28,18 @@ public:
         Break,
         Battle,
         Talk,
-        Trade,
-        OpenInventory,
-        OpenSkills,
-        OpenMap,
-        OpenHelp,
+        Trade
+    };
+
+    /**
+     * @brief Types of UI commands
+     */
+    enum class UICommandType
+    {
+        Inventory,
+        Skills,
+        Map,
+        Help,
         Quit
     };
 
@@ -127,6 +134,7 @@ private:
     std::queue<InputHandler::Command> m_CommandQueue;
     std::map<std::string, Direction> m_DirDict;
     std::map<std::string, CommandType> m_CmdDict;
+    std::map<std::string, UICommandType> m_UICmdDict;
     std::vector<std::string> m_AndKeywords;
     std::vector<std::string> m_LastKeywords;
     bool m_ShouldQuit;
@@ -138,6 +146,13 @@ private:
      * @return true if completed successfully
      */
     bool ExecCommand(Command& command);
+
+    /**
+     * @brief Execute a UI command of the given type
+     * 
+     * @param type UI command type
+     */
+    void ExecUICommand(UICommandType type);
 
     /**
      * @brief Evaluate input from the world view
