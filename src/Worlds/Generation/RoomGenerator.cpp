@@ -44,8 +44,10 @@ std::unique_ptr<RoomLayout> RoomGenerator::CreateLayout(RoomLayout::Type layoutT
         break;
     }
 
-    if (m_GeneratedRoomCount > 0) m_UndiscoveredRoomCount--;
+    // Update generation statistics
+    if (m_GeneratedRoomCount > 0) m_UndiscoveredRoomCount--; // we've just discovered one room
     m_GeneratedRoomCount++;
+    // Every entrance except the one we came from counts as an undiscovered room
     m_UndiscoveredRoomCount += layout->GetEntrances().size() - 1;
     UpdateParameters();
 
@@ -54,6 +56,7 @@ std::unique_ptr<RoomLayout> RoomGenerator::CreateLayout(RoomLayout::Type layoutT
 
 void RoomGenerator::InitializeParameters()
 {
+    // These are relevant for the starting room
     m_Parameters.ForceContinue = true;
     m_Parameters.OptionalEntranceChance = 0.5;
     m_Parameters.DarknessChance = 0;
@@ -63,27 +66,29 @@ void RoomGenerator::UpdateParameters()
 {
     m_Parameters.ForceContinue = false;
     m_Parameters.OptionalEntranceChance = 0.5;
+
     int roomCountFloor = RoomCountFloor();
     int roomCountCap = RoomCountCap();
     if (m_UndiscoveredRoomCount - 1 <= m_GeneratedRoomCount / 10 && m_GeneratedRoomCount < roomCountFloor)
     {
-        // When running out of rooms
+        // When running out of rooms too early, force continue
         m_Parameters.ForceContinue = true;
     }
     else if (m_GeneratedRoomCount + m_UndiscoveredRoomCount >= roomCountCap)
     {
-        // When the room cap is hit
+        // When the room cap is hit, generate no more entrances
         m_Parameters.OptionalEntranceChance = 0;
     }
     else if (m_GeneratedRoomCount >= roomCountFloor && m_GeneratedRoomCount <= roomCountCap)
     {
-        // When we're between the room floor and cap
+        // When we're between the room floor and cap, reduce the chance slowly
         m_Parameters.OptionalEntranceChance = (roomCountCap - m_GeneratedRoomCount) / 100.0;
     }
 
+    // Chance of dark rooms increases with every world
     m_Parameters.DarknessChance = 0.1;
     for (int i = 0; i < m_World.GetWorldNumber(); i++)
-        m_Parameters.DarknessChance += 0.015;
+        m_Parameters.DarknessChance += 0.02;
 }
 
 int RoomGenerator::RoomCountFloor() const

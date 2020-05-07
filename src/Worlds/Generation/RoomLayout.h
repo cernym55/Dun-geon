@@ -134,6 +134,12 @@ protected:
      */
     virtual void GenerateAttributes();
 
+    /**
+     * @brief Generate the directions to create entrances in
+     * Takes into account EntranceInfo and other Parameters.
+     * 
+     * @return std::vector<Direction> list of directions
+     */
     virtual std::vector<Direction> GenerateEntranceDirections() const;
 
     /**

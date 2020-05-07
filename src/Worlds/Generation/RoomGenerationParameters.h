@@ -24,11 +24,6 @@ struct RoomGenerationParameters
     std::map<Direction, bool> EntranceInfo;
 
     /**
-     * @brief Camera style
-     */
-    UI::CameraStyle CameraStyle;
-
-    /**
      * @brief Force this room to have at least two entrances
      */
     bool ForceContinue;
