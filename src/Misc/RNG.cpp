@@ -40,6 +40,15 @@ double RandomDouble(double low, double high)
 
 bool Chance(double threshold)
 {
+    if (threshold >= 1.)
+    {
+        return true;
+    }
+    else if (threshold <= 0.)
+    {
+        return false;
+    }
+
     return RandomDouble() < threshold;
 }
 

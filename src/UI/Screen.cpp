@@ -1,4 +1,5 @@
 #include "Screen.h"
+#include "CameraStyle.h"
 #include "ColorPairs.h"
 #include "Entities/EntityManager.h"
 #include "Entities/Player.h"
@@ -383,7 +384,7 @@ void Screen::ResizeAndRepositionWorldWindow()
     size_t windowLines = currentRoom.GetHeight() + 2;
     size_t windowColumns = currentRoom.GetWidth() + 2;
 
-    if (currentRoom.GetCameraStyle() != Worlds::Generation::RoomLayout::CameraStyle::Fixed &&
+    if (currentRoom.GetCameraStyle() != CameraStyle::Fixed &&
         currentRoom.GetVisionRadius() > 0)
     {
         windowLines = currentRoom.GetVisionRadius() * 2 + 3;
@@ -418,11 +419,11 @@ void Screen::DrawWorld()
             int desiredFieldYPos = 0;
             switch (m_CurrentRoom->GetCameraStyle())
             {
-            case Worlds::Generation::RoomLayout::CameraStyle::Fixed:
+            case CameraStyle::Fixed:
                 desiredFieldXPos = i - 1;
                 desiredFieldYPos = j - 1;
                 break;
-            case Worlds::Generation::RoomLayout::CameraStyle::PlayerCentered:
+            case CameraStyle::PlayerCentered:
                 // These coords are relative to the player's position
                 desiredFieldXPos = playerCoords.GetX() + (i - 1) - rangeX;
                 desiredFieldYPos = playerCoords.GetY() + (j - 1) - rangeY;
@@ -454,7 +455,7 @@ void Screen::DrawWorld()
             }
         }
     }
-    if (m_CurrentRoom->GetCameraStyle() != Worlds::Generation::RoomLayout::CameraStyle::Fixed)
+    if (m_CurrentRoom->GetCameraStyle() != CameraStyle::Fixed)
     {
         box(m_GameWorldWindow, 0, 0);
     }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Misc/Coords.h"
+#include "RoomGenerationParameters.h"
 #include "RoomLayout.h"
 #include <memory>
 
@@ -44,6 +45,33 @@ public:
 
 private:
     World& m_World;
+    RoomGenerationParameters m_Parameters;
+    int m_GeneratedRoomCount;
+    int m_UndiscoveredRoomCount;
+
+    /**
+     * @brief Initialize the generation parameters struct
+     */
+    void InitializeParameters();
+
+    /**
+     * @brief Update the generation parameters struct
+     */
+    void UpdateParameters();
+
+    /**
+     * @brief Get the minimum number of rooms to generate
+     * 
+     * @return int room count floor
+     */
+    int RoomCountFloor() const;
+
+    /**
+     * @brief Get the maximum number of rooms to generate
+     * 
+     * @return int room count cap
+     */
+    int RoomCountCap() const;
 
     /**
      * @brief Get a map with info on which entrances a room at the given coords must or must not have.

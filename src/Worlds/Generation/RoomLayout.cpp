@@ -4,6 +4,9 @@
 #include "Misc/Direction.h"
 #include "Misc/Exceptions.h"
 #include "Misc/RNG.h"
+#include "RoomGenerationParameters.h"
+#include "UI/CameraStyle.h"
+#include <algorithm>
 #include <map>
 #include <vector>
 
@@ -13,12 +16,8 @@ namespace Worlds
 namespace Generation
 {
 
-RoomLayout::RoomLayout(const std::map<Direction, bool>& entranceInfo)
-    : m_Width(0), m_Height(0), m_EntranceInfo(entranceInfo), m_VisionRadius(0)
-{
-}
-
-void RoomLayout::GenerateAttributes()
+RoomLayout::RoomLayout(const RoomGenerationParameters& parameters)
+    : m_Width(0), m_Height(0), m_Parameters(parameters), m_VisionRadius(0)
 {
 }
 
@@ -51,7 +50,7 @@ const std::map<Direction, Coords>& RoomLayout::GetEntrances() const
     return m_Entrances;
 }
 
-RoomLayout::CameraStyle RoomLayout::GetCameraStyle() const
+UI::CameraStyle RoomLayout::GetCameraStyle() const
 {
     return m_CameraStyle;
 }
@@ -61,7 +60,42 @@ int RoomLayout::GetVisionRadius() const
     return m_VisionRadius;
 }
 
-Coords RoomLayout::GenerateEntranceCoords(Direction dir)
+void RoomLayout::GenerateAttributes()
+{
+}
+
+std::vector<Direction> RoomLayout::GenerateEntranceDirections() const
+{
+    // Select all directions that aren't forbidden
+    std::vector<Direction> directions, viable;
+    for (const auto& dir : Direction::All())
+    {
+        if (m_Parameters.EntranceInfo.count(dir) == 0 || m_Parameters.EntranceInfo.at(dir) == true)
+        {
+            viable.push_back(dir);
+        }
+    }
+    // Select those that are forced or pass RNG
+    for (const auto& dir : viable)
+    {
+        if ((m_Parameters.EntranceInfo.count(dir) > 0 && m_Parameters.EntranceInfo.at(dir) == true) ||
+            (m_Parameters.EntranceInfo.count(dir) == 0 && RNG::Chance(m_Parameters.OptionalEntranceChance)))
+        {
+            directions.push_back(dir);
+        }
+    }
+    // If we randomly happened to only get one but the room must continue, generate a second entrance anyway
+    if (directions.size() <= 1 && viable.size() > 1 && m_Parameters.ForceContinue)
+    {
+        auto whereWeCameFrom = std::find(viable.begin(), viable.end(), directions.front());
+        viable.erase(whereWeCameFrom);
+        auto randomDir = viable[RNG::RandomInt(viable.size())];
+        directions.push_back(randomDir);
+    }
+    return directions;
+}
+
+Coords RoomLayout::GenerateEntranceCoords(Direction dir) const
 {
     constexpr static const int MinimumCornerDistance = 3;
     switch (dir())

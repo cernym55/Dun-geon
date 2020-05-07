@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Misc/Direction.h"
+#include "RoomGenerationParameters.h"
 #include "RoomLayout.h"
-#include <map>
 
 namespace Worlds
 {
@@ -19,9 +18,9 @@ public:
     /**
      * @brief Constructor
      * 
-     * @param entranceInfo entrance info
+     * @param parameters parameters
      */
-    HallwayRoomLayout(const std::map<Direction, bool>& entranceInfo);
+    HallwayRoomLayout(const RoomGenerationParameters& parameters);
 
     HallwayRoomLayout(const HallwayRoomLayout&) = delete;
 
@@ -38,11 +37,12 @@ public:
 
 private:
     constexpr static const size_t MaximumWidth = 30;
-    constexpr static const size_t MaximumHeight = 16;
-    constexpr static const size_t MinimumWidth = 20;
-    constexpr static const size_t MinimumHeight = 12;
+    constexpr static const size_t MaximumHeight = 18;
+    constexpr static const size_t MinimumWidth = 24;
+    constexpr static const size_t MinimumHeight = 16;
     constexpr static const size_t HallwayWidth = 3;
     constexpr static const size_t MinimumCornerDistance = 2;
+    constexpr static const int DarknessVisionRadius = 4;
 
     /**
      * @brief Generate the layout

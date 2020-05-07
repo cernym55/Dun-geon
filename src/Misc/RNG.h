@@ -39,7 +39,7 @@ double RandomDouble(double low, double high);
 /**
  * @brief Decide whether the given chance shall be satisfied
  * 
- * @param threshold chance (accepted range is [0, 1))
+ * @param threshold chance
  * @return true if satisfied
  */
 bool Chance(double threshold);
