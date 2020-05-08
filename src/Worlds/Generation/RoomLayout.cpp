@@ -25,9 +25,9 @@ void RoomLayout::WriteToFields(std::vector<std::vector<Field>>& fields) const
 {
     fields.clear();
     fields.resize(m_Width);
-    for (size_t i = 0; i < m_Width; i++)
+    for (Coords::Scalar i = 0; i < m_Width; i++)
     {
-        for (size_t j = 0; j < m_Height; j++)
+        for (Coords::Scalar j = 0; j < m_Height; j++)
         {
             fields[i].emplace_back(Coords(i, j));
             switch (m_Map[i][j])
@@ -121,25 +121,25 @@ void RoomLayout::DrawMapLine(Coords from, Coords to, FieldType value)
     }
 }
 
-void RoomLayout::DrawMapBox(Coords center, size_t radius, FieldType value)
+void RoomLayout::DrawMapBox(Coords center, Coords::Scalar radius, FieldType value)
 {
-    for (size_t i = 0; i <= radius; i++)
+    for (Coords::Scalar i = 0; i <= radius; i++)
     {
-        for (size_t j = 0; j <= radius; j++)
+        for (Coords::Scalar j = 0; j <= radius; j++)
         {
-            size_t left = center.GetX() - i;
-            size_t right = center.GetX() + i;
-            size_t up = center.GetY() - j;
-            size_t down = center.GetY() + j;
-            if (left < m_Width)
+            Coords::Scalar left = center.GetX() - i;
+            Coords::Scalar right = center.GetX() + i;
+            Coords::Scalar up = center.GetY() - j;
+            Coords::Scalar down = center.GetY() + j;
+            if (left < m_Width && left >= 0)
             {
-                if (up < m_Height) m_Map[left][up] = value;
-                if (down < m_Height) m_Map[left][down] = value;
+                if (up < m_Height && up >= 0) m_Map[left][up] = value;
+                if (down < m_Height && down >= 0) m_Map[left][down] = value;
             }
-            if (right < m_Width)
+            if (right < m_Width && right >= 0)
             {
-                if (up < m_Height) m_Map[right][up] = value;
-                if (down < m_Height) m_Map[right][down] = value;
+                if (up < m_Height && up >= 0) m_Map[right][up] = value;
+                if (down < m_Height && down >= 0) m_Map[right][down] = value;
             }
         }
     }

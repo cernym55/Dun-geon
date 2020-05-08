@@ -20,12 +20,12 @@ public:
     /**
      * @brief Maximum span/width/height of a world grid
      */
-    constexpr static const size_t MaximumSpan = 21;
+    constexpr static const Coords::Scalar MaximumSpan = 21;
 
     /**
      * @brief Center position index on the world grid
      */
-    constexpr static const size_t CenterPos = MaximumSpan / 2;
+    constexpr static const Coords::Scalar CenterPos = MaximumSpan / 2;
 
     /**
      * @brief Constructor

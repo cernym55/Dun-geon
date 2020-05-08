@@ -38,7 +38,7 @@ bool EntityManager::TryMovePlayerEntity(Direction dir)
         CycleEntitiesInCurrentRoom();
         return true;
     }
-    else if (IsCharacterAboutToLeaveRoom(m_Player, dir))
+    else if (m_WorldManager.GetCurrentRoom().IsPositionAtRoomEdge(m_Player.GetCoords(), dir))
     {
         Direction nextRoomEntranceDir = dir.Opposite();
         VacateEntityFieldInRoom(m_Player, m_WorldManager.GetCurrentRoom());
@@ -63,24 +63,6 @@ const Entity* EntityManager::GetApproachedEntity(const Character& approachingCha
     return approachedField != nullptr ? approachedField->TryGetForegroundEntity() : nullptr;
 }
 
-bool EntityManager::IsCharacterAboutToLeaveRoom(const Character& character,
-                                                Direction moveDirection) const
-{
-    switch (moveDirection())
-    {
-    case Direction::Value::Up:
-        return character.GetCoords().GetY() == 0;
-    case Direction::Value::Right:
-        return character.GetCoords().GetX() == m_WorldManager.GetCurrentRoom().GetWidth() - 1;
-    case Direction::Value::Down:
-        return character.GetCoords().GetY() == m_WorldManager.GetCurrentRoom().GetHeight() - 1;
-    case Direction::Value::Left:
-        return character.GetCoords().GetX() == 0;
-    default:
-        return false;
-    }
-}
-
 bool EntityManager::CanCharacterMove(const Character& character, Direction dir) const
 {
     if (dir == Direction::None()) return true;
@@ -99,10 +81,14 @@ const std::array<const Worlds::Field*, 4> EntityManager::GetFieldsNextToEntity(
 {
     Coords coords = entity.GetCoords();
     const Worlds::Room& currentRoom = m_WorldManager.GetCurrentRoom();
-    return { { coords.GetY() != 0 ? &currentRoom.GetFieldAt(coords.GetAdjacent(Direction::Up())) : nullptr,
-               coords.GetX() != currentRoom.GetWidth() - 1 ? &currentRoom.GetFieldAt(coords.GetAdjacent(Direction::Right())) : nullptr,
-               coords.GetY() != currentRoom.GetHeight() - 1 ? &currentRoom.GetFieldAt(coords.GetAdjacent(Direction::Down())) : nullptr,
-               coords.GetX() != 0 ? &currentRoom.GetFieldAt(coords.GetAdjacent(Direction::Left())) : nullptr } };
+    std::array<const Worlds::Field*, 4> fields;
+    for (const auto& dir : Direction::All())
+    {
+        fields[dir.ToInt()] = !currentRoom.IsPositionAtRoomEdge(coords, dir)
+                                  ? &currentRoom.GetFieldAt(coords.GetAdjacent(dir))
+                                  : nullptr;
+    }
+    return fields;
 }
 
 const Worlds::Field* EntityManager::GetFieldNextToEntity(
@@ -110,7 +96,7 @@ const Worlds::Field* EntityManager::GetFieldNextToEntity(
     Direction direction) const
 {
     return direction != Direction::None()
-               ? GetFieldsNextToEntity(entity)[static_cast<int>(direction())]
+               ? GetFieldsNextToEntity(entity)[direction.ToInt()]
                : nullptr;
 }
 
