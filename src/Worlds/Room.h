@@ -138,6 +138,15 @@ public:
      */
     const Field& GetFieldAt(Coords coords) const;
 
+    /**
+     * @brief Check if the coords are at the edge of this room
+     * 
+     * @param coords coords
+     * @param dir edge direction
+     * @return true if at the edge
+     */
+    bool IsPositionAtRoomEdge(Coords coords, Direction dir) const;
+
 protected:
     WorldManager& m_WorldManager;
     World& m_World;

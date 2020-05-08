@@ -565,7 +565,7 @@ chtype Screen::GetFieldIcon(const Worlds::Field& field) const
     auto lmd = m_Player.GetLastMoveDirection();
     if (canHaveHighlight &&
         lmd != Direction::None() &&
-        !m_EntityManager.IsCharacterAboutToLeaveRoom(m_Player, lmd) &&
+        !m_CurrentRoom->IsPositionAtRoomEdge(m_Player.GetCoords(), lmd) &&
         field.GetCoords() == m_Player.GetCoords().GetAdjacent(lmd))
     {
         short highlightPair;

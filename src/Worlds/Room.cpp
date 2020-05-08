@@ -127,4 +127,21 @@ const Field& Room::GetFieldAt(Coords coords) const
     }
 }
 
+bool Room::IsPositionAtRoomEdge(Coords coords, Direction dir) const
+{
+    switch (dir())
+    {
+    case Direction::Value::Up:
+        return coords.GetY() == 0;
+    case Direction::Value::Right:
+        return coords.GetX() == m_Width - 1;
+    case Direction::Value::Down:
+        return coords.GetY() == m_Height - 1;
+    case Direction::Value::Left:
+        return coords.GetX() == 0;
+    default:
+        return false;
+    }
+}
+
 } /* namespace Worlds */
