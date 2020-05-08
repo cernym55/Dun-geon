@@ -65,16 +65,16 @@ public:
     /**
      * @brief Get the width
      * 
-     * @return size_t width
+     * @return Coords::Scalar width
      */
-    size_t GetWidth() const;
+    Coords::Scalar GetWidth() const;
 
     /**
      * @brief Get the height
      * 
-     * @return size_t height
+     * @return Coords::Scalar height
      */
-    size_t GetHeight() const;
+    Coords::Scalar GetHeight() const;
 
     /**
      * @brief Get the camera style
@@ -152,8 +152,8 @@ protected:
     World& m_World;
     int m_RoomNumber;
     Coords m_Coords;
-    size_t m_Width;
-    size_t m_Height;
+    Coords::Scalar m_Width;
+    Coords::Scalar m_Height;
     std::array<Field*, 4> m_Entrances;
     std::vector<std::vector<Field>> m_Fields;
     UI::CameraStyle m_CameraStyle;

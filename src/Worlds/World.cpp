@@ -1,8 +1,9 @@
 #include "World.h"
-#include "Misc/Coords.h"
-#include "Misc/RNG.h"
 #include "Generation/RoomGenerator.h"
 #include "Generation/RoomLayout.h"
+#include "Misc/Coords.h"
+#include "Misc/Exceptions.h"
+#include "Misc/RNG.h"
 #include "Room.h"
 #include "WorldManager.h"
 #include <array>
@@ -32,12 +33,13 @@ int World::GetWorldNumber() const
 
 Room& World::GetRoomAt(Coords coords)
 {
-    if (coords.GetX() >= MaximumSpan || coords.GetY() >= MaximumSpan)
+    if (coords.GetX() >= MaximumSpan || coords.GetY() >= MaximumSpan ||
+        coords.GetX() < 0 || coords.GetY() < 0)
     {
         std::ostringstream errorMessage;
         errorMessage << "World grid position out of bounds: "
                      << coords;
-        throw std::out_of_range(errorMessage.str());
+        throw InvalidPositionException(errorMessage.str());
     }
 
     if (m_Rooms[coords.GetX()][coords.GetY()] == nullptr)
@@ -56,12 +58,13 @@ Room& World::GetRoomAt(Coords coords)
 
 const Room& World::GetRoomAt(Coords coords) const
 {
-    if (coords.GetX() >= MaximumSpan || coords.GetY() >= MaximumSpan)
+    if (coords.GetX() >= MaximumSpan || coords.GetY() >= MaximumSpan ||
+        coords.GetX() < 0 || coords.GetY() < 0)
     {
         std::ostringstream errorMessage;
         errorMessage << "World grid position out of bounds: "
                      << coords;
-        throw std::out_of_range(errorMessage.str());
+        throw InvalidPositionException(errorMessage.str());
     }
 
     if (m_Rooms[coords.GetX()][coords.GetY()] == nullptr)
@@ -107,6 +110,14 @@ const Room& World::GetStartingRoom() const
 
 Room& World::CreateRoomAt(Coords coords)
 {
+    if (RoomExistsAt(coords))
+    {
+        std::ostringstream errorMessage;
+        errorMessage << "Attempted to create room overlapping with existing room at "
+                     << coords;
+        throw std::invalid_argument(errorMessage.str());
+    }
+
     auto layout = m_RoomGenerator.CreateLayout(coords);
     m_Rooms[coords.GetX()][coords.GetY()] = std::make_unique<Room>(
         m_WorldManager,
@@ -120,6 +131,14 @@ Room& World::CreateRoomAt(Coords coords)
 
 bool World::RoomExistsAt(Coords coords) const
 {
+    if (coords.GetX() >= MaximumSpan || coords.GetY() >= MaximumSpan ||
+        coords.GetX() < 0 || coords.GetY() < 0)
+    {
+        std::ostringstream errorMessage;
+        errorMessage << "World grid position out of bounds: "
+                     << coords;
+        throw InvalidPositionException(errorMessage.str());
+    }
     return m_Rooms[coords.GetX()][coords.GetY()] != nullptr;
 }
 

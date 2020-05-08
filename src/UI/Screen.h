@@ -45,27 +45,27 @@ public:
     /**
      * @brief Width of the screen
      */
-    constexpr static const int ScreenWidth = 80;
+    constexpr static const Coords::Scalar ScreenWidth = 80;
 
     /**
      * @brief Height of the screen
      */
-    constexpr static const int ScreenHeight = 25;
+    constexpr static const Coords::Scalar ScreenHeight = 25;
 
     /**
      * @brief Width of the world panel
      */
-    constexpr static const int WorldPanelWidth = 50;
+    constexpr static const Coords::Scalar WorldPanelWidth = 50;
 
     /**
      * @brief Height of the world panel
      */
-    constexpr static const int WorldPanelHeight = 21;
+    constexpr static const Coords::Scalar WorldPanelHeight = 21;
 
     /**
      * @brief Width of the HUD panel
      */
-    constexpr static const int HUDPanelWidth = ScreenWidth - WorldPanelWidth;
+    constexpr static const Coords::Scalar HUDPanelWidth = ScreenWidth - WorldPanelWidth;
 
     /**
      * @brief Constructor

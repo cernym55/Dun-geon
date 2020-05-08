@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Direction.h"
+#include <cstdint>
 #include <iostream>
 #include <vector>
 
@@ -10,6 +11,12 @@
 class Coords
 {
 public:
+    /**
+     * @brief 
+     * 
+     */
+    using Scalar = std::int16_t;
+
     /**
      * @brief Constructor
      */
@@ -21,7 +28,7 @@ public:
      * @param xCoord X coordinate
      * @param yCoord Y coordinate
      */
-    Coords(size_t xCoord, size_t yCoord);
+    Coords(Scalar xCoord, Scalar yCoord);
 
     /**
      * @brief Equals operator overload
@@ -34,30 +41,30 @@ public:
     /**
      * @brief Get the X coordinate
      * 
-     * @return size_t 
+     * @return Scalar X coordinate
      */
-    size_t GetX() const;
+    Scalar GetX() const;
 
     /**
      * @brief Set the X coordinate
      * 
      * @param value new value
      */
-    void SetX(size_t value);
+    void SetX(Scalar value);
 
     /**
      * @brief Get the Y coordinate
      * 
-     * @return size_t Y coordinate
+     * @return Scalar Y coordinate
      */
-    size_t GetY() const;
+    Scalar GetY() const;
 
     /**
      * @brief Set the Y coordinate
      * 
      * @param value new value
      */
-    void SetY(size_t value);
+    void SetY(Scalar value);
 
     /**
      * @brief Get the adjacent coordinates in the given direction
@@ -95,9 +102,9 @@ public:
      * @brief Gets the combined X and Y distance from here to there
      * 
      * @param there target coords
-     * @return size_t distance
+     * @return Scalar distance
      */
-    size_t CombinedDistanceFrom(Coords there) const;
+    Scalar CombinedDistanceFrom(Coords there) const;
 
     /**
      * @brief Operator << overload
@@ -109,6 +116,6 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Coords& coords);
 
 private:
-    size_t m_XCoord;
-    size_t m_YCoord;
+    Scalar m_XCoord;
+    Scalar m_YCoord;
 };

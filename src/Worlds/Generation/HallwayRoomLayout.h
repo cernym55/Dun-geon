@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Misc/Coords.h"
 #include "RoomGenerationParameters.h"
 #include "RoomLayout.h"
 
@@ -36,13 +37,13 @@ public:
     virtual ~HallwayRoomLayout() = default;
 
 private:
-    constexpr static const size_t MaximumWidth = 30;
-    constexpr static const size_t MaximumHeight = 18;
-    constexpr static const size_t MinimumWidth = 24;
-    constexpr static const size_t MinimumHeight = 16;
-    constexpr static const size_t HallwayWidth = 3;
-    constexpr static const size_t MinimumCornerDistance = 2;
-    constexpr static const int DarknessVisionRadius = 4;
+    constexpr static const Coords::Scalar MaximumWidth = 30;
+    constexpr static const Coords::Scalar MaximumHeight = 18;
+    constexpr static const Coords::Scalar MinimumWidth = 24;
+    constexpr static const Coords::Scalar MinimumHeight = 16;
+    constexpr static const Coords::Scalar HallwayWidth = 3;
+    constexpr static const Coords::Scalar MinimumCornerDistance = 2;
+    constexpr static const Coords::Scalar DarknessVisionRadius = 4;
 
     /**
      * @brief Generate the layout

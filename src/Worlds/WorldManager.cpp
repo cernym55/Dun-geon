@@ -39,7 +39,7 @@ bool WorldManager::IsCurrentRoom(const Room& room) const
 
 Room& WorldManager::SwitchCurrentRoom(Direction dir)
 {
-    Coords newCoords = Coords(m_CurrentRoomCoords).GetAdjacent(dir);
+    Coords newCoords = m_CurrentRoomCoords.GetAdjacent(dir);
     if (!m_CurrentWorld->RoomExistsAt(newCoords))
     {
         m_CurrentWorld->CreateRoomAt(newCoords);

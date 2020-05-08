@@ -38,7 +38,8 @@ Screen::Screen(InputHandler& inputHandler,
       m_View(View::MainMenu),
       m_GameWorldWindow(nullptr),
       m_GameHUDWindow(nullptr),
-      m_GameMessageWindow(nullptr)
+      m_GameMessageWindow(nullptr),
+      m_CurrentRoom(nullptr)
 {
     Init();
 }
@@ -381,8 +382,8 @@ void Screen::ResizeAndRepositionWorldWindow()
     wrefresh(m_GameWorldWindow);
     const Worlds::Room& currentRoom = m_WorldManager.GetCurrentRoom();
 
-    size_t windowLines = currentRoom.GetHeight() + 2;
-    size_t windowColumns = currentRoom.GetWidth() + 2;
+    Coords::Scalar windowLines = currentRoom.GetHeight() + 2;
+    Coords::Scalar windowColumns = currentRoom.GetWidth() + 2;
 
     if (currentRoom.GetCameraStyle() != CameraStyle::Fixed &&
         currentRoom.GetVisionRadius() > 0)
@@ -391,10 +392,10 @@ void Screen::ResizeAndRepositionWorldWindow()
         windowColumns = windowLines;
     }
 
-    const Coords WorldWindowPos = { (WorldPanelWidth - windowColumns) / 2 - 1,
-                                    (WorldPanelHeight - windowLines) / 2 };
+    int windowXPos = (WorldPanelWidth - windowColumns) / 2 - 1;
+    int windowYPos = (WorldPanelHeight - windowLines) / 2;
     wresize(m_GameWorldWindow, windowLines, windowColumns);
-    mvwin(m_GameWorldWindow, WorldWindowPos.GetY(), WorldWindowPos.GetX());
+    mvwin(m_GameWorldWindow, windowYPos, windowXPos);
 }
 
 void Screen::DrawWorld()
@@ -408,8 +409,8 @@ void Screen::DrawWorld()
     int worldY, worldX;
     getmaxyx(m_GameWorldWindow, worldY, worldX);
     // How far can we draw vertically or horizontally
-    size_t rangeX = worldX / 2 - (worldX % 2 ? 0 : 1) - 1;
-    size_t rangeY = worldY / 2 - (worldY % 2 ? 0 : 1) - 1;
+    Coords::Scalar rangeX = worldX / 2 - (worldX % 2 ? 0 : 1) - 1;
+    Coords::Scalar rangeY = worldY / 2 - (worldY % 2 ? 0 : 1) - 1;
     auto playerCoords = m_Player.GetCoords();
     for (int i = 1; i < worldX - 1; i++)
     {
@@ -430,18 +431,18 @@ void Screen::DrawWorld()
                 break;
             }
             if (desiredFieldXPos < 0 ||
-                desiredFieldXPos >= static_cast<int>(m_CurrentRoom->GetWidth()) ||
+                desiredFieldXPos >= m_CurrentRoom->GetWidth() ||
                 desiredFieldYPos < 0 ||
-                desiredFieldYPos >= static_cast<int>(m_CurrentRoom->GetHeight()))
+                desiredFieldYPos >= m_CurrentRoom->GetHeight())
             {
                 mvwaddch(m_GameWorldWindow, j, i, DefaultFieldIcon);
             }
             else
             {
                 auto radius = m_CurrentRoom->GetVisionRadius();
-                Coords targetCoords(static_cast<size_t>(desiredFieldXPos), static_cast<size_t>(desiredFieldYPos));
+                Coords targetCoords(desiredFieldXPos, desiredFieldYPos);
                 if (radius > 0 &&
-                    static_cast<int>(playerCoords.CombinedDistanceFrom(targetCoords)) >
+                    playerCoords.CombinedDistanceFrom(targetCoords) >
                         (playerCoords.SharesAxisWith(targetCoords)
                              ? radius - 1
                              : radius))

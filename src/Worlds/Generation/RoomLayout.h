@@ -5,6 +5,7 @@
 #include "Misc/Direction.h"
 #include "RoomGenerationParameters.h"
 #include "UI/CameraStyle.h"
+#include <cstdint>
 #include <map>
 #include <vector>
 
@@ -91,7 +92,7 @@ protected:
     /**
      * @brief Type of field for generation
      */
-    enum class FieldType
+    enum class FieldType : std::int8_t
     {
         /**
          * @brief Empty inaccessible field
@@ -109,8 +110,8 @@ protected:
         Wall
     };
 
-    size_t m_Width;
-    size_t m_Height;
+    Coords::Scalar m_Width;
+    Coords::Scalar m_Height;
     std::vector<std::vector<FieldType>> m_Map;
     const RoomGenerationParameters& m_Parameters;
     std::map<Direction, Coords> m_Entrances;
@@ -166,7 +167,7 @@ protected:
      * @param radius distance from the center to the edge
      * @param value value to apply (default: wall)
      */
-    void DrawMapBox(Coords center, size_t radius, FieldType value = FieldType::Wall);
+    void DrawMapBox(Coords center, Coords::Scalar radius, FieldType value = FieldType::Wall);
 };
 
 } /* namespace Generation */

@@ -78,7 +78,6 @@ private:
     Entities::Entity* m_ForegroundEntity;
     Entities::Entity* m_BackgroundEntity;
     bool m_Accessible;
-    //std::vector<std::shared_ptr<Items::Item>> m_ContainedItems;
 };
 
 } /* namespace Worlds */

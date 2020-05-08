@@ -47,12 +47,12 @@ const World& Room::GetWorld() const
     return m_World;
 }
 
-size_t Room::GetWidth() const
+Coords::Scalar Room::GetWidth() const
 {
     return m_Width;
 }
 
-size_t Room::GetHeight() const
+Coords::Scalar Room::GetHeight() const
 {
     return m_Height;
 }
@@ -99,7 +99,8 @@ const Room& Room::GetNeighbor(Direction dir) const
 
 Field& Room::GetFieldAt(Coords coords)
 {
-    if (coords.GetX() >= m_Width || coords.GetY() >= m_Height)
+    if (coords.GetX() >= m_Width || coords.GetY() >= m_Height ||
+        coords.GetX() < 0 || coords.GetY() < 0)
     {
         std::ostringstream errorMessage;
         errorMessage << "Room field coords out of bounds: "
@@ -114,7 +115,8 @@ Field& Room::GetFieldAt(Coords coords)
 
 const Field& Room::GetFieldAt(Coords coords) const
 {
-    if (coords.GetX() >= m_Width || coords.GetY() >= m_Height)
+    if (coords.GetX() >= m_Width || coords.GetY() >= m_Height ||
+        coords.GetX() < 0 || coords.GetY() < 0)
     {
         std::ostringstream errorMessage;
         errorMessage << "Room field coords out of bounds: "

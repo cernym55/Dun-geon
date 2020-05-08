@@ -65,8 +65,8 @@ void HallwayRoomLayout::Generate()
 
     // The central portion of the hallway between the opposing entrance approach sections
     // on the straight axis is always present, we'll call it the "spine."
-    size_t spineCoord;        // This coord can be X or Y depending on the axis orientation
-    std::vector<Coords> path; // Coords outlining the pathway for the player
+    Coords::Scalar spineCoord; // This coord can be X or Y depending on the axis orientation
+    std::vector<Coords> path;  // Coords outlining the pathway for the player
     Coords spineStart, spineEnd;
 
     if (vertical)
@@ -91,14 +91,16 @@ void HallwayRoomLayout::Generate()
         auto entrance = m_Entrances[Direction::Up()];
         if (vertical)
         {
-            for (const auto& coords : entrance.StraightPathTo({ spineCoord, Min(spineStart.GetY(), spineEnd.GetY()) - 1 }))
+            for (const auto& coords : entrance.StraightPathTo(
+                     Coords(spineCoord, Min(spineStart.GetY(), spineEnd.GetY())).GetAdjacent(Direction::Up())))
             {
                 path.push_back(coords);
             }
         }
         else
         {
-            for (const auto& coords : entrance.StraightPathTo({ entrance.GetX(), spineCoord - 1 }))
+            for (const auto& coords : entrance.StraightPathTo(
+                     Coords(entrance.GetX(), spineCoord).GetAdjacent(Direction::Up())))
             {
                 path.push_back(coords);
             }
@@ -110,14 +112,16 @@ void HallwayRoomLayout::Generate()
         auto entrance = m_Entrances[Direction::Right()];
         if (vertical)
         {
-            for (const auto& coords : entrance.StraightPathTo({ spineCoord + 1, entrance.GetY() }))
+            for (const auto& coords : entrance.StraightPathTo(
+                     Coords(spineCoord, entrance.GetY()).GetAdjacent(Direction::Right())))
             {
                 path.push_back(coords);
             }
         }
         else
         {
-            for (const auto& coords : entrance.StraightPathTo({ Max(spineStart.GetX(), spineEnd.GetX()) + 1, spineCoord }))
+            for (const auto& coords : entrance.StraightPathTo(
+                     Coords(Max(spineStart.GetX(), spineEnd.GetX()), spineCoord).GetAdjacent(Direction::Right())))
             {
                 path.push_back(coords);
             }
@@ -129,14 +133,16 @@ void HallwayRoomLayout::Generate()
         auto entrance = m_Entrances[Direction::Down()];
         if (vertical)
         {
-            for (const auto& coords : entrance.StraightPathTo({ spineCoord, Max(spineStart.GetY(), spineEnd.GetY()) + 1 }))
+            for (const auto& coords : entrance.StraightPathTo(
+                     Coords(spineCoord, Max(spineStart.GetY(), spineEnd.GetY())).GetAdjacent(Direction::Down())))
             {
                 path.push_back(coords);
             }
         }
         else
         {
-            for (const auto& coords : entrance.StraightPathTo({ entrance.GetX(), spineCoord + 1 }))
+            for (const auto& coords : entrance.StraightPathTo(
+                     Coords(entrance.GetX(), spineCoord).GetAdjacent(Direction::Down())))
             {
                 path.push_back(coords);
             }
@@ -148,14 +154,16 @@ void HallwayRoomLayout::Generate()
         auto entrance = m_Entrances[Direction::Left()];
         if (vertical)
         {
-            for (const auto& coords : entrance.StraightPathTo({ spineCoord - 1, entrance.GetY() }))
+            for (const auto& coords : entrance.StraightPathTo(
+                     Coords(spineCoord, entrance.GetY()).GetAdjacent(Direction::Left())))
             {
                 path.push_back(coords);
             }
         }
         else
         {
-            for (const auto& coords : entrance.StraightPathTo({ Min(spineStart.GetX(), spineEnd.GetX()) - 1, spineCoord }))
+            for (const auto& coords : entrance.StraightPathTo(
+                     Coords(Min(spineStart.GetX(), spineEnd.GetX()), spineCoord).GetAdjacent(Direction::Left())))
             {
                 path.push_back(coords);
             }

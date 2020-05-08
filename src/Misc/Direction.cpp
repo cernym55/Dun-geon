@@ -28,7 +28,7 @@ Direction::Value Direction::operator()() const
 
 bool Direction::operator<(const Direction& r) const
 {
-    return static_cast<int>(m_Value) < static_cast<int>(r.m_Value);
+    return ToInt() < r.ToInt();
 }
 
 Direction Direction::Opposite() const
