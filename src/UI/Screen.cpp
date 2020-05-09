@@ -123,6 +123,9 @@ void Screen::ShowMap()
     WINDOW* mapWindow = newwin(height, width, (ScreenHeight - height) / 2, (ScreenWidth - width) / 2);
     wclear(mapWindow);
     box(mapWindow, 0, 0);
+    wattron(mapWindow, A_REVERSE);
+    PrintCenterAt(mapWindow, " World Map ", 0);
+    wattroff(mapWindow, A_REVERSE);
 
     // Draw the map
     DrawMap(mapWindow);
