@@ -121,7 +121,7 @@ void InputHandler::Eval(const std::string& input)
 
     switch (m_Screen.GetView())
     {
-    case Screen::View::World:
+    case Screen::View::InGame:
         EvalWorld(words);
         break;
     default:
@@ -404,11 +404,11 @@ void InputHandler::HandleNextKeyInput()
         }
         break;
     }
+    case 'm':
+        ExecUICommand(UICommandType::Map);
+        break;
     case 'q':
-        if (m_Screen.YesNoMessageBox("Are you sure you want to quit?"))
-        {
-            SetQuit();
-        }
+        ExecUICommand(UICommandType::Quit);
         break;
     }
 
@@ -478,6 +478,9 @@ void InputHandler::ExecUICommand(UICommandType type)
 {
     switch (type)
     {
+    case UICommandType::Map:
+        m_Screen.ShowMap();
+        break;
     case UICommandType::Quit:
         if (m_Screen.YesNoMessageBox("Are you sure you want to quit?"))
         {

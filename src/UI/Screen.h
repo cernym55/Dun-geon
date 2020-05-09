@@ -32,14 +32,14 @@ public:
         MainMenu,
 
         /**
-         * @brief View of the game world
+         * @brief In game view
          */
-        World,
+        InGame,
 
         /**
-         * @brief View of the player's inventory
+         * @brief World map view
          */
-        Inventory
+        Map
     };
 
     /**
@@ -114,6 +114,11 @@ public:
      * @brief Set the message to display the next time the screen is drawn
      */
     void PostMessage(const std::string& message);
+
+    /**
+     * @brief Show the world map in a window
+     */
+    void ShowMap();
 
     /**
      * @brief Show a centered message box with two menu-like option buttons and a variable prompt
@@ -221,6 +226,13 @@ private:
     void DrawMessageWindow();
 
     /**
+     * @brief Draw the map screen
+     * 
+     * @param mapWindow map window
+     */
+    void DrawMap(WINDOW* mapWindow);
+
+    /**
      * @brief Get the icon for the given field
      * 
      * @param field field
@@ -235,6 +247,14 @@ private:
      * @return chtype icon
      */
     chtype GetFieldIcon(Coords coords) const;
+
+    /**
+     * @brief Get the map icon for this room
+     * 
+     * @param room room
+     * @return chtype map icon
+     */
+    chtype GetRoomMapIcon(const Worlds::Room& room) const;
 };
 
 } /* namespace UI */

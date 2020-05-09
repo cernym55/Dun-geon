@@ -110,6 +110,32 @@ void Screen::PostMessage(const std::string& message)
     m_Message = message;
 }
 
+void Screen::ShowMap()
+{
+    View previousView = m_View;
+    m_View = View::Map;
+
+    // Prepare window
+    // Every room icon is 1 char wide and has 1 char of spacing on both sides horizontally
+    // for drawing "hallways" between rooms. This also helps keep better proportions.
+    int width = Worlds::World::MaximumSpan * 2 - 1 + 2;
+    int height = Worlds::World::MaximumSpan + 2;
+    WINDOW* mapWindow = newwin(height, width, (ScreenHeight - height) / 2, (ScreenWidth - width) / 2);
+    wclear(mapWindow);
+    box(mapWindow, 0, 0);
+
+    // Draw the map
+    DrawMap(mapWindow);
+    wgetch(mapWindow);
+
+    // Clean up the window
+    wclear(mapWindow);
+    wrefresh(mapWindow);
+
+    delwin(mapWindow);
+    m_View = previousView;
+}
+
 bool Screen::YesNoMessageBox(const std::string& prompt, const std::string& leftOption, const std::string& rightOption, const std::string& title)
 {
     // Split the prompt into lines
@@ -368,7 +394,7 @@ int Screen::SelectViaMenu(std::map<int, std::string> options, Coords position, i
 
 void Screen::StartGame()
 {
-    m_View = View::World;
+    m_View = View::InGame;
     m_GameWorldWindow = newwin(1, 1, 0, 0);
     ResizeAndRepositionWorldWindow();
     m_GameHUDWindow = newwin(ScreenHeight, HUDPanelWidth, 0, WorldPanelWidth);
@@ -539,6 +565,48 @@ void Screen::DrawMessageWindow()
     wrefresh(m_GameMessageWindow);
 }
 
+void Screen::DrawMap(WINDOW* mapWindow)
+{
+    const auto& world = m_WorldManager.GetCurrentWorld();
+    for (Coords::Scalar i = 0; i < Worlds::World::MaximumSpan; i++)
+    {
+        for (Coords::Scalar j = 0; j < Worlds::World::MaximumSpan; j++)
+        {
+            chtype icon;
+            Coords current(i, j);
+            if (!world.RoomExistsAt(current))
+            {
+                icon = ' ';
+                for (const auto& dir : Direction::All())
+                {
+
+                    if (world.RoomExistsAt(current.GetAdjacent(dir)) &&
+                        world.GetRoomAt(current.GetAdjacent(dir)).TryGetEntrance(dir.Opposite()) != nullptr)
+                    {
+                        icon = '?';
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                const auto& room = world.GetRoomAt(current);
+                icon = GetRoomMapIcon(room);
+                if (room.TryGetEntrance(Direction::Left()) != nullptr)
+                    mvwaddch(mapWindow, j + 1, i * 2, ACS_HLINE);
+                if (room.TryGetEntrance(Direction::Right()) != nullptr)
+                    mvwaddch(mapWindow, j + 1, i * 2 + 2, ACS_HLINE);
+            }
+            if (m_WorldManager.GetCurrentRoom().GetCoords() == current)
+            {
+                icon |= (COLOR_PAIR(ColorPairs::WorldTouchedFieldNoBg) | A_BOLD);
+            }
+            mvwaddch(mapWindow, j + 1, i * 2 + 1, icon);
+        }
+    }
+    wrefresh(mapWindow);
+}
+
 chtype Screen::GetFieldIcon(const Worlds::Field& field) const
 {
     chtype icon = 0;
@@ -586,6 +654,31 @@ chtype Screen::GetFieldIcon(const Worlds::Field& field) const
 chtype Screen::GetFieldIcon(Coords coords) const
 {
     return GetFieldIcon(m_WorldManager.GetCurrentRoom().GetFieldAt(coords));
+}
+
+chtype Screen::GetRoomMapIcon(const Worlds::Room& room) const
+{
+    bool up = room.TryGetEntrance(Direction::Up()) != nullptr;
+    bool right = room.TryGetEntrance(Direction::Right()) != nullptr;
+    bool down = room.TryGetEntrance(Direction::Down()) != nullptr;
+    bool left = room.TryGetEntrance(Direction::Left()) != nullptr;
+
+    if (up && right && down && left) return ACS_PLUS;
+    if (up && right && down && !left) return ACS_LTEE;
+    if (up && right && !down && left) return ACS_BTEE;
+    if (up && right && !down && !left) return ACS_LLCORNER;
+    if (up && !right && down && left) return ACS_RTEE;
+    if (up && !right && down && !left) return ACS_VLINE;
+    if (up && !right && !down && left) return ACS_LRCORNER;
+    if (up && !right && !down && !left) return ACS_DIAMOND;
+    if (!up && right && down && left) return ACS_TTEE;
+    if (!up && right && down && !left) return ACS_ULCORNER;
+    if (!up && right && !down && left) return ACS_HLINE;
+    if (!up && right && !down && !left) return ACS_DIAMOND;
+    if (!up && !right && down && left) return ACS_URCORNER;
+    if (!up && !right && down && !left) return ACS_DIAMOND;
+    if (!up && !right && !down && left) return ACS_DIAMOND;
+    return 'x';
 }
 
 } /* namespace UI */
