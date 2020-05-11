@@ -281,6 +281,10 @@ bool Screen::YesNoMessageBox(const std::string& prompt, const std::string& leftO
                 menu_driver(menu, REQ_LEFT_ITEM);
             selectedLeft = !selectedLeft;
             break;
+        // ESC exits with negative response
+        case 27:
+            selectedLeft = false;
+            // drop through
         case KEY_ENTER:
         case 10:
             pressedEnter = true;
