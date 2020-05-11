@@ -712,22 +712,43 @@ chtype Screen::GetRoomMapIcon(const Worlds::Room& room) const
     bool down = room.TryGetEntrance(Direction::Down()) != nullptr;
     bool left = room.TryGetEntrance(Direction::Left()) != nullptr;
 
-    if (up && right && down && left) return ACS_PLUS;
-    if (up && right && down && !left) return ACS_LTEE;
-    if (up && right && !down && left) return ACS_BTEE;
-    if (up && right && !down && !left) return ACS_LLCORNER;
-    if (up && !right && down && left) return ACS_RTEE;
-    if (up && !right && down && !left) return ACS_VLINE;
-    if (up && !right && !down && left) return ACS_LRCORNER;
-    if (up && !right && !down && !left) return ACS_DIAMOND;
-    if (!up && right && down && left) return ACS_TTEE;
-    if (!up && right && down && !left) return ACS_ULCORNER;
-    if (!up && right && !down && left) return ACS_HLINE;
-    if (!up && right && !down && !left) return ACS_DIAMOND;
-    if (!up && !right && down && left) return ACS_URCORNER;
-    if (!up && !right && down && !left) return ACS_DIAMOND;
-    if (!up && !right && !down && left) return ACS_DIAMOND;
-    return 'x';
+    constexpr static const chtype deadEnd = '#';
+
+    if (up)
+    {
+        if (right)
+        {
+            if (down && left) return ACS_PLUS;
+            if (down && !left) return ACS_LTEE;
+            if (!down && left) return ACS_BTEE;
+            if (!down && !left) return ACS_LLCORNER;
+        }
+        else
+        {
+            if (down && left) return ACS_RTEE;
+            if (down && !left) return ACS_VLINE;
+            if (!down && left) return ACS_LRCORNER;
+            if (!down && !left) return deadEnd;
+        }
+    }
+    else
+    {
+        if (right)
+        {
+            if (down && left) return ACS_TTEE;
+            if (down && !left) return ACS_ULCORNER;
+            if (!down && left) return ACS_HLINE;
+            if (!down && !left) return deadEnd;
+        }
+        else
+        {
+            if (down && left) return ACS_URCORNER;
+            if (down && !left) return deadEnd;
+            if (!down && left) return deadEnd;
+        }
+    }
+
+    return deadEnd;
 }
 
 } /* namespace UI */
