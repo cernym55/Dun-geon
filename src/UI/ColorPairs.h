@@ -13,6 +13,7 @@ constexpr static const short BlueOnDefault = 4;
 constexpr static const short MagentaOnDefault = 5;
 constexpr static const short CyanOnDefault = 6;
 constexpr static const short WhiteOnDefault = 7;
+constexpr static const short BlackOnDefault = 8;
 
 constexpr static const short BlackOnRed = 10;
 constexpr static const short RedOnRed = 11;

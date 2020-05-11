@@ -16,6 +16,7 @@ void InitPairs()
             init_pair(bg * 10 + fg, fg, bg == 0 ? -1 : bg);
         }
     }
+    init_pair(BlackOnDefault, COLOR_BLACK, -1);
 }
 
 } /* namespace ColorPairs */
