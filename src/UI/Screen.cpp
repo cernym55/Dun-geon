@@ -244,12 +244,6 @@ void Screen::Init()
     noecho();
     curs_set(0);
 
-    // init_pair(ColorPairs::Wall, -1, COLOR_WHITE);
-    // init_pair(ColorPairs::PlayerEntityIcon, COLOR_MAGENTA, -1);
-    // init_pair(ColorPairs::YellowText, COLOR_YELLOW, -1);
-    // init_pair(ColorPairs::WorldAccessibleField, COLOR_WHITE, -1);
-    // init_pair(ColorPairs::WorldTouchedField, COLOR_RED, COLOR_RED);
-    // init_pair(ColorPairs::WorldTouchedFieldNoBg, COLOR_RED, -1);
     ColorPairs::InitPairs();
 }
 
@@ -600,6 +594,8 @@ void Screen::DrawMap(WINDOW* mapWindow)
                 if (room.TryGetEntrance(Direction::Right()) != nullptr)
                     mvwaddch(mapWindow, j + 1, i * 2 + 2, ACS_HLINE);
             }
+
+            // Highlight current room
             if (m_WorldManager.GetCurrentRoom().GetCoords() == current)
             {
                 icon |= (COLOR_PAIR(ColorPairs::RedOnDefault) | A_BOLD);
