@@ -4,6 +4,7 @@
 #include "Entities/Player.h"
 #include "InputHandler.h"
 #include "Misc/Coords.h"
+#include "WorldMapObjectType.h"
 #include "Worlds/Field.h"
 #include "Worlds/Room.h"
 #include <iostream>
@@ -138,6 +139,11 @@ private:
      */
     constexpr static const chtype DefaultFieldIcon = ' ';
 
+    constexpr static const int WorldMapWidth = Worlds::World::MaximumSpan * 2 - 1 + 2;
+    constexpr static const int WorldMapHeight = Worlds::World::MaximumSpan + 2;
+    constexpr static const int WorldMapXPos = (ScreenWidth - WorldMapWidth) / 2;
+    constexpr static const int WorldMapYPos = (ScreenHeight - WorldMapHeight) / 2;
+
     InputHandler& m_InputHandler;
     const Worlds::WorldManager& m_WorldManager;
     const Entities::EntityManager& m_EntityManager;
@@ -148,6 +154,7 @@ private:
     WINDOW* m_GameMessageWindow;
     const Worlds::Room* m_CurrentRoom;
     std::string m_Message;
+    bool m_IsWorldMapCursorEnabled;
 
     /**
      * @brief Initialize the screen
@@ -222,8 +229,10 @@ private:
 
     /**
      * @brief Draw the message window
+     * 
+     * @param shouldPostMessage whether or not to write out the current message
      */
-    void DrawMessageWindow();
+    void DrawMessageWindow(bool shouldPostMessage = true);
 
     /**
      * @brief Draw the map in the map window
@@ -231,9 +240,17 @@ private:
      * at the specified position.
      * 
      * @param mapWindow map window
-     * @param cursor Cursor position on world grid
+     * @param cursor cursor position on world grid
      */
     void DrawMap(WINDOW* mapWindow, Coords cursor = { -1, -1 });
+
+    /**
+     * @brief Draw the tooltip for the object under the cursor
+     * 
+     * @param cursor cursor
+     * @param objectType object type
+     */
+    void DrawMapTooltip(Coords cursor, WorldMapObjectType objectType);
 
     /**
      * @brief Get the icon for the given field
@@ -258,6 +275,14 @@ private:
      * @return chtype map icon
      */
     chtype GetRoomMapIcon(const Worlds::Room& room) const;
+
+    /**
+     * @brief Get the WorldMapObjectType for the given coords
+     * 
+     * @param coords coords
+     * @return WorldMapObjectType object type
+     */
+    WorldMapObjectType GetWorldMapObjectType(Coords coords) const;
 };
 
 } /* namespace UI */

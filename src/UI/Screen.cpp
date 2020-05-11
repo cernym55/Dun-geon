@@ -8,6 +8,7 @@
 #include "Misc/Exceptions.h"
 #include "Misc/RNG.h"
 #include "Misc/Utils.h"
+#include "WorldMapObjectType.h"
 #include "Worlds/Field.h"
 #include "Worlds/Generation/RoomLayout.h"
 #include "Worlds/Room.h"
@@ -39,7 +40,8 @@ Screen::Screen(InputHandler& inputHandler,
       m_GameWorldWindow(nullptr),
       m_GameHUDWindow(nullptr),
       m_GameMessageWindow(nullptr),
-      m_CurrentRoom(nullptr)
+      m_CurrentRoom(nullptr),
+      m_IsWorldMapCursorEnabled(true)
 {
     Init();
 }
@@ -118,57 +120,81 @@ void Screen::ShowMap()
     // Prepare window
     // Every room icon is 1 char wide and has 1 char of spacing on both sides horizontally
     // for drawing "hallways" between rooms. This also helps keep better proportions.
-    int width = Worlds::World::MaximumSpan * 2 - 1 + 2;
-    int height = Worlds::World::MaximumSpan + 2;
-    WINDOW* mapWindow = newwin(height, width, (ScreenHeight - height) / 2, (ScreenWidth - width) / 2);
-    wclear(mapWindow);
-    box(mapWindow, 0, 0);
-    wattron(mapWindow, A_REVERSE);
-    PrintCenterAt(mapWindow, " World Map ", 0);
-    wattroff(mapWindow, A_REVERSE);
+    WINDOW* mapWindow = newwin(WorldMapHeight, WorldMapWidth, WorldMapYPos, WorldMapXPos);
 
     // Handle map interaction
     Coords cursor = m_CurrentRoom->GetCoords();
     int key = 0;
     bool done = false;
+    bool actionTaken = true;
     keypad(mapWindow, 1);
 
     do
     {
-        DrawMap(mapWindow, cursor);
+        // Need to redraw the screen to get rid of leftover tooltips
+        if (actionTaken)
+        {
+            DrawWorld();
+            DrawHUD();
+            DrawMessageWindow(false); // don't post the message
+
+            DrawMap(mapWindow, cursor);
+            if (m_IsWorldMapCursorEnabled)
+            {
+                WorldMapObjectType selectedObjectType = GetWorldMapObjectType(cursor);
+                DrawMapTooltip(cursor, selectedObjectType);
+            }
+
+            actionTaken = false;
+        }
         key = wgetch(mapWindow);
 
         switch (key)
         {
         case 'w':
         case KEY_UP:
-            if (!m_WorldManager.GetCurrentWorld().IsPositionAtWorldGridEdge(cursor, Direction::Up()))
+            if (m_IsWorldMapCursorEnabled &&
+                !m_WorldManager.GetCurrentWorld().IsPositionAtWorldGridEdge(cursor, Direction::Up()))
             {
                 cursor.MoveInDirection(Direction::Up());
+                actionTaken = true;
             }
             break;
         case 'd':
         case KEY_RIGHT:
-            if (!m_WorldManager.GetCurrentWorld().IsPositionAtWorldGridEdge(cursor, Direction::Right()))
+            if (m_IsWorldMapCursorEnabled &&
+                !m_WorldManager.GetCurrentWorld().IsPositionAtWorldGridEdge(cursor, Direction::Right()))
             {
                 cursor.MoveInDirection(Direction::Right());
+                actionTaken = true;
             }
             break;
         case 's':
         case KEY_DOWN:
-            if (!m_WorldManager.GetCurrentWorld().IsPositionAtWorldGridEdge(cursor, Direction::Down()))
+            if (m_IsWorldMapCursorEnabled &&
+                !m_WorldManager.GetCurrentWorld().IsPositionAtWorldGridEdge(cursor, Direction::Down()))
             {
                 cursor.MoveInDirection(Direction::Down());
+                actionTaken = true;
             }
             break;
         case 'a':
         case KEY_LEFT:
-            if (!m_WorldManager.GetCurrentWorld().IsPositionAtWorldGridEdge(cursor, Direction::Left()))
+            if (m_IsWorldMapCursorEnabled &&
+                !m_WorldManager.GetCurrentWorld().IsPositionAtWorldGridEdge(cursor, Direction::Left()))
             {
                 cursor.MoveInDirection(Direction::Left());
+                actionTaken = true;
             }
             break;
-        default:
+        case ' ':
+            m_IsWorldMapCursorEnabled = !m_IsWorldMapCursorEnabled;
+            actionTaken = true;
+            break;
+        case KEY_ENTER:
+        case 10:
+        case 27:
+        case 'q':
             done = true;
             break;
         }
@@ -286,6 +312,7 @@ void Screen::Init()
     keypad(stdscr, true);
     noecho();
     curs_set(0);
+    ESCDELAY = 0;
 
     ColorPairs::InitPairs();
 }
@@ -309,7 +336,6 @@ void Screen::PrintCenterAt(const std::string& str, int yPos)
 void Screen::PrintCenterAt(WINDOW* window, const std::string& str, int yPos)
 {
     int xPos = (getmaxx(window) - str.size()) / 2;
-    xPos += xPos % 2;
     mvwaddstr(window, yPos, xPos, str.c_str());
     wrefresh(window);
 }
@@ -582,65 +608,75 @@ void Screen::DrawHUD()
     wrefresh(m_GameHUDWindow);
 }
 
-void Screen::DrawMessageWindow()
+void Screen::DrawMessageWindow(bool shouldPostMessage)
 {
     wclear(m_GameMessageWindow);
     wborder(m_GameMessageWindow, 0, 0, 0, 0, 0, ACS_PLUS, 0, ACS_BTEE);
-    // Post the current message, split it into two lines if it's too long
-    if (m_Message.size() > WorldPanelWidth - 4)
+    if (shouldPostMessage)
     {
-        size_t pos = WorldPanelWidth - 5;
-        while (m_Message[pos] != ' ' && pos > 0)
-            pos--;
-        std::string secondLine = m_Message.substr(pos > 0 ? pos + 1 : WorldPanelWidth - 4);
-        m_Message = m_Message.substr(0, pos > 0 ? pos : WorldPanelWidth - 4);
-        mvwaddstr(m_GameMessageWindow, 1, 2, m_Message.c_str());
-        mvwaddstr(m_GameMessageWindow, 2, 2, secondLine.c_str());
+        if (m_Message.size() > WorldPanelWidth - 4)
+        {
+            size_t pos = WorldPanelWidth - 5;
+            while (m_Message[pos] != ' ' && pos > 0)
+                pos--;
+            std::string secondLine = m_Message.substr(pos > 0 ? pos + 1 : WorldPanelWidth - 4);
+            m_Message = m_Message.substr(0, pos > 0 ? pos : WorldPanelWidth - 4);
+            mvwaddstr(m_GameMessageWindow, 1, 2, m_Message.c_str());
+            mvwaddstr(m_GameMessageWindow, 2, 2, secondLine.c_str());
+        }
+        else
+        {
+            mvwaddstr(m_GameMessageWindow, 1, 2, m_Message.c_str());
+        }
+        m_Message.clear();
     }
-    else
-    {
-        mvwaddstr(m_GameMessageWindow, 1, 2, m_Message.c_str());
-    }
-    m_Message.clear();
     wrefresh(m_GameMessageWindow);
 }
 
 void Screen::DrawMap(WINDOW* mapWindow, Coords cursor)
 {
+    wclear(mapWindow);
+    wattron(mapWindow, COLOR_PAIR(ColorPairs::BlackOnYellow));
+    box(mapWindow, 0, 0);
+    PrintCenterAt(mapWindow, " [SPACE] to toggle cursor ", WorldMapHeight - 1);
+    wattroff(mapWindow, A_COLOR);
+    wattron(mapWindow, COLOR_PAIR(ColorPairs::WhiteOnYellow) | A_BOLD);
+    PrintCenterAt(mapWindow, " World Map ", 0);
+    wattroff(mapWindow, A_COLOR | A_BOLD);
+
     const auto& world = m_WorldManager.GetCurrentWorld();
     for (Coords::Scalar i = 0; i < Worlds::World::MaximumSpan; i++)
     {
         for (Coords::Scalar j = 0; j < Worlds::World::MaximumSpan; j++)
         {
-            chtype icon;
             Coords current(i, j);
-            if (!world.RoomExistsAt(current))
-            {
-                icon = ' ';
-                for (const auto& dir : Direction::All())
-                {
+            WorldMapObjectType type = GetWorldMapObjectType(current);
 
-                    if (world.RoomExistsAt(current.GetAdjacent(dir)) &&
-                        world.GetRoomAt(current.GetAdjacent(dir)).TryGetEntrance(dir.Opposite()) != nullptr)
-                    {
-                        icon = '?';
-                        break;
-                    }
-                }
-            }
-            else
+            // Select the icon based on the object type
+            chtype icon;
+            switch (type)
             {
+            default:
+            case WorldMapObjectType::Empty:
+                icon = ' ';
+                break;
+            case WorldMapObjectType::Room: {
                 const auto& room = world.GetRoomAt(current);
                 icon = GetRoomMapIcon(room);
                 if (room.TryGetEntrance(Direction::Left()) != nullptr)
                     mvwaddch(mapWindow, j + 1, i * 2, ACS_HLINE);
                 if (room.TryGetEntrance(Direction::Right()) != nullptr)
                     mvwaddch(mapWindow, j + 1, i * 2 + 2, ACS_HLINE);
+                break;
+            }
+            case WorldMapObjectType::UndiscoveredRoom:
+                icon = '?';
+                break;
             }
 
             // Apply highlighting
             bool isCurrentRoom = m_WorldManager.GetCurrentRoom().GetCoords() == current;
-            if (cursor == current)
+            if (m_IsWorldMapCursorEnabled && cursor == current)
             {
                 icon |= isCurrentRoom
                             ? (COLOR_PAIR(ColorPairs::BlackOnRed))
@@ -654,6 +690,69 @@ void Screen::DrawMap(WINDOW* mapWindow, Coords cursor)
         }
     }
     wrefresh(mapWindow);
+}
+
+void Screen::DrawMapTooltip(Coords cursor, WorldMapObjectType objectType)
+{
+    if (objectType == WorldMapObjectType::Empty) return;
+
+    // Prepare window contents
+    std::vector<std::string> lines;
+    switch (objectType)
+    {
+    case WorldMapObjectType::Room: {
+        const auto& room = m_WorldManager.GetCurrentWorld().GetRoomAt(cursor);
+        bool isCurrentRoom = m_WorldManager.IsCurrentRoom(room);
+        std::string locPronoun = isCurrentRoom ? "here" : "there";
+        lines.push_back("Room " + std::to_string(room.GetRoomNumber()));
+        if (m_WorldManager.IsCurrentRoom(room))
+            lines.push_back("* You are here *");
+        if (room.GetVisionRadius() > 0)
+            lines.push_back("It's dark in " + locPronoun + ".");
+        break;
+    }
+    case WorldMapObjectType::UndiscoveredRoom:
+        lines.push_back("Undiscovered room");
+        break;
+    default:
+        break;
+    }
+
+    // Scale the window
+    int tooltipWidth = 0;
+    for (const auto& line : lines)
+        if (line.size() > static_cast<size_t>(tooltipWidth))
+            tooltipWidth = line.size();
+    tooltipWidth += 4;
+    int tooltipHeight = lines.size() + 2;
+
+    // Tooltip sticks to the cursor
+    // Calculate the real coord on the screen first
+    int cursorActualX = cursor.GetX() * 2 + 1 + WorldMapXPos;
+    int cursorActualY = cursor.GetY() + 1 + WorldMapYPos;
+    WINDOW* tooltipWindow = newwin(tooltipHeight,
+                                   tooltipWidth,
+                                   // Flip the tooltip to the other side of the cursor
+                                   // if it cannot fit on either axis
+                                   cursorActualY > tooltipHeight
+                                       ? cursorActualY - tooltipHeight
+                                       : cursorActualY + 1,
+                                   cursorActualX < ScreenWidth - tooltipWidth - 1
+                                       ? cursorActualX + 1
+                                       : cursorActualX - tooltipWidth);
+    // Draw the window
+    wattron(tooltipWindow, COLOR_PAIR(ColorPairs::YellowOnDefault) | A_BOLD);
+    box(tooltipWindow, 0, 0);
+    wattroff(tooltipWindow, A_BOLD);
+    for (size_t i = 0; i < lines.size(); i++)
+    {
+        PrintCenterAt(tooltipWindow, lines[i], i + 1);
+    }
+    wattroff(tooltipWindow, A_COLOR);
+    wrefresh(tooltipWindow);
+
+    // Cleanup
+    delwin(tooltipWindow);
 }
 
 chtype Screen::GetFieldIcon(const Worlds::Field& field) const
@@ -749,6 +848,32 @@ chtype Screen::GetRoomMapIcon(const Worlds::Room& room) const
     }
 
     return deadEnd;
+}
+
+WorldMapObjectType Screen::GetWorldMapObjectType(Coords coords) const
+{
+    WorldMapObjectType type = WorldMapObjectType::Empty;
+    const auto& world = m_WorldManager.GetCurrentWorld();
+    if (!world.RoomExistsAt(coords))
+    {
+        // If the room is undiscovered, we cannot access it directly, but we can check
+        // if its neighbors have any entrances leading here.
+        for (const auto& dir : Direction::All())
+        {
+            if (world.RoomExistsAt(coords.GetAdjacent(dir)) &&
+                world.GetRoomAt(coords.GetAdjacent(dir)).TryGetEntrance(dir.Opposite()) != nullptr)
+            {
+                type = WorldMapObjectType::UndiscoveredRoom;
+                break;
+            }
+        }
+    }
+    else
+    {
+        type = WorldMapObjectType::Room;
+    }
+
+    return type;
 }
 
 } /* namespace UI */
