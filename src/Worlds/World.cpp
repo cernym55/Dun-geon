@@ -134,10 +134,7 @@ bool World::RoomExistsAt(Coords coords) const
     if (coords.GetX() >= MaximumSpan || coords.GetY() >= MaximumSpan ||
         coords.GetX() < 0 || coords.GetY() < 0)
     {
-        std::ostringstream errorMessage;
-        errorMessage << "World grid position out of bounds: "
-                     << coords;
-        throw InvalidPositionException(errorMessage.str());
+        return false;
     }
     return m_Rooms[coords.GetX()][coords.GetY()] != nullptr;
 }
