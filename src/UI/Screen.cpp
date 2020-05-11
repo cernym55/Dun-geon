@@ -127,9 +127,52 @@ void Screen::ShowMap()
     PrintCenterAt(mapWindow, " World Map ", 0);
     wattroff(mapWindow, A_REVERSE);
 
-    // Draw the map
-    DrawMap(mapWindow);
-    wgetch(mapWindow);
+    // Handle map interaction
+    Coords cursor = m_CurrentRoom->GetCoords();
+    int key = 0;
+    bool done = false;
+    keypad(mapWindow, 1);
+
+    do
+    {
+        DrawMap(mapWindow, cursor);
+        key = wgetch(mapWindow);
+
+        switch (key)
+        {
+        case 'w':
+        case KEY_UP:
+            if (!m_WorldManager.GetCurrentWorld().IsPositionAtWorldGridEdge(cursor, Direction::Up()))
+            {
+                cursor.MoveInDirection(Direction::Up());
+            }
+            break;
+        case 'd':
+        case KEY_RIGHT:
+            if (!m_WorldManager.GetCurrentWorld().IsPositionAtWorldGridEdge(cursor, Direction::Right()))
+            {
+                cursor.MoveInDirection(Direction::Right());
+            }
+            break;
+        case 's':
+        case KEY_DOWN:
+            if (!m_WorldManager.GetCurrentWorld().IsPositionAtWorldGridEdge(cursor, Direction::Down()))
+            {
+                cursor.MoveInDirection(Direction::Down());
+            }
+            break;
+        case 'a':
+        case KEY_LEFT:
+            if (!m_WorldManager.GetCurrentWorld().IsPositionAtWorldGridEdge(cursor, Direction::Left()))
+            {
+                cursor.MoveInDirection(Direction::Left());
+            }
+            break;
+        default:
+            done = true;
+            break;
+        }
+    } while (!done);
 
     // Clean up the window
     wclear(mapWindow);
@@ -562,7 +605,7 @@ void Screen::DrawMessageWindow()
     wrefresh(m_GameMessageWindow);
 }
 
-void Screen::DrawMap(WINDOW* mapWindow)
+void Screen::DrawMap(WINDOW* mapWindow, Coords cursor)
 {
     const auto& world = m_WorldManager.GetCurrentWorld();
     for (Coords::Scalar i = 0; i < Worlds::World::MaximumSpan; i++)
@@ -595,8 +638,15 @@ void Screen::DrawMap(WINDOW* mapWindow)
                     mvwaddch(mapWindow, j + 1, i * 2 + 2, ACS_HLINE);
             }
 
-            // Highlight current room
-            if (m_WorldManager.GetCurrentRoom().GetCoords() == current)
+            // Apply highlighting
+            bool isCurrentRoom = m_WorldManager.GetCurrentRoom().GetCoords() == current;
+            if (cursor == current)
+            {
+                icon |= isCurrentRoom
+                            ? (COLOR_PAIR(ColorPairs::BlackOnRed))
+                            : (COLOR_PAIR(ColorPairs::BlackOnYellow));
+            }
+            else if (isCurrentRoom)
             {
                 icon |= (COLOR_PAIR(ColorPairs::RedOnDefault) | A_BOLD);
             }

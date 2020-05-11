@@ -226,11 +226,14 @@ private:
     void DrawMessageWindow();
 
     /**
-     * @brief Draw the map screen
+     * @brief Draw the map in the map window
+     * If cursor coords are set to a non-default value, will draw the cursor
+     * at the specified position.
      * 
      * @param mapWindow map window
+     * @param cursor Cursor position on world grid
      */
-    void DrawMap(WINDOW* mapWindow);
+    void DrawMap(WINDOW* mapWindow, Coords cursor = { -1, -1 });
 
     /**
      * @brief Get the icon for the given field
