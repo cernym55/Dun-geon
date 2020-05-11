@@ -6,6 +6,6 @@
 namespace Entities
 {
 
-Entity Wall("Wall", "", ' ' | COLOR_PAIR(UI::ColorPairs::Wall));
+Entity Wall("Wall", "", ' ' | COLOR_PAIR(UI::ColorPairs::BlackOnWhite));
 
 } /* namespace Entities */

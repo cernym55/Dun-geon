@@ -17,7 +17,7 @@ Application::Application()
     : m_InputHandler(m_Screen, m_PlayerController),
       m_Screen(m_InputHandler, m_WorldManager, m_EntityManager, m_Player),
       m_WorldManager(),
-      m_Player("Gref", 'G' | A_BOLD | COLOR_PAIR(UI::ColorPairs::PlayerEntityIcon)),
+      m_Player("Gref", 'G' | A_BOLD | COLOR_PAIR(UI::ColorPairs::MagentaOnDefault)),
       m_EntityManager(m_WorldManager, m_Player),
       m_PlayerController(m_EntityManager, m_WorldManager, m_Player)
 {

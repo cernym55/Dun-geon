@@ -586,7 +586,7 @@ std::string InputHandler::GetTextInputFromPrompt()
 
     // We have to handle the line input ourselves in order to allow the ESC cancel
     curs_set(1);
-    wattron(inputWindow, COLOR_PAIR(ColorPairs::YellowText));
+    wattron(inputWindow, COLOR_PAIR(ColorPairs::YellowOnDefault));
     std::string input;
     input.resize(Screen::ScreenWidth - 25, 0);
     int ch;

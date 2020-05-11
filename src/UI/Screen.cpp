@@ -244,13 +244,13 @@ void Screen::Init()
     noecho();
     curs_set(0);
 
-    // Default color pairs
-    init_pair(ColorPairs::Wall, -1, COLOR_WHITE);
-    init_pair(ColorPairs::PlayerEntityIcon, COLOR_MAGENTA, -1);
-    init_pair(ColorPairs::YellowText, COLOR_YELLOW, -1);
-    init_pair(ColorPairs::WorldAccessibleField, COLOR_WHITE, -1);
-    init_pair(ColorPairs::WorldTouchedField, COLOR_RED, COLOR_RED);
-    init_pair(ColorPairs::WorldTouchedFieldNoBg, COLOR_RED, -1);
+    // init_pair(ColorPairs::Wall, -1, COLOR_WHITE);
+    // init_pair(ColorPairs::PlayerEntityIcon, COLOR_MAGENTA, -1);
+    // init_pair(ColorPairs::YellowText, COLOR_YELLOW, -1);
+    // init_pair(ColorPairs::WorldAccessibleField, COLOR_WHITE, -1);
+    // init_pair(ColorPairs::WorldTouchedField, COLOR_RED, COLOR_RED);
+    // init_pair(ColorPairs::WorldTouchedFieldNoBg, COLOR_RED, -1);
+    ColorPairs::InitPairs();
 }
 
 void Screen::Terminate()
@@ -293,7 +293,7 @@ void Screen::DrawLogo(int xPos, int yPos)
     addch('.');
     printw("%d", GameVersionMinor);
     addch('.');
-    attron(COLOR_PAIR(ColorPairs::YellowText));
+    attron(COLOR_PAIR(ColorPairs::YellowOnDefault));
     printw("%d", GameVersionRevision);
     attroff(A_COLOR);
     attroff(A_BOLD);
@@ -520,7 +520,7 @@ void Screen::DrawHUD()
     int xPos = (HUDPanelWidth - wealthAmountStr.size() - 12) / 2;
     xPos += xPos % 2;
     mvwaddstr(m_GameHUDWindow, 14, xPos, "Wealth: ");
-    wattron(m_GameHUDWindow, COLOR_PAIR(ColorPairs::YellowText) | A_BOLD);
+    wattron(m_GameHUDWindow, COLOR_PAIR(ColorPairs::YellowOnDefault) | A_BOLD);
     wprintw(m_GameHUDWindow, "%d", stats.dun);
     wattroff(m_GameHUDWindow, A_COLOR | A_BOLD);
     waddstr(m_GameHUDWindow, " dun");
@@ -602,7 +602,7 @@ void Screen::DrawMap(WINDOW* mapWindow)
             }
             if (m_WorldManager.GetCurrentRoom().GetCoords() == current)
             {
-                icon |= (COLOR_PAIR(ColorPairs::WorldTouchedFieldNoBg) | A_BOLD);
+                icon |= (COLOR_PAIR(ColorPairs::RedOnDefault) | A_BOLD);
             }
             mvwaddch(mapWindow, j + 1, i * 2 + 1, icon);
         }
@@ -624,7 +624,7 @@ chtype Screen::GetFieldIcon(const Worlds::Field& field) const
     }
     else if (field.IsAccessible() && m_CurrentRoom->GetVisionRadius() > 0)
     {
-        icon = '.' | COLOR_PAIR(ColorPairs::WorldAccessibleField);
+        icon = '.' | COLOR_PAIR(ColorPairs::WhiteOnDefault);
         canHaveHighlight = false;
     }
     else
@@ -645,7 +645,7 @@ chtype Screen::GetFieldIcon(const Worlds::Field& field) const
         short bgColorPair = (icon & A_COLOR) >> 8;
         short fg, bg;
         pair_content(bgColorPair, &fg, &bg);
-        highlightPair = (bg > 0) ? ColorPairs::WorldTouchedField : ColorPairs::WorldTouchedFieldNoBg;
+        highlightPair = (bg > 0) ? ColorPairs::RedOnRed : ColorPairs::RedOnDefault;
 
         icon &= ~A_COLOR;
         icon |= COLOR_PAIR(highlightPair) | A_BOLD;
