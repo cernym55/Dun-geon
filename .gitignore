@@ -6,5 +6,6 @@ deps/
 TODO*
 data/
 dun-geon
+.project
 .vscode
 vgcore*
