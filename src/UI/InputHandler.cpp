@@ -408,6 +408,7 @@ void InputHandler::HandleNextKeyInput()
         ExecUICommand(UICommandType::Map);
         break;
     case 'q':
+    case 27:
         ExecUICommand(UICommandType::Quit);
         break;
     }
