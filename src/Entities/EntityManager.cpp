@@ -11,23 +11,37 @@
 namespace Entities
 {
 
+/**
+ * @brief Constructor
+ *
+ * @param WorldManager world manager
+ * @param player player
+ */
 EntityManager::EntityManager(Worlds::WorldManager& worldManager, Player& player)
     : m_WorldManager(worldManager),
       m_Player(player)
 {
 }
 
+/**
+ * @brief Take ownership of an entity and assign it to this room's storage
+ *
+ * @param room room
+ * @param entity entity
+ */
 void EntityManager::StoreEntity(Worlds::Room& room, Entity& entity)
 {
     // Storing pointers is safe because both rooms and entities are tied to the world's lifespan
     m_EntityStorage[&room].emplace_back(&entity);
 }
 
-void EntityManager::CycleEntitiesInCurrentRoom()
-{
-    CycleEntitiesInRoom(m_WorldManager.GetCurrentRoom());
-}
-
+/**
+ * @brief Try to move the player in the given direction
+ * This counts as a player action and results in entities cycling if successful.
+ *
+ * @param dir direction
+ * @return true if move successful
+ */
 bool EntityManager::TryMovePlayerEntity(Direction dir)
 {
     if (CanCharacterMove(m_Player, dir))
@@ -57,12 +71,26 @@ bool EntityManager::TryMovePlayerEntity(Direction dir)
     return false;
 }
 
+/**
+ * @brief Get the entity the character is touching
+ * This is any entity next to the character in the direction of its last move.
+ *
+ * @param character character
+ * @return const Entity* entity being approached
+ */
 const Entity* EntityManager::GetApproachedEntity(const Character& approachingCharacter) const
 {
     const Worlds::Field* approachedField = GetFieldNextToEntity(approachingCharacter, approachingCharacter.GetLastMoveDirection());
     return approachedField != nullptr ? approachedField->TryGetForegroundEntity() : nullptr;
 }
 
+/**
+ * @brief Check if the character can move in the given direction
+ *
+ * @param character character
+ * @param dir direction
+ * @return true if can move
+ */
 bool EntityManager::CanCharacterMove(const Character& character, Direction dir) const
 {
     if (dir == Direction::None()) return true;
@@ -76,6 +104,12 @@ bool EntityManager::CanCharacterMove(const Character& character, Direction dir) 
     return false;
 }
 
+/**
+ * @brief Get an array of fields surrounding the entity
+ *
+ * @param entity entity
+ * @return const std::array<const Worlds::Field*, 4> surrounding fields
+ */
 const std::array<const Worlds::Field*, 4> EntityManager::GetFieldsNextToEntity(
     const Entity& entity) const
 {
@@ -91,6 +125,13 @@ const std::array<const Worlds::Field*, 4> EntityManager::GetFieldsNextToEntity(
     return fields;
 }
 
+/**
+ * @brief Get the field next to the entity in the given direction
+ *
+ * @param entity entity
+ * @param direction direction
+ * @return const Worlds::Field* neighboring field
+ */
 const Worlds::Field* EntityManager::GetFieldNextToEntity(
     const Entity& entity,
     Direction direction) const
@@ -100,6 +141,11 @@ const Worlds::Field* EntityManager::GetFieldNextToEntity(
                : nullptr;
 }
 
+/**
+ * @brief Perform behavior for all entities in the given room
+ *
+ * @param room room
+ */
 void EntityManager::CycleEntitiesInRoom(Worlds::Room& room)
 {
     for (auto& entity : m_EntityStorage[&room])
@@ -111,12 +157,24 @@ void EntityManager::CycleEntitiesInRoom(Worlds::Room& room)
     }
 }
 
+/**
+ * @brief Place the entity in its position in the given room
+ *
+ * @param entity entity
+ * @param room room
+ */
 void EntityManager::PlaceEntityInRoom(Entity& entity, Worlds::Room& room)
 {
     auto& field = room.GetFieldAt(entity.GetCoords());
     field.PlaceEntity(entity);
 }
 
+/**
+ * @brief Vacate the field occupied by the entity in the given room
+ *
+ * @param entity entity
+ * @param room room
+ */
 void EntityManager::VacateEntityFieldInRoom(Entity& entity, Worlds::Room& room)
 {
     auto& field = room.GetFieldAt(entity.GetCoords());
