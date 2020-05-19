@@ -4,6 +4,17 @@
 
 
 
+--- v0.3.3 | 05/19/2020 (Latest)
+ - Added the world map.
+     The M key and 'map' command open a world map window which shows visited
+     and adjacent unexplored rooms in the world.
+     Rooms can be highlighted with the cursor for more information about what's
+     in them. The cursor can be disabled for a better view.
+ - Added diagonal movement.
+     Keys around the WASD cluster (Q, E, Z, C) can be used for convenient
+     diagonal movement consisting of two move commands one after another.
+
+
 --- v0.3.2 | 05/08/2020
  - Reworked procedural generation of rooms.
      The generation algorithm is no longer purely random and now considers
