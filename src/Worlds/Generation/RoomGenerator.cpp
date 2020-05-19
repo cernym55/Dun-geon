@@ -103,7 +103,7 @@ int RoomGenerator::RoomCountFloor() const
 
 int RoomGenerator::RoomCountCap() const
 {
-    int base = 50;
+    int base = 60;
     for (int i = 0; i < m_World.GetWorldNumber(); i++)
     {
         base *= 1.2;

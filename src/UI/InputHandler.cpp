@@ -121,7 +121,7 @@ void InputHandler::Eval(const std::string& input)
 
     switch (m_Screen.GetView())
     {
-    case Screen::View::World:
+    case Screen::View::InGame:
         EvalWorld(words);
         break;
     default:
@@ -396,6 +396,30 @@ void InputHandler::HandleNextKeyInput()
     case KEY_LEFT:
         m_CommandQueue.emplace(CommandType::Move, Direction::Left(), 1);
         break;
+    case 'q':
+        if (!m_PlayerController.TryMovePlayerDiagonally(Direction::Up(), Direction::Left()))
+        {
+            m_Screen.PostMessage(CannotMoveMessage);
+        }
+        break;
+    case 'e':
+        if (!m_PlayerController.TryMovePlayerDiagonally(Direction::Up(), Direction::Right()))
+        {
+            m_Screen.PostMessage(CannotMoveMessage);
+        }
+        break;
+    case 'c':
+        if (!m_PlayerController.TryMovePlayerDiagonally(Direction::Down(), Direction::Right()))
+        {
+            m_Screen.PostMessage(CannotMoveMessage);
+        }
+        break;
+    case 'z':
+        if (!m_PlayerController.TryMovePlayerDiagonally(Direction::Down(), Direction::Left()))
+        {
+            m_Screen.PostMessage(CannotMoveMessage);
+        }
+        break;
     case ' ': {
         std::string input = GetTextInputFromPrompt();
         if (!input.empty())
@@ -404,11 +428,11 @@ void InputHandler::HandleNextKeyInput()
         }
         break;
     }
-    case 'q':
-        if (m_Screen.YesNoMessageBox("Are you sure you want to quit?"))
-        {
-            SetQuit();
-        }
+    case 'm':
+        ExecUICommand(UICommandType::Map);
+        break;
+    case 27:
+        ExecUICommand(UICommandType::Quit);
         break;
     }
 
@@ -478,6 +502,9 @@ void InputHandler::ExecUICommand(UICommandType type)
 {
     switch (type)
     {
+    case UICommandType::Map:
+        m_Screen.ShowMap();
+        break;
     case UICommandType::Quit:
         if (m_Screen.YesNoMessageBox("Are you sure you want to quit?"))
         {
@@ -583,7 +610,7 @@ std::string InputHandler::GetTextInputFromPrompt()
 
     // We have to handle the line input ourselves in order to allow the ESC cancel
     curs_set(1);
-    wattron(inputWindow, COLOR_PAIR(ColorPairs::YellowText));
+    wattron(inputWindow, COLOR_PAIR(ColorPairs::YellowOnDefault));
     std::string input;
     input.resize(Screen::ScreenWidth - 25, 0);
     int ch;

@@ -41,9 +41,9 @@ void BoxRoomLayout::Generate()
     }
 
     // Build walls
-    for (size_t col = 0; col < m_Width; col++)
+    for (Coords::Scalar col = 0; col < m_Width; col++)
     {
-        for (size_t row = 0; row < m_Height; row++)
+        for (Coords::Scalar row = 0; row < m_Height; row++)
         {
             m_Map[col][row] = FieldType::Accessible;
             if ((col > 0 && row > 0 && col < m_Width - 1 && row < m_Height - 1))

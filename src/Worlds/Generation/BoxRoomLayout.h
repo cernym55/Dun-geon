@@ -36,11 +36,11 @@ public:
     virtual ~BoxRoomLayout() = default;
 
 private:
-    constexpr static const size_t MaximumWidth = 30;
-    constexpr static const size_t MaximumHeight = 16;
-    constexpr static const size_t MinimumWidth = 20;
-    constexpr static const size_t MinimumHeight = 12;
-    constexpr static const int DarknessVisionRadius = 5;
+    constexpr static const Coords::Scalar MaximumWidth = 30;
+    constexpr static const Coords::Scalar MaximumHeight = 16;
+    constexpr static const Coords::Scalar MinimumWidth = 20;
+    constexpr static const Coords::Scalar MinimumHeight = 12;
+    constexpr static const Coords::Scalar DarknessVisionRadius = 5;
 
     /**
      * @brief Generate the layout

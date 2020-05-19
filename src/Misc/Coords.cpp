@@ -12,7 +12,7 @@ Coords::Coords()
 {
 }
 
-Coords::Coords(size_t xCoord, size_t yCoord)
+Coords::Coords(Scalar xCoord, Scalar yCoord)
     : m_XCoord(xCoord), m_YCoord(yCoord)
 {
 }
@@ -22,22 +22,22 @@ bool Coords::operator==(const Coords& r) const
     return m_XCoord == r.m_XCoord && m_YCoord == r.m_YCoord;
 }
 
-size_t Coords::GetX() const
+Coords::Scalar Coords::GetX() const
 {
     return m_XCoord;
 }
 
-void Coords::SetX(size_t value)
+void Coords::SetX(Scalar value)
 {
     m_XCoord = value;
 }
 
-size_t Coords::GetY() const
+Coords::Scalar Coords::GetY() const
 {
     return m_YCoord;
 }
 
-void Coords::SetY(size_t value)
+void Coords::SetY(Scalar value)
 {
     m_YCoord = value;
 }
@@ -48,7 +48,6 @@ Coords Coords::GetAdjacent(Direction dir) const
     switch (dir())
     {
     case Direction::Value::Up:
-        if (m_YCoord == 0) throw InvalidPositionException("Attempted to move Y coord below 0");
         adjacentCoords.m_YCoord--;
         break;
     case Direction::Value::Right:
@@ -58,7 +57,6 @@ Coords Coords::GetAdjacent(Direction dir) const
         adjacentCoords.m_YCoord++;
         break;
     case Direction::Value::Left:
-        if (m_XCoord == 0) throw InvalidPositionException("Attempted to move X coord below 0");
         adjacentCoords.m_XCoord--;
         break;
     default:
@@ -98,14 +96,14 @@ std::vector<Coords> Coords::StraightPathTo(Coords there) const
     std::vector<Coords> path;
     if (m_XCoord == there.m_XCoord)
     {
-        for (size_t y = m_YCoord; y != there.m_YCoord; m_YCoord < there.m_YCoord ? y++ : y--)
+        for (Scalar y = m_YCoord; y != there.m_YCoord; m_YCoord < there.m_YCoord ? y++ : y--)
         {
             path.push_back({ m_XCoord, y });
         }
     }
     else if (m_YCoord == there.m_YCoord)
     {
-        for (size_t x = m_XCoord; x != there.m_XCoord; m_XCoord < there.m_XCoord ? x++ : x--)
+        for (Scalar x = m_XCoord; x != there.m_XCoord; m_XCoord < there.m_XCoord ? x++ : x--)
         {
             path.push_back({ x, m_YCoord });
         }
@@ -115,10 +113,9 @@ std::vector<Coords> Coords::StraightPathTo(Coords there) const
     return path;
 }
 
-size_t Coords::CombinedDistanceFrom(Coords there) const
+Coords::Scalar Coords::CombinedDistanceFrom(Coords there) const
 {
-    return Abs(static_cast<int>(m_XCoord) - static_cast<int>(there.m_XCoord)) +
-           Abs(static_cast<int>(m_YCoord) - static_cast<int>(there.m_YCoord));
+    return Abs(m_XCoord - there.m_XCoord) + Abs(m_YCoord - there.m_YCoord);
 }
 
 std::ostream& operator<<(std::ostream& os, const Coords& coords)

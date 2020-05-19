@@ -39,12 +39,21 @@ public:
     ~Controller() = default;
 
     /**
-     * @brief Try to move the player in the given direction.
+     * @brief Try to move the player in the given direction
      * 
      * @param dir direction
      * @return true if move successfully performed
      */
     bool TryMovePlayer(Direction dir);
+
+    /**
+     * @brief Try to move the player diagonally (two successive moves)
+     *
+     * @param first first direction
+     * @param second second direction
+     * @return true if both moves successfully performed
+     */
+    bool TryMovePlayerDiagonally(Direction first, Direction second);
 
 private:
     Entities::EntityManager& m_EntityManager;

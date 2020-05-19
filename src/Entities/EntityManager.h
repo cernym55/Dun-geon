@@ -71,16 +71,6 @@ public:
      */
     const Entity* GetApproachedEntity(const Character& character) const;
 
-    /**
-     * @brief Check if the character will leave the room if it moves in the given direction
-     * 
-     * @param character character
-     * @param moveDirection direction of the move
-     * @return true if player will leave the room
-     */
-    bool IsCharacterAboutToLeaveRoom(const Character& character,
-                                     Direction moveDirection) const;
-
 private:
     Worlds::WorldManager& m_WorldManager;
     Player& m_Player;

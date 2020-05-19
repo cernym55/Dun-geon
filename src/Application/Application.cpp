@@ -17,7 +17,7 @@ Application::Application()
     : m_InputHandler(m_Screen, m_PlayerController),
       m_Screen(m_InputHandler, m_WorldManager, m_EntityManager, m_Player),
       m_WorldManager(),
-      m_Player("Gref", 'G' | A_BOLD | COLOR_PAIR(UI::ColorPairs::PlayerEntityIcon)),
+      m_Player("Gref", 'G' | A_BOLD | COLOR_PAIR(UI::ColorPairs::MagentaOnDefault)),
       m_EntityManager(m_WorldManager, m_Player),
       m_PlayerController(m_EntityManager, m_WorldManager, m_Player)
 {
@@ -26,10 +26,10 @@ Application::Application()
 void Application::Run()
 {
     m_Screen.MainMenu();
-    const Worlds::World& world = const_cast<const Worlds::WorldManager&>(m_WorldManager).GetCurrentWorld();
     //TODO: move Player initialization out
-    m_Player.SetCoords({ world.GetStartingRoom().GetWidth() / 2,
-                         world.GetStartingRoom().GetHeight() / 2 });
+    const Worlds::World& world = const_cast<const Worlds::WorldManager&>(m_WorldManager).GetCurrentWorld();
+    m_Player.SetCoords({ static_cast<Coords::Scalar>(world.GetStartingRoom().GetWidth() / 2),
+                         static_cast<Coords::Scalar>(world.GetStartingRoom().GetHeight() / 2) });
     m_Player.GetStats().level = 1;
     m_Player.GetStats().XP = 0;
     m_Player.GetStats().XPToNextLevel = 1;
