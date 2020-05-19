@@ -396,6 +396,30 @@ void InputHandler::HandleNextKeyInput()
     case KEY_LEFT:
         m_CommandQueue.emplace(CommandType::Move, Direction::Left(), 1);
         break;
+    case 'q':
+        if (!m_PlayerController.TryMovePlayerDiagonally(Direction::Up(), Direction::Left()))
+        {
+            m_Screen.PostMessage(CannotMoveMessage);
+        }
+        break;
+    case 'e':
+        if (!m_PlayerController.TryMovePlayerDiagonally(Direction::Up(), Direction::Right()))
+        {
+            m_Screen.PostMessage(CannotMoveMessage);
+        }
+        break;
+    case 'c':
+        if (!m_PlayerController.TryMovePlayerDiagonally(Direction::Down(), Direction::Right()))
+        {
+            m_Screen.PostMessage(CannotMoveMessage);
+        }
+        break;
+    case 'z':
+        if (!m_PlayerController.TryMovePlayerDiagonally(Direction::Down(), Direction::Left()))
+        {
+            m_Screen.PostMessage(CannotMoveMessage);
+        }
+        break;
     case ' ': {
         std::string input = GetTextInputFromPrompt();
         if (!input.empty())
@@ -407,7 +431,7 @@ void InputHandler::HandleNextKeyInput()
     case 'm':
         ExecUICommand(UICommandType::Map);
         break;
-    case 'q':
+    case 27:
         ExecUICommand(UICommandType::Quit);
         break;
     }
