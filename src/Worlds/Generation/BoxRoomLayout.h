@@ -45,12 +45,12 @@ private:
     /**
      * @brief Generate the layout
      */
-    void Generate() override;
+    void Generate() override final;
 
     /**
      * @brief Generate room attributes not related to the map layout
      */
-    void GenerateAttributes() override;
+    void GenerateAttributes() override final;
 };
 
 } /* namespace Generation */

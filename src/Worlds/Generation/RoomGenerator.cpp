@@ -122,10 +122,10 @@ std::map<Direction, bool> RoomGenerator::GetEntranceInfoByCoords(Coords coords) 
         {
             entranceInfo[dir] = false;
         }
-        else if (m_World.RoomExistsAt(coords.GetAdjacent(dir)))
+        else if (m_World.RoomExistsAt(coords.Adjacent(dir)))
         {
             // If there is a neighbor with an entrance, force one here
-            if (m_World.GetRoomAt(coords.GetAdjacent(dir)).TryGetEntrance(dir.Opposite()) != nullptr)
+            if (m_World.GetRoomAt(coords.Adjacent(dir)).TryGetEntrance(dir.Opposite()) != nullptr)
             {
                 entranceInfo[dir] = true;
             }

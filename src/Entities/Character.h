@@ -22,13 +22,31 @@ struct Stats
 class Character : public Entity
 {
 public:
+    /**
+     * @brief Constructor
+     *
+     * @param name name
+     * @param description description (default: empty)
+     * @param icon icon (default: set to first character of name)
+     * @param isBlocking blocking attribute (default: true)
+     */
     Character(const std::string& name,
               const std::string& description = "",
               chtype icon = 0,
               bool isBlocking = true);
 
+    /**
+     * @brief Move the character position in the given direction
+     *
+     * @param dir direction
+     */
     void Move(Direction dir);
 
+    /**
+     * @brief Get the direction of the last move the character performed
+     *
+     * @return Direction last move direction
+     */
     Direction GetLastMoveDirection() const;
 
     Stats& GetStats();

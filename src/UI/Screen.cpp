@@ -156,7 +156,7 @@ void Screen::ShowMap()
             if (m_IsWorldMapCursorEnabled &&
                 !m_WorldManager.GetCurrentWorld().IsPositionAtWorldGridEdge(cursor, Direction::Up()))
             {
-                cursor.MoveInDirection(Direction::Up());
+                cursor.Move(Direction::Up());
                 actionTaken = true;
             }
             break;
@@ -165,7 +165,7 @@ void Screen::ShowMap()
             if (m_IsWorldMapCursorEnabled &&
                 !m_WorldManager.GetCurrentWorld().IsPositionAtWorldGridEdge(cursor, Direction::Right()))
             {
-                cursor.MoveInDirection(Direction::Right());
+                cursor.Move(Direction::Right());
                 actionTaken = true;
             }
             break;
@@ -174,7 +174,7 @@ void Screen::ShowMap()
             if (m_IsWorldMapCursorEnabled &&
                 !m_WorldManager.GetCurrentWorld().IsPositionAtWorldGridEdge(cursor, Direction::Down()))
             {
-                cursor.MoveInDirection(Direction::Down());
+                cursor.Move(Direction::Down());
                 actionTaken = true;
             }
             break;
@@ -183,7 +183,7 @@ void Screen::ShowMap()
             if (m_IsWorldMapCursorEnabled &&
                 !m_WorldManager.GetCurrentWorld().IsPositionAtWorldGridEdge(cursor, Direction::Left()))
             {
-                cursor.MoveInDirection(Direction::Left());
+                cursor.Move(Direction::Left());
                 actionTaken = true;
             }
             break;
@@ -284,7 +284,8 @@ bool Screen::YesNoMessageBox(const std::string& prompt, const std::string& leftO
         // ESC exits with negative response
         case 27:
             selectedLeft = false;
-            // drop through
+            pressedEnter = true;
+            break;
         case KEY_ENTER:
         case 10:
             pressedEnter = true;
@@ -395,8 +396,8 @@ int Screen::SelectViaMenu(std::map<int, std::string> options, Coords position, i
     MENU* menu = new_menu(items.data());
     WINDOW* menuWindow = newwin(height,
                                 width,
-                                position.GetY(),
-                                position.GetX());
+                                position.Y,
+                                position.X);
     WINDOW* menuSub = derwin(menuWindow,
                              height - 2 - 2 * padY,
                              subWidth,
@@ -522,8 +523,8 @@ void Screen::DrawWorld()
                 break;
             case CameraStyle::PlayerCentered:
                 // These coords are relative to the player's position
-                desiredFieldXPos = playerCoords.GetX() + (i - 1) - rangeX;
-                desiredFieldYPos = playerCoords.GetY() + (j - 1) - rangeY;
+                desiredFieldXPos = playerCoords.X + (i - 1) - rangeX;
+                desiredFieldYPos = playerCoords.Y + (j - 1) - rangeY;
                 break;
             }
             if (desiredFieldXPos < 0 ||
@@ -732,8 +733,8 @@ void Screen::DrawMapTooltip(Coords cursor, WorldMapObjectType objectType)
 
     // Tooltip sticks to the cursor
     // Calculate the real coord on the screen first
-    int cursorActualX = cursor.GetX() * 2 + 1 + WorldMapXPos;
-    int cursorActualY = cursor.GetY() + 1 + WorldMapYPos;
+    int cursorActualX = cursor.X * 2 + 1 + WorldMapXPos;
+    int cursorActualY = cursor.Y + 1 + WorldMapYPos;
     WINDOW* tooltipWindow = newwin(tooltipHeight,
                                    tooltipWidth,
                                    // Flip the tooltip to the other side of the cursor
@@ -787,7 +788,7 @@ chtype Screen::GetFieldIcon(const Worlds::Field& field) const
     if (canHaveHighlight &&
         lmd != Direction::None() &&
         !m_CurrentRoom->IsPositionAtRoomEdge(m_Player.GetCoords(), lmd) &&
-        field.GetCoords() == m_Player.GetCoords().GetAdjacent(lmd))
+        field.GetCoords() == m_Player.GetCoords().Adjacent(lmd))
     {
         short highlightPair;
         // Highlight the background only if it was a non-default color
@@ -864,8 +865,8 @@ WorldMapObjectType Screen::GetWorldMapObjectType(Coords coords) const
         // if its neighbors have any entrances leading here.
         for (const auto& dir : Direction::All())
         {
-            if (world.RoomExistsAt(coords.GetAdjacent(dir)) &&
-                world.GetRoomAt(coords.GetAdjacent(dir)).TryGetEntrance(dir.Opposite()) != nullptr)
+            if (world.RoomExistsAt(coords.Adjacent(dir)) &&
+                world.GetRoomAt(coords.Adjacent(dir)).TryGetEntrance(dir.Opposite()) != nullptr)
             {
                 type = WorldMapObjectType::UndiscoveredRoom;
                 break;

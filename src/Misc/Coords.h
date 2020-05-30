@@ -12,10 +12,19 @@ class Coords
 {
 public:
     /**
-     * @brief 
-     * 
+     * @brief Size type for coords, distances, dimensions etc.
      */
     using Scalar = std::int16_t;
+
+    /**
+     * @brief X coordinate
+     */
+    Scalar X;
+
+    /**
+     * @brief Y coordinate
+     */
+    Scalar Y;
 
     /**
      * @brief Constructor
@@ -24,67 +33,31 @@ public:
 
     /**
      * @brief Constructor
-     * 
+     *
      * @param xCoord X coordinate
      * @param yCoord Y coordinate
      */
     Coords(Scalar xCoord, Scalar yCoord);
 
     /**
-     * @brief Equals operator overload
-     * 
-     * @param r 
-     * @return true if equal
-     */
-    bool operator==(const Coords& r) const;
-
-    /**
-     * @brief Get the X coordinate
-     * 
-     * @return Scalar X coordinate
-     */
-    Scalar GetX() const;
-
-    /**
-     * @brief Set the X coordinate
-     * 
-     * @param value new value
-     */
-    void SetX(Scalar value);
-
-    /**
-     * @brief Get the Y coordinate
-     * 
-     * @return Scalar Y coordinate
-     */
-    Scalar GetY() const;
-
-    /**
-     * @brief Set the Y coordinate
-     * 
-     * @param value new value
-     */
-    void SetY(Scalar value);
-
-    /**
      * @brief Get the adjacent coordinates in the given direction
-     * 
+     *
      * @param dir direction
      * @return Coords adjacent coordinates
      */
-    Coords GetAdjacent(Direction dir) const;
+    Coords Adjacent(Direction dir) const;
 
     /**
      * @brief Shift the coordinates by one in the given direction
-     * 
+     *
      * @param dir direction
      * @return Coords& this
      */
-    Coords& MoveInDirection(Direction dir);
+    Coords& Move(Direction dir);
 
     /**
      * @brief Check if these coords are on the same horizontal or vertical axis
-     * 
+     *
      * @param there target coords
      * @return true if shares axis
      */
@@ -92,7 +65,7 @@ public:
 
     /**
      * @brief Return a vector of coords in a straight line from here to there
-     * 
+     *
      * @param there target coords
      * @return std::vector<Coords> coords forming path
      */
@@ -100,22 +73,29 @@ public:
 
     /**
      * @brief Gets the combined X and Y distance from here to there
-     * 
+     *
      * @param there target coords
      * @return Scalar distance
      */
     Scalar CombinedDistanceFrom(Coords there) const;
 
-    /**
-     * @brief Operator << overload
-     * 
-     * @param os output stream
-     * @param coords coords
-     * @return std::ostream& output stream
-     */
-    friend std::ostream& operator<<(std::ostream& os, const Coords& coords);
+    inline Coords& operator+=(const Coords& r) { X += r.X; Y += r.Y; return *this; }
 
-private:
-    Scalar m_XCoord;
-    Scalar m_YCoord;
+    inline Coords& operator-=(const Coords& r) { X -= r.X; Y -= r.Y; return *this; }
 };
+
+inline Coords operator+(Coords l, const Coords& r) { return l += r; }
+
+inline Coords operator-(Coords l, const Coords& r) { return l -= r; }
+
+inline bool operator==(const Coords& l, const Coords& r)
+{
+    return l.X == r.X && l.Y == r.Y;
+}
+
+inline bool operator!=(const Coords& l, const Coords& r)
+{
+    return !(l == r);
+}
+
+std::ostream& operator<<(std::ostream& os, const Coords& coords);

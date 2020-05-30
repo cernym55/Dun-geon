@@ -28,13 +28,13 @@ bool Controller::TryMovePlayerDiagonally(Direction first, Direction second)
     auto& room = m_WorldManager.GetCurrentRoom();
     auto firstNeighbor = room.IsPositionAtRoomEdge(playerCoords, first)
             ? nullptr
-            : &room.GetFieldAt(playerCoords.GetAdjacent(first));
+            : &room.GetFieldAt(playerCoords.Adjacent(first));
     auto secondNeighbor = room.IsPositionAtRoomEdge(playerCoords, second)
             ? nullptr
-            : &room.GetFieldAt(playerCoords.GetAdjacent(second));
+            : &room.GetFieldAt(playerCoords.Adjacent(second));
     auto target = firstNeighbor == nullptr || secondNeighbor == nullptr
             ? nullptr
-            : &room.GetFieldAt(playerCoords.GetAdjacent(first).GetAdjacent(second));
+            : &room.GetFieldAt(playerCoords.Adjacent(first).Adjacent(second));
     if (target != nullptr && target->TryGetForegroundEntity() != nullptr)
         return false;
 

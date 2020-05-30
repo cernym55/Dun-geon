@@ -13,9 +13,6 @@
 namespace Application
 {
 
-/**
- * @brief Constructor
- */
 Application::Application()
     : m_InputHandler(m_Screen, m_PlayerController),
       m_Screen(m_InputHandler, m_WorldManager, m_EntityManager, m_Player),
@@ -26,9 +23,6 @@ Application::Application()
 {
 }
 
-/**
- * @brief Run the application
- */
 void Application::Run()
 {
     m_Screen.MainMenu();

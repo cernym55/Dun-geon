@@ -17,7 +17,11 @@ namespace Generation
 {
 
 RoomLayout::RoomLayout(const RoomGenerationParameters& parameters)
-    : m_Width(0), m_Height(0), m_Parameters(parameters), m_VisionRadius(0)
+    : m_Width(0),
+      m_Height(0),
+      m_Parameters(parameters),
+      m_CameraStyle(UI::CameraStyle::Fixed),
+      m_VisionRadius(0)
 {
 }
 
@@ -117,7 +121,7 @@ void RoomLayout::DrawMapLine(Coords from, Coords to, FieldType value)
 {
     for (const auto& pos : from.StraightPathTo(to))
     {
-        m_Map[pos.GetX()][pos.GetY()] = value;
+        m_Map[pos.X][pos.Y] = value;
     }
 }
 
@@ -127,10 +131,10 @@ void RoomLayout::DrawMapBox(Coords center, Coords::Scalar radius, FieldType valu
     {
         for (Coords::Scalar j = 0; j <= radius; j++)
         {
-            Coords::Scalar left = center.GetX() - i;
-            Coords::Scalar right = center.GetX() + i;
-            Coords::Scalar up = center.GetY() - j;
-            Coords::Scalar down = center.GetY() + j;
+            Coords::Scalar left = center.X - i;
+            Coords::Scalar right = center.X + i;
+            Coords::Scalar up = center.Y - j;
+            Coords::Scalar down = center.Y + j;
             if (left < m_Width && left >= 0)
             {
                 if (up < m_Height && up >= 0) m_Map[left][up] = value;

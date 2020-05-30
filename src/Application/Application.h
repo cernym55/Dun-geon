@@ -16,8 +16,14 @@ namespace Application
 class Application
 {
 public:
+    /**
+     * @brief Constructor
+     */
     Application();
 
+    /**
+     * @brief Run the application
+     */
     void Run();
 
 private:
