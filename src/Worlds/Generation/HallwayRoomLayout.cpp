@@ -5,6 +5,7 @@
 #include "Misc/Utils.h"
 #include "RoomGenerationParameters.h"
 #include "UI/CameraStyle.h"
+#include <algorithm>
 #include <map>
 
 namespace Worlds
@@ -92,7 +93,7 @@ void HallwayRoomLayout::Generate()
         if (vertical)
         {
             for (const auto& coords : entrance.StraightPath(
-                     Coords(spineCoord, Min(spineStart.Y, spineEnd.Y)).Adjacent(Direction::Up)))
+                     Coords(spineCoord, std::min(spineStart.Y, spineEnd.Y)).Adjacent(Direction::Up)))
             {
                 path.push_back(coords);
             }
@@ -121,7 +122,7 @@ void HallwayRoomLayout::Generate()
         else
         {
             for (const auto& coords : entrance.StraightPath(
-                     Coords(Max(spineStart.X, spineEnd.X), spineCoord).Adjacent(Direction::Right)))
+                     Coords(std::max(spineStart.X, spineEnd.X), spineCoord).Adjacent(Direction::Right)))
             {
                 path.push_back(coords);
             }
@@ -134,7 +135,7 @@ void HallwayRoomLayout::Generate()
         if (vertical)
         {
             for (const auto& coords : entrance.StraightPath(
-                     Coords(spineCoord, Max(spineStart.Y, spineEnd.Y)).Adjacent(Direction::Down)))
+                     Coords(spineCoord, std::max(spineStart.Y, spineEnd.Y)).Adjacent(Direction::Down)))
             {
                 path.push_back(coords);
             }
@@ -163,7 +164,7 @@ void HallwayRoomLayout::Generate()
         else
         {
             for (const auto& coords : entrance.StraightPath(
-                     Coords(Min(spineStart.X, spineEnd.X), spineCoord).Adjacent(Direction::Left)))
+                     Coords(std::min(spineStart.X, spineEnd.X), spineCoord).Adjacent(Direction::Left)))
             {
                 path.push_back(coords);
             }
