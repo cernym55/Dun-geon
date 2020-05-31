@@ -35,13 +35,12 @@ $(OBJDIR)/%.o: %.cpp | $(OBJDIR)
 
 # Test target
 TESTCOUNT = $(words $(TESTBINS))
-TESTFMT = printf "*** [%d/$(TESTCOUNT)]: $(subst test/,,$(testbin))\n"
+TESTFMT = printf "\n*** [%d/$(TESTCOUNT)]: $(subst test/,,$(testbin))\n"
 test: $(OBJS) $(PROG) $(TESTBINS)
 	@echo '*****************************************'
 	@echo "  Running unit tests: $(TESTCOUNT) modules ready"
 	@echo '*****************************************'
-	@echo 
-	@i=1 ; $(foreach testbin,$(TESTBINS),$(TESTFMT) $$((i)) ; $(testbin) ; i=$$(( i + 1 )))
+	@i=1 ; $(foreach testbin,$(TESTBINS),$(TESTFMT) $$i ; $(testbin) ; i=$$((i + 1)) ;)
 
 %.test: %Test.cpp $(filter-out %/main.o,$(OBJS)) 
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -lboost_unit_test_framework $^ -o $@
