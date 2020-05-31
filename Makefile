@@ -13,7 +13,7 @@ CXXFLAGS = -g -O2 -pipe -std=c++17 -Wall -pedantic $(INCFLAGS)
 DEPFLAGS = -MMD -MP
 SRCS = $(shell find $(SRCDIR) -name *.cpp)
 OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))
-TESTS = $(shell find $(TESTDIR) -name *.cpp)
+TESTS = $(shell find $(TESTDIR) -name *.cpp | sort)
 TESTBINS = $(patsubst %Test.cpp,%.test,$(TESTS))
 DEPS = $(OBJS:.o=.d)
 
