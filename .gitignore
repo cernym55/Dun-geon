@@ -6,6 +6,7 @@ deps/
 TODO*
 data/
 dun-geon
+*.test
 .project
 .cproject
 .externalToolBuilders
