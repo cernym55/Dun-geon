@@ -17,19 +17,19 @@ WorldManager::WorldManager()
     m_CurrentWorld = &firstWorld;
 }
 
-const World& WorldManager::GetCurrentWorld() const
+const World& WorldManager::CurrentWorld() const
 {
     return *m_CurrentWorld;
 }
 
-Room& WorldManager::GetCurrentRoom()
+Room& WorldManager::CurrentRoom()
 {
-    return m_CurrentWorld->GetRoomAt(m_CurrentRoomCoords);
+    return m_CurrentWorld->RoomAt(m_CurrentRoomCoords);
 }
 
-const Room& WorldManager::GetCurrentRoom() const
+const Room& WorldManager::CurrentRoom() const
 {
-    return m_CurrentWorld->GetRoomAt(m_CurrentRoomCoords);
+    return m_CurrentWorld->RoomAt(m_CurrentRoomCoords);
 }
 
 bool WorldManager::IsCurrentRoom(const Room& room) const
@@ -37,30 +37,30 @@ bool WorldManager::IsCurrentRoom(const Room& room) const
     return room.GetCoords() == m_CurrentRoomCoords;
 }
 
-Room& WorldManager::SwitchCurrentRoom(Direction dir)
+Room& WorldManager::SwitchRoom(Direction dir)
 {
     Coords newCoords = m_CurrentRoomCoords.Adjacent(dir);
-    if (!m_CurrentWorld->RoomExistsAt(newCoords))
+    if (!m_CurrentWorld->RoomExists(newCoords))
     {
-        m_CurrentWorld->CreateRoomAt(newCoords);
+        m_CurrentWorld->CreateRoom(newCoords);
     }
     m_CurrentRoomCoords = newCoords;
-    return GetCurrentRoom();
+    return CurrentRoom();
 }
 
-World& WorldManager::GetCurrentWorld()
+World& WorldManager::CurrentWorld()
 {
     return *m_CurrentWorld;
 }
 
 World& WorldManager::CreateWorld()
 {
-    m_Worlds.push_back(std::make_unique<World>(*this, PopNextWorldNumber()));
+    m_Worlds.push_back(std::make_unique<World>(*this, PopWorldNumber()));
 
     return *m_Worlds.back();
 }
 
-int WorldManager::PopNextWorldNumber()
+int WorldManager::PopWorldNumber()
 {
     return m_NextWorldNumber++;
 }

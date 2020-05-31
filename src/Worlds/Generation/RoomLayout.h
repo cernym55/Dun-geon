@@ -9,10 +9,7 @@
 #include <map>
 #include <vector>
 
-namespace Worlds
-{
-
-namespace Generation
+namespace Worlds::Generation
 {
 
 /**
@@ -46,14 +43,6 @@ public:
      * @brief Radius around an entrance field which should be kept empty
      */
     constexpr static const int EntranceRadius = 1;
-
-    RoomLayout(const RoomLayout&) = delete;
-
-    RoomLayout(RoomLayout&&) = delete;
-
-    RoomLayout& operator=(const RoomLayout&) = delete;
-
-    RoomLayout& operator=(RoomLayout&&) = delete;
 
     /**
      * @brief Destructor
@@ -170,6 +159,4 @@ protected:
     void DrawMapBox(Coords center, Coords::Scalar radius, FieldType value = FieldType::Wall);
 };
 
-} /* namespace Generation */
-
-} /* namespace Worlds */
+} /* namespace Worlds::Generation */

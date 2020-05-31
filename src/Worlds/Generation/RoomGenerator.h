@@ -10,7 +10,9 @@ namespace Worlds
 
 class World;
 
-namespace Generation
+} /* namespace Worlds */
+
+namespace Worlds::Generation
 {
 
 /**
@@ -82,9 +84,7 @@ private:
      * @param roomCoords room coords
      * @return std::map<Direction, bool> entrance info
      */
-    std::map<Direction, bool> GetEntranceInfoByCoords(Coords roomCoords) const;
+    std::map<Direction, bool> EntranceInfo(Coords roomCoords) const;
 };
 
-} /* namespace Generation */
-
-} /* namespace Worlds */
+} /* namespace Worlds::Generation */

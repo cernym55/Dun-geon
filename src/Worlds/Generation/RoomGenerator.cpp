@@ -9,10 +9,7 @@
 #include "RoomLayout.h"
 #include <memory>
 
-namespace Worlds
-{
-
-namespace Generation
+namespace Worlds::Generation
 {
 
 RoomGenerator::RoomGenerator(World& world)
@@ -32,7 +29,7 @@ std::unique_ptr<RoomLayout> RoomGenerator::CreateLayout(Coords coords)
 std::unique_ptr<RoomLayout> RoomGenerator::CreateLayout(RoomLayout::Type layoutType, Coords coords)
 {
     std::unique_ptr<RoomLayout> layout;
-    m_Parameters.EntranceInfo = GetEntranceInfoByCoords(coords);
+    m_Parameters.EntranceInfo = EntranceInfo(coords);
 
     switch (layoutType)
     {
@@ -111,21 +108,21 @@ int RoomGenerator::RoomCountCap() const
     return base;
 }
 
-std::map<Direction, bool> RoomGenerator::GetEntranceInfoByCoords(Coords coords) const
+std::map<Direction, bool> RoomGenerator::EntranceInfo(Coords coords) const
 {
     std::map<Direction, bool> entranceInfo;
 
     for (auto& dir : Direction::All)
     {
         // If there can be no neighbor, forbid entrances
-        if (m_World.IsPositionAtWorldGridEdge(coords, dir))
+        if (m_World.IsAtWorldGridEdge(coords, dir))
         {
             entranceInfo[dir] = false;
         }
-        else if (m_World.RoomExistsAt(coords.Adjacent(dir)))
+        else if (m_World.RoomExists(coords.Adjacent(dir)))
         {
             // If there is a neighbor with an entrance, force one here
-            if (m_World.GetRoomAt(coords.Adjacent(dir)).TryGetEntrance(dir.Opposite()) != nullptr)
+            if (m_World.RoomAt(coords.Adjacent(dir)).Entrance(dir.Opposite()) != nullptr)
             {
                 entranceInfo[dir] = true;
             }
@@ -140,6 +137,4 @@ std::map<Direction, bool> RoomGenerator::GetEntranceInfoByCoords(Coords coords) 
     return entranceInfo;
 }
 
-} /* namespace Generation */
-
-} /* namespace Worlds */
+} /* namespace Worlds::Generation */

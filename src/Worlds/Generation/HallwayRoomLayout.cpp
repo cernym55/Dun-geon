@@ -8,10 +8,7 @@
 #include <algorithm>
 #include <map>
 
-namespace Worlds
-{
-
-namespace Generation
+namespace Worlds::Generation
 {
 
 HallwayRoomLayout::HallwayRoomLayout(const RoomGenerationParameters& parameters)
@@ -212,6 +209,4 @@ void HallwayRoomLayout::GenerateAttributes()
     }
 }
 
-} /* namespace Generation */
-
-} /* namespace Worlds */
+} /* namespace Worlds::Generation */

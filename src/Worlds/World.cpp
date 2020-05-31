@@ -31,7 +31,7 @@ int World::GetWorldNumber() const
     return m_WorldNumber;
 }
 
-Room& World::GetRoomAt(Coords coords)
+Room& World::RoomAt(Coords coords)
 {
     if (coords.X >= MaximumSpan || coords.Y >= MaximumSpan ||
         coords.X < 0 || coords.Y < 0)
@@ -56,7 +56,7 @@ Room& World::GetRoomAt(Coords coords)
     return *m_Rooms[coords.X][coords.Y];
 }
 
-const Room& World::GetRoomAt(Coords coords) const
+const Room& World::RoomAt(Coords coords) const
 {
     if (coords.X >= MaximumSpan || coords.Y >= MaximumSpan ||
         coords.X < 0 || coords.Y < 0)
@@ -81,7 +81,7 @@ const Room& World::GetRoomAt(Coords coords) const
     return *m_Rooms[coords.X][coords.Y];
 }
 
-bool World::IsPositionAtWorldGridEdge(Coords coords, Direction dir) const
+bool World::IsAtWorldGridEdge(Coords coords, Direction dir) const
 {
     switch (dir())
     {
@@ -98,19 +98,19 @@ bool World::IsPositionAtWorldGridEdge(Coords coords, Direction dir) const
     }
 }
 
-Room& World::GetStartingRoom()
+Room& World::StartingRoom()
 {
-    return GetRoomAt({ CenterPos, CenterPos });
+    return RoomAt({ CenterPos, CenterPos });
 }
 
-const Room& World::GetStartingRoom() const
+const Room& World::StartingRoom() const
 {
-    return GetRoomAt({ CenterPos, CenterPos });
+    return RoomAt({ CenterPos, CenterPos });
 }
 
-Room& World::CreateRoomAt(Coords coords)
+Room& World::CreateRoom(Coords coords)
 {
-    if (RoomExistsAt(coords))
+    if (RoomExists(coords))
     {
         std::ostringstream errorMessage;
         errorMessage << "Attempted to create room overlapping with existing room at "
@@ -123,13 +123,13 @@ Room& World::CreateRoomAt(Coords coords)
         m_WorldManager,
         *this,
         *layout,
-        PopNextRoomNumber(),
+        PopRoomNumber(),
         coords);
 
     return *m_Rooms[coords.X][coords.Y];
 }
 
-bool World::RoomExistsAt(Coords coords) const
+bool World::RoomExists(Coords coords) const
 {
     if (coords.X >= MaximumSpan || coords.Y >= MaximumSpan ||
         coords.X < 0 || coords.Y < 0)
@@ -139,7 +139,7 @@ bool World::RoomExistsAt(Coords coords) const
     return m_Rooms[coords.X][coords.Y] != nullptr;
 }
 
-int World::PopNextRoomNumber()
+int World::PopRoomNumber()
 {
     return m_NextRoomNumber++;
 }
@@ -152,7 +152,7 @@ void World::CreateStartingRoom()
         m_WorldManager,
         *this,
         *layout,
-        PopNextRoomNumber(),
+        PopRoomNumber(),
         coords);
 }
 

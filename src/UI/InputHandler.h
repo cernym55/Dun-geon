@@ -51,16 +51,6 @@ public:
      */
     InputHandler(Screen& screen, Player::Controller& playerController);
 
-    InputHandler(const InputHandler&) = delete;
-
-    InputHandler(InputHandler&&) = delete;
-
-    InputHandler& operator=(const InputHandler&) = delete;
-
-    InputHandler& operator=(InputHandler&&) = delete;
-
-    ~InputHandler() = default;
-
     /**
      * @brief Execute all commands in the queue
      */
@@ -100,7 +90,7 @@ public:
     /**
      * @brief Handle the next key input
      */
-    void HandleNextKeyInput();
+    void ProcessKeypress();
 
 private:
     /**
@@ -166,7 +156,7 @@ private:
      * 
      * @return std::string input
      */
-    std::string GetTextInputFromPrompt();
+    std::string CommandInput();
 };
 
 } /* namespace UI */

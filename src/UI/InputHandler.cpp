@@ -374,7 +374,7 @@ void InputHandler::loadKeyConf()
     }
 }
 
-void InputHandler::HandleNextKeyInput()
+void InputHandler::ProcessKeypress()
 {
     static const std::string CannotMoveMessage = "Cannot move there.";
     int key = getch();
@@ -421,7 +421,7 @@ void InputHandler::HandleNextKeyInput()
         }
         break;
     case ' ': {
-        std::string input = GetTextInputFromPrompt();
+        std::string input = CommandInput();
         if (!input.empty())
         {
             Eval(input);
@@ -593,7 +593,7 @@ void InputHandler::EvalWorld(std::vector<std::string>& words)
     } while (nextAndKeyword != words.end());
 }
 
-std::string InputHandler::GetTextInputFromPrompt()
+std::string InputHandler::CommandInput()
 {
     WINDOW* inputWindow = newwin(3,
                                  Screen::ScreenWidth - 20,

@@ -33,7 +33,7 @@ Room::Room(WorldManager& worldManager,
     const auto& entrances = layout.GetEntrances();
     for (const auto& dir : Direction::All)
     {
-        m_Entrances[dir.ToInt()] = entrances.count(dir) > 0 ? &GetFieldAt(entrances.at(dir)) : nullptr;
+        m_Entrances[dir.ToInt()] = entrances.count(dir) > 0 ? &FieldAt(entrances.at(dir)) : nullptr;
     }
 }
 
@@ -72,23 +72,23 @@ int Room::GetRoomNumber() const
     return m_RoomNumber;
 }
 
-const Field* Room::TryGetEntrance(Direction dir) const
+const Field* Room::Entrance(Direction dir) const
 {
     return m_Entrances[static_cast<size_t>(dir())];
 }
 
 bool Room::HasNeighbor(Direction dir) const
 {
-    if (m_World.IsPositionAtWorldGridEdge(m_Coords, dir)) return false;
+    if (m_World.IsAtWorldGridEdge(m_Coords, dir)) return false;
 
-    return m_World.RoomExistsAt(m_Coords.Adjacent(dir));
+    return m_World.RoomExists(m_Coords.Adjacent(dir));
 }
 
-const Room& Room::GetNeighbor(Direction dir) const
+const Room& Room::Neighbor(Direction dir) const
 {
     if (HasNeighbor(dir))
     {
-        return m_World.GetRoomAt(m_Coords.Adjacent(dir));
+        return m_World.RoomAt(m_Coords.Adjacent(dir));
     }
 
     std::ostringstream errorMessage;
@@ -97,7 +97,7 @@ const Room& Room::GetNeighbor(Direction dir) const
     throw std::invalid_argument(errorMessage.str());
 }
 
-Field& Room::GetFieldAt(Coords coords)
+Field& Room::FieldAt(Coords coords)
 {
     if (coords.X >= m_Width || coords.Y >= m_Height ||
         coords.X < 0 || coords.Y < 0)
@@ -113,7 +113,7 @@ Field& Room::GetFieldAt(Coords coords)
     }
 }
 
-const Field& Room::GetFieldAt(Coords coords) const
+const Field& Room::FieldAt(Coords coords) const
 {
     if (coords.X >= m_Width || coords.Y >= m_Height ||
         coords.X < 0 || coords.Y < 0)
@@ -129,7 +129,7 @@ const Field& Room::GetFieldAt(Coords coords) const
     }
 }
 
-bool Room::IsPositionAtRoomEdge(Coords coords, Direction dir) const
+bool Room::IsAtRoomEdge(Coords coords, Direction dir) const
 {
     switch (dir())
     {

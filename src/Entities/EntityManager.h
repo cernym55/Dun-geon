@@ -40,7 +40,7 @@ public:
      */
     inline void CycleCurrentRoom()
     {
-        Cycle(m_WorldManager.GetCurrentRoom());
+        Cycle(m_WorldManager.CurrentRoom());
     }
 
     /**

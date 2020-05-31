@@ -8,10 +8,7 @@
 #include <algorithm>
 #include <map>
 
-namespace Worlds
-{
-
-namespace Generation
+namespace Worlds::Generation
 {
 
 BoxRoomLayout::BoxRoomLayout(const RoomGenerationParameters& parameters)
@@ -91,6 +88,4 @@ void BoxRoomLayout::GenerateAttributes()
     }
 }
 
-} /* namespace Generation */
-
-} /* namespace Worlds */
+} /* namespace Worlds::Generation */

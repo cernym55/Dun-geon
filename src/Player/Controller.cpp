@@ -25,22 +25,22 @@ bool Controller::TryMovePlayer(Direction dir)
 bool Controller::TryMovePlayerDiagonally(Direction first, Direction second)
 {
     auto playerCoords = m_PlayerEntity.GetCoords();
-    auto& room = m_WorldManager.GetCurrentRoom();
-    auto firstNeighbor = room.IsPositionAtRoomEdge(playerCoords, first)
+    auto& room = m_WorldManager.CurrentRoom();
+    auto firstNeighbor = room.IsAtRoomEdge(playerCoords, first)
             ? nullptr
-            : &room.GetFieldAt(playerCoords.Adjacent(first));
-    auto secondNeighbor = room.IsPositionAtRoomEdge(playerCoords, second)
+            : &room.FieldAt(playerCoords.Adjacent(first));
+    auto secondNeighbor = room.IsAtRoomEdge(playerCoords, second)
             ? nullptr
-            : &room.GetFieldAt(playerCoords.Adjacent(second));
+            : &room.FieldAt(playerCoords.Adjacent(second));
     auto target = firstNeighbor == nullptr || secondNeighbor == nullptr
             ? nullptr
-            : &room.GetFieldAt(playerCoords.Adjacent(first).Adjacent(second));
-    if (target != nullptr && target->TryGetForegroundEntity() != nullptr)
+            : &room.FieldAt(playerCoords.Adjacent(first).Adjacent(second));
+    if (target != nullptr && target->ForegroundEntity() != nullptr)
         return false;
 
-    if (firstNeighbor == nullptr || firstNeighbor->TryGetForegroundEntity() == nullptr)
+    if (firstNeighbor == nullptr || firstNeighbor->ForegroundEntity() == nullptr)
         return m_EntityManager.TryMovePlayer(first) && m_EntityManager.TryMovePlayer(second);
-    else if (secondNeighbor == nullptr || secondNeighbor->TryGetForegroundEntity() == nullptr)
+    else if (secondNeighbor == nullptr || secondNeighbor->ForegroundEntity() == nullptr)
         return m_EntityManager.TryMovePlayer(second) && m_EntityManager.TryMovePlayer(first);
     else
         return false;

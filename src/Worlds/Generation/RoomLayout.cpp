@@ -10,10 +10,7 @@
 #include <map>
 #include <vector>
 
-namespace Worlds
-{
-
-namespace Generation
+namespace Worlds::Generation
 {
 
 RoomLayout::RoomLayout(const RoomGenerationParameters& parameters)
@@ -153,6 +150,4 @@ void RoomLayout::DrawMapBox(Coords center, Coords::Scalar radius, FieldType valu
     }
 }
 
-} /* namespace Generation */
-
-} /* namespace Worlds */
+} /* namespace Worlds::Generation */
