@@ -62,14 +62,14 @@ InputHandler::InputHandler(Screen& screen, Player::Controller& playerController)
     m_UICmdDict["q"] = UICommandType::Quit;
     m_UICmdDict["quit"] = UICommandType::Quit;
     m_UICmdDict["exit"] = UICommandType::Quit;
-    m_DirDict["u"] = Direction::Up();
-    m_DirDict["up"] = Direction::Up();
-    m_DirDict["r"] = Direction::Right();
-    m_DirDict["right"] = Direction::Right();
-    m_DirDict["d"] = Direction::Down();
-    m_DirDict["down"] = Direction::Down();
-    m_DirDict["l"] = Direction::Left();
-    m_DirDict["left"] = Direction::Left();
+    m_DirDict["u"] = Direction::Up;
+    m_DirDict["up"] = Direction::Up;
+    m_DirDict["r"] = Direction::Right;
+    m_DirDict["right"] = Direction::Right;
+    m_DirDict["d"] = Direction::Down;
+    m_DirDict["down"] = Direction::Down;
+    m_DirDict["l"] = Direction::Left;
+    m_DirDict["left"] = Direction::Left;
     m_AndKeywords = { "and", "&", "then" };
     m_LastKeywords = { "a", "last", "repeat", "again" };
     makeKeyConf();
@@ -331,28 +331,28 @@ void InputHandler::loadKeyConf()
                 {
                     for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        m_DirDict[wordVec[i]] = Direction::Up();
+                        m_DirDict[wordVec[i]] = Direction::Up;
                     }
                 }
                 else if (wordVec[0] == "RIGHT")
                 {
                     for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        m_DirDict[wordVec[i]] = Direction::Right();
+                        m_DirDict[wordVec[i]] = Direction::Right;
                     }
                 }
                 else if (wordVec[0] == "DOWN")
                 {
                     for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        m_DirDict[wordVec[i]] = Direction::Down();
+                        m_DirDict[wordVec[i]] = Direction::Down;
                     }
                 }
                 else if (wordVec[0] == "LEFT")
                 {
                     for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        m_DirDict[wordVec[i]] = Direction::Left();
+                        m_DirDict[wordVec[i]] = Direction::Left;
                     }
                 }
                 else if (wordVec[0] == "AND")
@@ -374,7 +374,7 @@ void InputHandler::loadKeyConf()
     }
 }
 
-void InputHandler::HandleNextKeyInput()
+void InputHandler::ProcessKeypress()
 {
     static const std::string CannotMoveMessage = "Cannot move there.";
     int key = getch();
@@ -382,46 +382,46 @@ void InputHandler::HandleNextKeyInput()
     {
     case 'w':
     case KEY_UP:
-        m_CommandQueue.emplace(CommandType::Move, Direction::Up(), 1);
+        m_CommandQueue.emplace(CommandType::Move, Direction::Up, 1);
         break;
     case 'd':
     case KEY_RIGHT:
-        m_CommandQueue.emplace(CommandType::Move, Direction::Right(), 1);
+        m_CommandQueue.emplace(CommandType::Move, Direction::Right, 1);
         break;
     case 's':
     case KEY_DOWN:
-        m_CommandQueue.emplace(CommandType::Move, Direction::Down(), 1);
+        m_CommandQueue.emplace(CommandType::Move, Direction::Down, 1);
         break;
     case 'a':
     case KEY_LEFT:
-        m_CommandQueue.emplace(CommandType::Move, Direction::Left(), 1);
+        m_CommandQueue.emplace(CommandType::Move, Direction::Left, 1);
         break;
     case 'q':
-        if (!m_PlayerController.TryMovePlayerDiagonally(Direction::Up(), Direction::Left()))
+        if (!m_PlayerController.TryMovePlayerDiagonally(Direction::Up, Direction::Left))
         {
             m_Screen.PostMessage(CannotMoveMessage);
         }
         break;
     case 'e':
-        if (!m_PlayerController.TryMovePlayerDiagonally(Direction::Up(), Direction::Right()))
+        if (!m_PlayerController.TryMovePlayerDiagonally(Direction::Up, Direction::Right))
         {
             m_Screen.PostMessage(CannotMoveMessage);
         }
         break;
     case 'c':
-        if (!m_PlayerController.TryMovePlayerDiagonally(Direction::Down(), Direction::Right()))
+        if (!m_PlayerController.TryMovePlayerDiagonally(Direction::Down, Direction::Right))
         {
             m_Screen.PostMessage(CannotMoveMessage);
         }
         break;
     case 'z':
-        if (!m_PlayerController.TryMovePlayerDiagonally(Direction::Down(), Direction::Left()))
+        if (!m_PlayerController.TryMovePlayerDiagonally(Direction::Down, Direction::Left))
         {
             m_Screen.PostMessage(CannotMoveMessage);
         }
         break;
     case ' ': {
-        std::string input = GetTextInputFromPrompt();
+        std::string input = CommandInput();
         if (!input.empty())
         {
             Eval(input);
@@ -440,7 +440,7 @@ void InputHandler::HandleNextKeyInput()
 }
 
 InputHandler::Command::Command()
-    : type(CommandType::None), dir(Direction::None()), repeats(1)
+    : type(CommandType::None), dir(Direction::None), repeats(1)
 {
 }
 
@@ -458,7 +458,7 @@ bool InputHandler::ExecCommand(Command& command)
     case CommandType::None:
         break;
     case CommandType::Move:
-        if (command.dir == Direction::None())
+        if (command.dir == Direction::None)
         {
             messageStream << "No direction given.";
             result = false;
@@ -593,7 +593,7 @@ void InputHandler::EvalWorld(std::vector<std::string>& words)
     } while (nextAndKeyword != words.end());
 }
 
-std::string InputHandler::GetTextInputFromPrompt()
+std::string InputHandler::CommandInput()
 {
     WINDOW* inputWindow = newwin(3,
                                  Screen::ScreenWidth - 20,

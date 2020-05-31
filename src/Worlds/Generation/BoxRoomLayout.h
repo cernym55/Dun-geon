@@ -3,10 +3,7 @@
 #include "RoomGenerationParameters.h"
 #include "RoomLayout.h"
 
-namespace Worlds
-{
-
-namespace Generation
+namespace Worlds::Generation
 {
 
 /**
@@ -22,19 +19,6 @@ public:
      */
     BoxRoomLayout(const RoomGenerationParameters& parameters);
 
-    BoxRoomLayout(const BoxRoomLayout&) = delete;
-
-    BoxRoomLayout(BoxRoomLayout&&) = delete;
-
-    BoxRoomLayout& operator=(const BoxRoomLayout&) = delete;
-
-    BoxRoomLayout& operator=(BoxRoomLayout&&) = delete;
-
-    /**
-     * @brief Destructor
-     */
-    virtual ~BoxRoomLayout() = default;
-
 private:
     constexpr static const Coords::Scalar MaximumWidth = 30;
     constexpr static const Coords::Scalar MaximumHeight = 16;
@@ -45,14 +29,13 @@ private:
     /**
      * @brief Generate the layout
      */
-    void Generate() override;
+    void Generate() override final;
 
     /**
      * @brief Generate room attributes not related to the map layout
      */
-    void GenerateAttributes() override;
+    void GenerateAttributes() override final;
 };
 
-} /* namespace Generation */
+} /* namespace Worlds::Generation */
 
-} /* namespace Worlds */

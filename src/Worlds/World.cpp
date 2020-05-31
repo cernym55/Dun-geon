@@ -31,10 +31,10 @@ int World::GetWorldNumber() const
     return m_WorldNumber;
 }
 
-Room& World::GetRoomAt(Coords coords)
+Room& World::RoomAt(Coords coords)
 {
-    if (coords.GetX() >= MaximumSpan || coords.GetY() >= MaximumSpan ||
-        coords.GetX() < 0 || coords.GetY() < 0)
+    if (coords.X >= MaximumSpan || coords.Y >= MaximumSpan ||
+        coords.X < 0 || coords.Y < 0)
     {
         std::ostringstream errorMessage;
         errorMessage << "World grid position out of bounds: "
@@ -42,7 +42,7 @@ Room& World::GetRoomAt(Coords coords)
         throw InvalidPositionException(errorMessage.str());
     }
 
-    if (m_Rooms[coords.GetX()][coords.GetY()] == nullptr)
+    if (m_Rooms[coords.X][coords.Y] == nullptr)
     {
         std::ostringstream errorMessage;
         errorMessage << "Room "
@@ -53,13 +53,13 @@ Room& World::GetRoomAt(Coords coords)
         throw std::invalid_argument(errorMessage.str());
     }
 
-    return *m_Rooms[coords.GetX()][coords.GetY()];
+    return *m_Rooms[coords.X][coords.Y];
 }
 
-const Room& World::GetRoomAt(Coords coords) const
+const Room& World::RoomAt(Coords coords) const
 {
-    if (coords.GetX() >= MaximumSpan || coords.GetY() >= MaximumSpan ||
-        coords.GetX() < 0 || coords.GetY() < 0)
+    if (coords.X >= MaximumSpan || coords.Y >= MaximumSpan ||
+        coords.X < 0 || coords.Y < 0)
     {
         std::ostringstream errorMessage;
         errorMessage << "World grid position out of bounds: "
@@ -67,7 +67,7 @@ const Room& World::GetRoomAt(Coords coords) const
         throw InvalidPositionException(errorMessage.str());
     }
 
-    if (m_Rooms[coords.GetX()][coords.GetY()] == nullptr)
+    if (m_Rooms[coords.X][coords.Y] == nullptr)
     {
         std::ostringstream errorMessage;
         errorMessage << "Room "
@@ -78,39 +78,39 @@ const Room& World::GetRoomAt(Coords coords) const
         throw std::invalid_argument(errorMessage.str());
     }
 
-    return *m_Rooms[coords.GetX()][coords.GetY()];
+    return *m_Rooms[coords.X][coords.Y];
 }
 
-bool World::IsPositionAtWorldGridEdge(Coords coords, Direction dir) const
+bool World::IsAtWorldGridEdge(Coords coords, Direction dir) const
 {
     switch (dir())
     {
     case Direction::Value::Up:
-        return coords.GetY() == 0;
+        return coords.Y == 0;
     case Direction::Value::Right:
-        return coords.GetX() == MaximumSpan - 1;
+        return coords.X == MaximumSpan - 1;
     case Direction::Value::Down:
-        return coords.GetY() == MaximumSpan - 1;
+        return coords.Y == MaximumSpan - 1;
     case Direction::Value::Left:
-        return coords.GetX() == 0;
+        return coords.X == 0;
     default:
         return false;
     }
 }
 
-Room& World::GetStartingRoom()
+Room& World::StartingRoom()
 {
-    return GetRoomAt({ CenterPos, CenterPos });
+    return RoomAt({ CenterPos, CenterPos });
 }
 
-const Room& World::GetStartingRoom() const
+const Room& World::StartingRoom() const
 {
-    return GetRoomAt({ CenterPos, CenterPos });
+    return RoomAt({ CenterPos, CenterPos });
 }
 
-Room& World::CreateRoomAt(Coords coords)
+Room& World::CreateRoom(Coords coords)
 {
-    if (RoomExistsAt(coords))
+    if (RoomExists(coords))
     {
         std::ostringstream errorMessage;
         errorMessage << "Attempted to create room overlapping with existing room at "
@@ -119,27 +119,27 @@ Room& World::CreateRoomAt(Coords coords)
     }
 
     auto layout = m_RoomGenerator.CreateLayout(coords);
-    m_Rooms[coords.GetX()][coords.GetY()] = std::make_unique<Room>(
+    m_Rooms[coords.X][coords.Y] = std::make_unique<Room>(
         m_WorldManager,
         *this,
         *layout,
-        PopNextRoomNumber(),
+        PopRoomNumber(),
         coords);
 
-    return *m_Rooms[coords.GetX()][coords.GetY()];
+    return *m_Rooms[coords.X][coords.Y];
 }
 
-bool World::RoomExistsAt(Coords coords) const
+bool World::RoomExists(Coords coords) const
 {
-    if (coords.GetX() >= MaximumSpan || coords.GetY() >= MaximumSpan ||
-        coords.GetX() < 0 || coords.GetY() < 0)
+    if (coords.X >= MaximumSpan || coords.Y >= MaximumSpan ||
+        coords.X < 0 || coords.Y < 0)
     {
         return false;
     }
-    return m_Rooms[coords.GetX()][coords.GetY()] != nullptr;
+    return m_Rooms[coords.X][coords.Y] != nullptr;
 }
 
-int World::PopNextRoomNumber()
+int World::PopRoomNumber()
 {
     return m_NextRoomNumber++;
 }
@@ -152,7 +152,7 @@ void World::CreateStartingRoom()
         m_WorldManager,
         *this,
         *layout,
-        PopNextRoomNumber(),
+        PopRoomNumber(),
         coords);
 }
 

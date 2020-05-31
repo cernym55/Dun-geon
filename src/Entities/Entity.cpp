@@ -16,11 +16,6 @@ Entity::Entity(const std::string& name,
 {
 }
 
-void Entity::SetCoords(Coords value)
-{
-    m_Coords = value;
-}
-
 Coords Entity::GetCoords() const
 {
     return m_Coords;

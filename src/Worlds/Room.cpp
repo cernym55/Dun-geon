@@ -31,9 +31,9 @@ Room::Room(WorldManager& worldManager,
     m_Width = m_Fields.size();
     m_Height = m_Fields[0].size();
     const auto& entrances = layout.GetEntrances();
-    for (const auto& dir : Direction::All())
+    for (const auto& dir : Direction::All)
     {
-        m_Entrances[dir.ToInt()] = entrances.count(dir) > 0 ? &GetFieldAt(entrances.at(dir)) : nullptr;
+        m_Entrances[dir.ToInt()] = entrances.count(dir) > 0 ? &FieldAt(entrances.at(dir)) : nullptr;
     }
 }
 
@@ -72,23 +72,23 @@ int Room::GetRoomNumber() const
     return m_RoomNumber;
 }
 
-const Field* Room::TryGetEntrance(Direction dir) const
+const Field* Room::Entrance(Direction dir) const
 {
-    return m_Entrances[(int)dir()];
+    return m_Entrances[static_cast<size_t>(dir())];
 }
 
 bool Room::HasNeighbor(Direction dir) const
 {
-    if (m_World.IsPositionAtWorldGridEdge(m_Coords, dir)) return false;
+    if (m_World.IsAtWorldGridEdge(m_Coords, dir)) return false;
 
-    return m_World.RoomExistsAt(m_Coords.GetAdjacent(dir));
+    return m_World.RoomExists(m_Coords.Adjacent(dir));
 }
 
-const Room& Room::GetNeighbor(Direction dir) const
+const Room& Room::Neighbor(Direction dir) const
 {
     if (HasNeighbor(dir))
     {
-        return m_World.GetRoomAt(m_Coords.GetAdjacent(dir));
+        return m_World.RoomAt(m_Coords.Adjacent(dir));
     }
 
     std::ostringstream errorMessage;
@@ -97,10 +97,10 @@ const Room& Room::GetNeighbor(Direction dir) const
     throw std::invalid_argument(errorMessage.str());
 }
 
-Field& Room::GetFieldAt(Coords coords)
+Field& Room::FieldAt(Coords coords)
 {
-    if (coords.GetX() >= m_Width || coords.GetY() >= m_Height ||
-        coords.GetX() < 0 || coords.GetY() < 0)
+    if (coords.X >= m_Width || coords.Y >= m_Height ||
+        coords.X < 0 || coords.Y < 0)
     {
         std::ostringstream errorMessage;
         errorMessage << "Room field coords out of bounds: "
@@ -109,14 +109,14 @@ Field& Room::GetFieldAt(Coords coords)
     }
     else
     {
-        return m_Fields[coords.GetX()][coords.GetY()];
+        return m_Fields[coords.X][coords.Y];
     }
 }
 
-const Field& Room::GetFieldAt(Coords coords) const
+const Field& Room::FieldAt(Coords coords) const
 {
-    if (coords.GetX() >= m_Width || coords.GetY() >= m_Height ||
-        coords.GetX() < 0 || coords.GetY() < 0)
+    if (coords.X >= m_Width || coords.Y >= m_Height ||
+        coords.X < 0 || coords.Y < 0)
     {
         std::ostringstream errorMessage;
         errorMessage << "Room field coords out of bounds: "
@@ -125,22 +125,22 @@ const Field& Room::GetFieldAt(Coords coords) const
     }
     else
     {
-        return m_Fields[coords.GetX()][coords.GetY()];
+        return m_Fields[coords.X][coords.Y];
     }
 }
 
-bool Room::IsPositionAtRoomEdge(Coords coords, Direction dir) const
+bool Room::IsAtRoomEdge(Coords coords, Direction dir) const
 {
     switch (dir())
     {
     case Direction::Value::Up:
-        return coords.GetY() == 0;
+        return coords.Y == 0;
     case Direction::Value::Right:
-        return coords.GetX() == m_Width - 1;
+        return coords.X == m_Width - 1;
     case Direction::Value::Down:
-        return coords.GetY() == m_Height - 1;
+        return coords.Y == m_Height - 1;
     case Direction::Value::Left:
-        return coords.GetX() == 0;
+        return coords.X == 0;
     default:
         return false;
     }

@@ -43,6 +43,36 @@ public:
     };
 
     /**
+     * @brief "None" direction
+     */
+    static const Direction None;
+
+    /**
+     * @brief Up direction
+     */
+    static const Direction Up;
+
+    /**
+     * @brief Right direction
+     */
+    static const Direction Right;
+
+    /**
+     * @brief Down direction
+     */
+    static const Direction Down;
+
+    /**
+     * @brief Left direction
+     */
+    static const Direction Left;
+
+    /**
+     * @brief Array of all directions except "None"
+     */
+    static const std::array<Direction, 4> All;
+
+    /**
      * @brief Constructor
      */
     Direction();
@@ -53,38 +83,6 @@ public:
      * @param value value
      */
     Direction(Value value);
-
-    /**
-     * @brief Operator== overload
-     * 
-     * @param r
-     * @return true if equal
-     */
-    bool operator==(const Direction& r) const;
-
-    /**
-     * @brief Operator!= overload
-     * 
-     * @param r 
-     * @return true if not equal
-     */
-    bool operator!=(const Direction& r) const;
-
-    /**
-     * @brief Operator() overload
-     * Returns the contained value.
-     * 
-     * @return Value value
-     */
-    Value operator()() const;
-
-    /**
-     * @brief Operator< overload
-     * 
-     * @param r
-     * @return true if (int)(*this)() < (int)r()
-     */
-    bool operator<(const Direction& r) const;
 
     /**
      * @brief Get the opposite direction
@@ -98,59 +96,19 @@ public:
      * 
      * @return int int value
      */
-    int ToInt() const;
+    inline int ToInt() const { return static_cast<int>(m_Value); }
 
-    /**
-     * @brief Return a Direction object with the value Up
-     * 
-     * @return Direction Up direction
-     */
-    static Direction Up();
+    inline Value operator()() const { return m_Value; }
 
-    /**
-     * @brief Return a Direction object with the value Right
-     * 
-     * @return Direction Right direction
-     */
-    static Direction Right();
-
-    /**
-     * @brief Return a Direction object with the value Down
-     * 
-     * @return Direction Down direction
-     */
-    static Direction Down();
-
-    /**
-     * @brief Return a Direction object with the value Left
-     * 
-     * @return Direction Left direction
-     */
-    static Direction Left();
-
-    /**
-     * @brief Return a Direction object with the value None
-     * 
-     * @return Direction "None" direction
-     */
-    static Direction None();
-
-    /**
-     * @brief Return an iterable array containing all four directions
-     * 
-     * @return std::array<Direction, 4> collection of directions
-     */
-    static std::array<Direction, 4> All();
-
-    /**
-     * @brief Operator<< overload
-     * 
-     * @param os output stream
-     * @param r 
-     * @return std::ostream& output stream
-     */
-    friend std::ostream& operator<<(std::ostream& os, const Direction& r);
 
 private:
     Value m_Value;
 };
+
+inline bool operator<(const Direction& l, const Direction& r) { return l.ToInt() < r.ToInt(); }
+
+inline bool operator==(const Direction& l, const Direction& r) { return l() == r(); }
+
+inline bool operator!=(const Direction& l, const Direction& r) { return !(l == r); }
+
+std::ostream& operator<<(std::ostream& os, const Direction& r);

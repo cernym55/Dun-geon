@@ -25,19 +25,6 @@ public:
                Worlds::WorldManager& worldManager,
                Entities::Player& playerEntity);
 
-    Controller(const Controller&) = delete;
-
-    Controller(Controller&&) = delete;
-
-    Controller& operator=(const Controller&) = delete;
-
-    Controller& operator=(Controller&&) = delete;
-
-    /**
-     * @brief Destructor
-     */
-    ~Controller() = default;
-
     /**
      * @brief Try to move the player in the given direction
      * 

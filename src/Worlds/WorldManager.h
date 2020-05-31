@@ -22,39 +22,26 @@ public:
      */
     WorldManager();
 
-    WorldManager(const WorldManager&) = delete;
-
-    WorldManager(WorldManager&&) = delete;
-
-    WorldManager& operator=(const WorldManager&) = delete;
-
-    WorldManager& operator=(WorldManager&&) = delete;
-
-    /**
-     * @brief Destructor
-     */
-    ~WorldManager() = default;
-
     /**
      * @brief Get the world where the player is present
      * 
      * @return const World& current world
      */
-    const World& GetCurrentWorld() const;
+    const World& CurrentWorld() const;
 
     /**
      * @brief Get the room where the player is present
      * 
      * @return Room& current room
      */
-    Room& GetCurrentRoom();
+    Room& CurrentRoom();
 
     /**
      * @brief Get the room where the player is present
      * 
      * @return const Room& current room
      */
-    const Room& GetCurrentRoom() const;
+    const Room& CurrentRoom() const;
 
     /**
      * @brief Check if the given room is the current room
@@ -70,7 +57,7 @@ public:
      * @param dir direction
      * @return Room& new current room
      */
-    Room& SwitchCurrentRoom(Direction dir);
+    Room& SwitchRoom(Direction dir);
 
 private:
     std::vector<std::unique_ptr<World>> m_Worlds;
@@ -83,7 +70,7 @@ private:
      * 
      * @return World& current world
      */
-    World& GetCurrentWorld();
+    World& CurrentWorld();
 
     /**
      * @brief Create a new world
@@ -97,7 +84,7 @@ private:
      * 
      * @return int next world number
      */
-    int PopNextWorldNumber();
+    int PopWorldNumber();
 };
 
 } /* namespace Worlds */

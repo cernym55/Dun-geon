@@ -4,10 +4,7 @@
 #include "UI/CameraStyle.h"
 #include <map>
 
-namespace Worlds
-{
-
-namespace Generation
+namespace Worlds::Generation
 {
 
 /**
@@ -39,6 +36,4 @@ struct RoomGenerationParameters
     double DarknessChance;
 };
 
-} /* namespace Generation */
-
-} /* namespace Worlds */
+} /* namespace Worlds::Generation */

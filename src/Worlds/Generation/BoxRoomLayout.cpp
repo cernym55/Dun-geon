@@ -8,16 +8,13 @@
 #include <algorithm>
 #include <map>
 
-namespace Worlds
-{
-
-namespace Generation
+namespace Worlds::Generation
 {
 
 BoxRoomLayout::BoxRoomLayout(const RoomGenerationParameters& parameters)
     : RoomLayout(parameters)
 {
-    Generate();
+    BoxRoomLayout::Generate();
 }
 
 void BoxRoomLayout::Generate()
@@ -51,19 +48,19 @@ void BoxRoomLayout::Generate()
                 continue;
             }
 
-            if (row == 0 && m_Entrances.count(Direction::Up()) > 0 && Abs(col - m_Entrances[Direction::Up()].GetX()) <= EntranceRadius)
+            if (row == 0 && m_Entrances.count(Direction::Up) > 0 && Abs(col - m_Entrances[Direction::Up].X) <= EntranceRadius)
             {
                 continue;
             }
-            if (col == m_Width - 1 && m_Entrances.count(Direction::Right()) > 0 && Abs(row - m_Entrances[Direction::Right()].GetY()) <= EntranceRadius)
+            if (col == m_Width - 1 && m_Entrances.count(Direction::Right) > 0 && Abs(row - m_Entrances[Direction::Right].Y) <= EntranceRadius)
             {
                 continue;
             }
-            if (row == m_Height - 1 && m_Entrances.count(Direction::Down()) > 0 && Abs(col - m_Entrances[Direction::Down()].GetX()) <= EntranceRadius)
+            if (row == m_Height - 1 && m_Entrances.count(Direction::Down) > 0 && Abs(col - m_Entrances[Direction::Down].X) <= EntranceRadius)
             {
                 continue;
             }
-            if (col == 0 && m_Entrances.count(Direction::Left()) > 0 && Abs(row - m_Entrances[Direction::Left()].GetY()) <= EntranceRadius)
+            if (col == 0 && m_Entrances.count(Direction::Left) > 0 && Abs(row - m_Entrances[Direction::Left].Y) <= EntranceRadius)
             {
                 continue;
             }
@@ -91,6 +88,4 @@ void BoxRoomLayout::GenerateAttributes()
     }
 }
 
-} /* namespace Generation */
-
-} /* namespace Worlds */
+} /* namespace Worlds::Generation */
