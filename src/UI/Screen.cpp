@@ -539,7 +539,7 @@ void Screen::DrawWorld()
                 auto radius = m_CurrentRoom->GetVisionRadius();
                 Coords targetCoords(desiredFieldXPos, desiredFieldYPos);
                 if (radius > 0 &&
-                    playerCoords.CombinedDistance(targetCoords) >
+                    playerCoords.Distance(targetCoords) >
                         (playerCoords.SharesAxis(targetCoords)
                              ? radius - 1
                              : radius))

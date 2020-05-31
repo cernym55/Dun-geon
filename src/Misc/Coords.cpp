@@ -88,7 +88,7 @@ std::vector<Coords> Coords::StraightPath(Coords there) const
     return path;
 }
 
-Coords::Scalar Coords::CombinedDistance(Coords there) const
+Coords::Scalar Coords::Distance(Coords there) const
 {
     return Abs(X - there.X) + Abs(Y - there.Y);
 }

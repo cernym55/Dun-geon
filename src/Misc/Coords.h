@@ -77,7 +77,7 @@ public:
      * @param there target coords
      * @return Scalar distance
      */
-    Scalar CombinedDistance(Coords there) const;
+    Scalar Distance(Coords there) const;
 
     inline Coords& operator+=(const Coords& r) { X += r.X; Y += r.Y; return *this; }
 
