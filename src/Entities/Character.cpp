@@ -12,7 +12,7 @@ Character::Character(const std::string& name,
                      chtype icon,
                      bool isBlocking)
     : Entity(name, description, icon, isBlocking),
-      m_LastMoveDirection(Direction::None())
+      m_LastMoveDirection(Direction::None)
 {
 }
 

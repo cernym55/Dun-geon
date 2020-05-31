@@ -154,36 +154,36 @@ void Screen::ShowMap()
         case 'w':
         case KEY_UP:
             if (m_IsWorldMapCursorEnabled &&
-                !m_WorldManager.GetCurrentWorld().IsPositionAtWorldGridEdge(cursor, Direction::Up()))
+                !m_WorldManager.GetCurrentWorld().IsPositionAtWorldGridEdge(cursor, Direction::Up))
             {
-                cursor.Move(Direction::Up());
+                cursor.Move(Direction::Up);
                 actionTaken = true;
             }
             break;
         case 'd':
         case KEY_RIGHT:
             if (m_IsWorldMapCursorEnabled &&
-                !m_WorldManager.GetCurrentWorld().IsPositionAtWorldGridEdge(cursor, Direction::Right()))
+                !m_WorldManager.GetCurrentWorld().IsPositionAtWorldGridEdge(cursor, Direction::Right))
             {
-                cursor.Move(Direction::Right());
+                cursor.Move(Direction::Right);
                 actionTaken = true;
             }
             break;
         case 's':
         case KEY_DOWN:
             if (m_IsWorldMapCursorEnabled &&
-                !m_WorldManager.GetCurrentWorld().IsPositionAtWorldGridEdge(cursor, Direction::Down()))
+                !m_WorldManager.GetCurrentWorld().IsPositionAtWorldGridEdge(cursor, Direction::Down))
             {
-                cursor.Move(Direction::Down());
+                cursor.Move(Direction::Down);
                 actionTaken = true;
             }
             break;
         case 'a':
         case KEY_LEFT:
             if (m_IsWorldMapCursorEnabled &&
-                !m_WorldManager.GetCurrentWorld().IsPositionAtWorldGridEdge(cursor, Direction::Left()))
+                !m_WorldManager.GetCurrentWorld().IsPositionAtWorldGridEdge(cursor, Direction::Left))
             {
-                cursor.Move(Direction::Left());
+                cursor.Move(Direction::Left);
                 actionTaken = true;
             }
             break;
@@ -539,8 +539,8 @@ void Screen::DrawWorld()
                 auto radius = m_CurrentRoom->GetVisionRadius();
                 Coords targetCoords(desiredFieldXPos, desiredFieldYPos);
                 if (radius > 0 &&
-                    playerCoords.CombinedDistanceFrom(targetCoords) >
-                        (playerCoords.SharesAxisWith(targetCoords)
+                    playerCoords.CombinedDistance(targetCoords) >
+                        (playerCoords.SharesAxis(targetCoords)
                              ? radius - 1
                              : radius))
                 {
@@ -601,10 +601,10 @@ void Screen::DrawHUD()
 
     PrintCenterAt(m_GameHUDWindow, "[q]uit", 18);
 
-    if (m_EntityManager.GetApproachedEntity(m_Player) != nullptr)
+    if (m_EntityManager.Approaching(m_Player) != nullptr)
     {
-        PrintCenterAt(m_GameHUDWindow, m_EntityManager.GetApproachedEntity(m_Player)->GetName(), WorldPanelHeight + 1);
-        PrintCenterAt(m_GameHUDWindow, m_EntityManager.GetApproachedEntity(m_Player)->GetDescription(), WorldPanelHeight + 2);
+        PrintCenterAt(m_GameHUDWindow, m_EntityManager.Approaching(m_Player)->GetName(), WorldPanelHeight + 1);
+        PrintCenterAt(m_GameHUDWindow, m_EntityManager.Approaching(m_Player)->GetDescription(), WorldPanelHeight + 2);
     }
 
     box(m_GameHUDWindow, 0, 0);
@@ -668,9 +668,9 @@ void Screen::DrawMap(WINDOW* mapWindow, Coords cursor)
             case WorldMapObjectType::Room: {
                 const auto& room = world.GetRoomAt(current);
                 icon = GetRoomMapIcon(room);
-                if (room.TryGetEntrance(Direction::Left()) != nullptr)
+                if (room.TryGetEntrance(Direction::Left) != nullptr)
                     mvwaddch(mapWindow, j + 1, i * 2, ACS_HLINE);
-                if (room.TryGetEntrance(Direction::Right()) != nullptr)
+                if (room.TryGetEntrance(Direction::Right) != nullptr)
                     mvwaddch(mapWindow, j + 1, i * 2 + 2, ACS_HLINE);
                 break;
             }
@@ -786,7 +786,7 @@ chtype Screen::GetFieldIcon(const Worlds::Field& field) const
     // Apply highlight if the player is touching this field
     auto lmd = m_Player.GetLastMoveDirection();
     if (canHaveHighlight &&
-        lmd != Direction::None() &&
+        lmd != Direction::None &&
         !m_CurrentRoom->IsPositionAtRoomEdge(m_Player.GetCoords(), lmd) &&
         field.GetCoords() == m_Player.GetCoords().Adjacent(lmd))
     {
@@ -811,10 +811,10 @@ chtype Screen::GetFieldIcon(Coords coords) const
 
 chtype Screen::GetRoomMapIcon(const Worlds::Room& room) const
 {
-    bool up = room.TryGetEntrance(Direction::Up()) != nullptr;
-    bool right = room.TryGetEntrance(Direction::Right()) != nullptr;
-    bool down = room.TryGetEntrance(Direction::Down()) != nullptr;
-    bool left = room.TryGetEntrance(Direction::Left()) != nullptr;
+    bool up = room.TryGetEntrance(Direction::Up) != nullptr;
+    bool right = room.TryGetEntrance(Direction::Right) != nullptr;
+    bool down = room.TryGetEntrance(Direction::Down) != nullptr;
+    bool left = room.TryGetEntrance(Direction::Left) != nullptr;
 
     constexpr static const chtype deadEnd = '#';
 
@@ -863,7 +863,7 @@ WorldMapObjectType Screen::GetWorldMapObjectType(Coords coords) const
     {
         // If the room is undiscovered, we cannot access it directly, but we can check
         // if its neighbors have any entrances leading here.
-        for (const auto& dir : Direction::All())
+        for (const auto& dir : Direction::All)
         {
             if (world.RoomExistsAt(coords.Adjacent(dir)) &&
                 world.GetRoomAt(coords.Adjacent(dir)).TryGetEntrance(dir.Opposite()) != nullptr)

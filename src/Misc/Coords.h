@@ -61,7 +61,7 @@ public:
      * @param there target coords
      * @return true if shares axis
      */
-    bool SharesAxisWith(Coords there) const;
+    bool SharesAxis(Coords there) const;
 
     /**
      * @brief Return a vector of coords in a straight line from here to there
@@ -69,7 +69,7 @@ public:
      * @param there target coords
      * @return std::vector<Coords> coords forming path
      */
-    std::vector<Coords> StraightPathTo(Coords there) const;
+    std::vector<Coords> StraightPath(Coords there) const;
 
     /**
      * @brief Gets the combined X and Y distance from here to there
@@ -77,7 +77,7 @@ public:
      * @param there target coords
      * @return Scalar distance
      */
-    Scalar CombinedDistanceFrom(Coords there) const;
+    Scalar CombinedDistance(Coords there) const;
 
     inline Coords& operator+=(const Coords& r) { X += r.X; Y += r.Y; return *this; }
 

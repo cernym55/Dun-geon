@@ -115,7 +115,7 @@ std::map<Direction, bool> RoomGenerator::GetEntranceInfoByCoords(Coords coords) 
 {
     std::map<Direction, bool> entranceInfo;
 
-    for (auto& dir : Direction::All())
+    for (auto& dir : Direction::All)
     {
         // If there can be no neighbor, forbid entrances
         if (m_World.IsPositionAtWorldGridEdge(coords, dir))

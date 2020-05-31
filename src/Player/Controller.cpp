@@ -19,7 +19,7 @@ Controller::Controller(Entities::EntityManager& entityManager,
 
 bool Controller::TryMovePlayer(Direction dir)
 {
-    return m_EntityManager.TryMovePlayerEntity(dir);
+    return m_EntityManager.TryMovePlayer(dir);
 }
 
 bool Controller::TryMovePlayerDiagonally(Direction first, Direction second)
@@ -39,9 +39,9 @@ bool Controller::TryMovePlayerDiagonally(Direction first, Direction second)
         return false;
 
     if (firstNeighbor == nullptr || firstNeighbor->TryGetForegroundEntity() == nullptr)
-        return m_EntityManager.TryMovePlayerEntity(first) && m_EntityManager.TryMovePlayerEntity(second);
+        return m_EntityManager.TryMovePlayer(first) && m_EntityManager.TryMovePlayer(second);
     else if (secondNeighbor == nullptr || secondNeighbor->TryGetForegroundEntity() == nullptr)
-        return m_EntityManager.TryMovePlayerEntity(second) && m_EntityManager.TryMovePlayerEntity(first);
+        return m_EntityManager.TryMovePlayer(second) && m_EntityManager.TryMovePlayer(first);
     else
         return false;
 }

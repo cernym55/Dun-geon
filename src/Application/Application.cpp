@@ -42,7 +42,7 @@ void Application::Run()
     m_Player.GetStats().valor = 5;
     m_Player.GetStats().haste = 5;
     m_Player.GetStats().magic = 10;
-    m_EntityManager.TryMovePlayerEntity(Direction::None());
+    m_EntityManager.TryMovePlayer(Direction::None);
     while (!m_InputHandler.ShouldQuit())
     {
         m_Screen.Draw();

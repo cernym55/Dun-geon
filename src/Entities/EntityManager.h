@@ -33,14 +33,14 @@ public:
      * @param room room
      * @param entity entity
      */
-    void StoreEntity(Worlds::Room& room, Entity& entity);
+    void Store(Worlds::Room& room, Entity& entity);
 
     /**
      * @brief Perform behavior for all entities in the current room
      */
-    inline void CycleEntitiesInCurrentRoom()
+    inline void CycleCurrentRoom()
     {
-        CycleEntitiesInRoom(m_WorldManager.GetCurrentRoom());
+        Cycle(m_WorldManager.GetCurrentRoom());
     }
 
     /**
@@ -50,7 +50,7 @@ public:
      * @param dir direction
      * @return true if move successful
      */
-    bool TryMovePlayerEntity(Direction dir);
+    bool TryMovePlayer(Direction dir);
 
     /**
      * @brief Get the entity the character is touching
@@ -59,7 +59,7 @@ public:
      * @param character character
      * @return const Entity* entity being approached
      */
-    const Entity* GetApproachedEntity(const Character& character) const;
+    const Entity* Approaching(const Character& character) const;
 
 private:
     Worlds::WorldManager& m_WorldManager;
@@ -81,7 +81,7 @@ private:
      * @param entity entity
      * @return const std::array<const Worlds::Field*, 4> surrounding fields
      */
-    const std::array<const Worlds::Field*, 4> GetFieldsNextToEntity(const Entity& entity) const;
+    const std::array<const Worlds::Field*, 4> AdjacentFields(const Entity& entity) const;
 
     /**
      * @brief Get the field next to the entity in the given direction
@@ -90,14 +90,14 @@ private:
      * @param direction direction
      * @return const Worlds::Field* neighboring field
      */
-    const Worlds::Field* GetFieldNextToEntity(const Entity& entity, Direction dir) const;
+    const Worlds::Field* AdjacentField(const Entity& entity, Direction dir) const;
 
     /**
      * @brief Perform behavior for all entities in the given room
      *
      * @param room room
      */
-    void CycleEntitiesInRoom(Worlds::Room& room);
+    void Cycle(Worlds::Room& room);
 
     /**
      * @brief Place the entity in its position in the given room
@@ -105,7 +105,7 @@ private:
      * @param entity entity
      * @param room room
      */
-    void PlaceEntityInRoom(Entity& entity, Worlds::Room& room);
+    void Place(Entity& entity, Worlds::Room& room);
 
     /**
      * @brief Vacate the field occupied by the entity in the given room
@@ -113,7 +113,7 @@ private:
      * @param entity entity
      * @param room room
      */
-    void VacateEntityFieldInRoom(Entity& entity, Worlds::Room& room);
+    void Pluck(Entity& entity, Worlds::Room& room);
 };
 
 } /* namespace Entities */

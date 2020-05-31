@@ -50,14 +50,14 @@ Coords& Coords::Move(Direction dir)
     return *this;
 }
 
-bool Coords::SharesAxisWith(Coords there) const
+bool Coords::SharesAxis(Coords there) const
 {
     return X == there.X || Y == there.Y;
 }
 
-std::vector<Coords> Coords::StraightPathTo(Coords there) const
+std::vector<Coords> Coords::StraightPath(Coords there) const
 {
-    if (!SharesAxisWith(there))
+    if (!SharesAxis(there))
     {
         std::ostringstream errorMessage;
         errorMessage
@@ -88,7 +88,7 @@ std::vector<Coords> Coords::StraightPathTo(Coords there) const
     return path;
 }
 
-Coords::Scalar Coords::CombinedDistanceFrom(Coords there) const
+Coords::Scalar Coords::CombinedDistance(Coords there) const
 {
     return Abs(X - there.X) + Abs(Y - there.Y);
 }

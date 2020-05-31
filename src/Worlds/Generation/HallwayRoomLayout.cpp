@@ -38,7 +38,7 @@ void HallwayRoomLayout::Generate()
         m_Entrances[dir] = {};
     }
 
-    for (const auto& dir : Direction::All())
+    for (const auto& dir : Direction::All)
     {
         allEntrances[dir] = GenerateEntranceCoords(dir);
     }
@@ -50,11 +50,11 @@ void HallwayRoomLayout::Generate()
     // The two entrance positions on the straight axis must thus share a coordinate.
     if (vertical)
     {
-        allEntrances[Direction::Down()].X = allEntrances[Direction::Up()].X;
+        allEntrances[Direction::Down].X = allEntrances[Direction::Up].X;
     }
     else
     {
-        allEntrances[Direction::Right()].Y = allEntrances[Direction::Left()].Y;
+        allEntrances[Direction::Right].Y = allEntrances[Direction::Left].Y;
     }
 
     // Load the pre-generated entrance positions for the entrances we'll be keeping.
@@ -71,99 +71,99 @@ void HallwayRoomLayout::Generate()
 
     if (vertical)
     {
-        spineCoord = allEntrances[Direction::Up()].X;
-        path = Coords(spineCoord, allEntrances[Direction::Left()].Y)
-                   .StraightPathTo({ spineCoord, allEntrances[Direction::Right()].Y });
+        spineCoord = allEntrances[Direction::Up].X;
+        path = Coords(spineCoord, allEntrances[Direction::Left].Y)
+                   .StraightPath({ spineCoord, allEntrances[Direction::Right].Y });
     }
     else
     {
-        spineCoord = allEntrances[Direction::Left()].Y;
-        path = Coords(allEntrances[Direction::Up()].X, spineCoord)
-                   .StraightPathTo({ allEntrances[Direction::Down()].X, spineCoord });
+        spineCoord = allEntrances[Direction::Left].Y;
+        path = Coords(allEntrances[Direction::Up].X, spineCoord)
+                   .StraightPath({ allEntrances[Direction::Down].X, spineCoord });
     }
 
     spineStart = path.front();
     spineEnd = path.back();
 
     // Add entrance approaches to the path
-    if (m_Entrances.count(Direction::Up()) > 0)
+    if (m_Entrances.count(Direction::Up) > 0)
     {
-        auto entrance = m_Entrances[Direction::Up()];
+        auto entrance = m_Entrances[Direction::Up];
         if (vertical)
         {
-            for (const auto& coords : entrance.StraightPathTo(
-                     Coords(spineCoord, Min(spineStart.Y, spineEnd.Y)).Adjacent(Direction::Up())))
+            for (const auto& coords : entrance.StraightPath(
+                     Coords(spineCoord, Min(spineStart.Y, spineEnd.Y)).Adjacent(Direction::Up)))
             {
                 path.push_back(coords);
             }
         }
         else
         {
-            for (const auto& coords : entrance.StraightPathTo(
-                     Coords(entrance.X, spineCoord).Adjacent(Direction::Up())))
+            for (const auto& coords : entrance.StraightPath(
+                     Coords(entrance.X, spineCoord).Adjacent(Direction::Up)))
             {
                 path.push_back(coords);
             }
         }
     }
 
-    if (m_Entrances.count(Direction::Right()) > 0)
+    if (m_Entrances.count(Direction::Right) > 0)
     {
-        auto entrance = m_Entrances[Direction::Right()];
+        auto entrance = m_Entrances[Direction::Right];
         if (vertical)
         {
-            for (const auto& coords : entrance.StraightPathTo(
-                     Coords(spineCoord, entrance.Y).Adjacent(Direction::Right())))
+            for (const auto& coords : entrance.StraightPath(
+                     Coords(spineCoord, entrance.Y).Adjacent(Direction::Right)))
             {
                 path.push_back(coords);
             }
         }
         else
         {
-            for (const auto& coords : entrance.StraightPathTo(
-                     Coords(Max(spineStart.X, spineEnd.X), spineCoord).Adjacent(Direction::Right())))
+            for (const auto& coords : entrance.StraightPath(
+                     Coords(Max(spineStart.X, spineEnd.X), spineCoord).Adjacent(Direction::Right)))
             {
                 path.push_back(coords);
             }
         }
     }
 
-    if (m_Entrances.count(Direction::Down()) > 0)
+    if (m_Entrances.count(Direction::Down) > 0)
     {
-        auto entrance = m_Entrances[Direction::Down()];
+        auto entrance = m_Entrances[Direction::Down];
         if (vertical)
         {
-            for (const auto& coords : entrance.StraightPathTo(
-                     Coords(spineCoord, Max(spineStart.Y, spineEnd.Y)).Adjacent(Direction::Down())))
+            for (const auto& coords : entrance.StraightPath(
+                     Coords(spineCoord, Max(spineStart.Y, spineEnd.Y)).Adjacent(Direction::Down)))
             {
                 path.push_back(coords);
             }
         }
         else
         {
-            for (const auto& coords : entrance.StraightPathTo(
-                     Coords(entrance.X, spineCoord).Adjacent(Direction::Down())))
+            for (const auto& coords : entrance.StraightPath(
+                     Coords(entrance.X, spineCoord).Adjacent(Direction::Down)))
             {
                 path.push_back(coords);
             }
         }
     }
 
-    if (m_Entrances.count(Direction::Left()) > 0)
+    if (m_Entrances.count(Direction::Left) > 0)
     {
-        auto entrance = m_Entrances[Direction::Left()];
+        auto entrance = m_Entrances[Direction::Left];
         if (vertical)
         {
-            for (const auto& coords : entrance.StraightPathTo(
-                     Coords(spineCoord, entrance.Y).Adjacent(Direction::Left())))
+            for (const auto& coords : entrance.StraightPath(
+                     Coords(spineCoord, entrance.Y).Adjacent(Direction::Left)))
             {
                 path.push_back(coords);
             }
         }
         else
         {
-            for (const auto& coords : entrance.StraightPathTo(
-                     Coords(Min(spineStart.X, spineEnd.X), spineCoord).Adjacent(Direction::Left())))
+            for (const auto& coords : entrance.StraightPath(
+                     Coords(Min(spineStart.X, spineEnd.X), spineCoord).Adjacent(Direction::Left)))
             {
                 path.push_back(coords);
             }

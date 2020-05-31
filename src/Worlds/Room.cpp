@@ -31,7 +31,7 @@ Room::Room(WorldManager& worldManager,
     m_Width = m_Fields.size();
     m_Height = m_Fields[0].size();
     const auto& entrances = layout.GetEntrances();
-    for (const auto& dir : Direction::All())
+    for (const auto& dir : Direction::All)
     {
         m_Entrances[dir.ToInt()] = entrances.count(dir) > 0 ? &GetFieldAt(entrances.at(dir)) : nullptr;
     }
