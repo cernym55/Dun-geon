@@ -1,6 +1,7 @@
 #define BOOST_TEST_MODULE Misc.Coords
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
+#include "Helpers.h"
 #include "Misc/Coords.h"
 #include "Misc/Direction.h"
 #include "Misc/Exceptions.h"
@@ -11,12 +12,13 @@ BOOST_AUTO_TEST_CASE(Constructors)
 {
     // Check that constructors assign the correct values
     Coords defaultCoords;
-    BOOST_CHECK_EQUAL(defaultCoords.X, 0);
-    BOOST_CHECK_EQUAL(defaultCoords.Y, 0);
+    BOOST_CHECK_EQUAL(defaultCoords, Coords(0, 0));
 
     Coords nonDefaultCoords(2, 4);
-    BOOST_CHECK_EQUAL(nonDefaultCoords.X, 2);
-    BOOST_CHECK_EQUAL(nonDefaultCoords.Y, 4);
+    BOOST_CHECK_EQUAL(nonDefaultCoords, Coords(2, 4));
+
+    Coords copy(nonDefaultCoords);
+    BOOST_CHECK_EQUAL(copy, Coords(2, 4));
 }
 
 BOOST_AUTO_TEST_CASE(Adjacent)
@@ -85,9 +87,8 @@ BOOST_AUTO_TEST_CASE(Operators)
     Coords a(2, 4);
     Coords a2(2, 4);
     BOOST_CHECK(a == a2);
-
-    Coords b(1, 1);
     // Check operator!=
+    Coords b(1, 1);
     BOOST_CHECK(a != b);
     // Check operator+
     BOOST_CHECK_EQUAL(a + b, Coords(3, 5));
@@ -103,7 +104,5 @@ BOOST_AUTO_TEST_CASE(Operators)
 
     // Check operator<<
     a = {2, 4};
-    std::ostringstream oss;
-    oss << a;
-    BOOST_CHECK_EQUAL(oss.str(), "[2, 4]");
+    CheckStringConversion(a, "[2, 4]");
 }

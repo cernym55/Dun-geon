@@ -43,7 +43,7 @@ test: $(OBJS) $(PROG) $(TESTBINS)
 	@i=1 ; $(foreach testbin,$(TESTBINS),$(TESTFMT) $$i ; $(testbin) ; i=$$((i + 1)) ;)
 
 %.test: %Test.cpp $(filter-out %/main.o,$(OBJS)) 
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) -lboost_unit_test_framework $^ -o $@
+	$(CXX) $(CXXFLAGS) -Itest $(LDFLAGS) -lboost_unit_test_framework $^ -o $@
 
 # Clean target
 clean:
