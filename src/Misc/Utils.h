@@ -46,6 +46,8 @@ int Abs(int x);
 
 /**
  * @brief Shorten the string if it is above the maximum length
+ * If the short string is above a certain length,
+ * an ellipsis is inserted for indication.
  * 
  * @param str string
  * @param maxLength maximum length

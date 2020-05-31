@@ -15,10 +15,11 @@ int Abs(int x)
 
 std::string ShortenString(const std::string& str, size_t maxLength)
 {
+    if (str.size() <= maxLength) return str;
     std::string out = str;
     out.erase(out.begin() + maxLength, out.end());
     // Don't add an ellipsis if the string is very short
-    if (maxLength > 5)
+    if (maxLength > 5 && str.size() > 5)
     {
         for (size_t i = 1; i <= 3; i++)
         {
