@@ -4,6 +4,23 @@
 #include "Helpers.h"
 #include "Misc/Direction.h"
 
+BOOST_AUTO_TEST_CASE(Statics)
+{
+    // Check that the static members are initialized correctly
+    BOOST_CHECK_EQUAL(Direction::Up(), Direction::Value::Up);
+    BOOST_CHECK_EQUAL(Direction::Right(), Direction::Value::Right);
+    BOOST_CHECK_EQUAL(Direction::Down(), Direction::Value::Down);
+    BOOST_CHECK_EQUAL(Direction::Left(), Direction::Value::Left);
+    BOOST_CHECK_EQUAL(Direction::None(), Direction::Value::None);
+
+    // Check the "All" collection has the correct size and order of elements
+    BOOST_CHECK_EQUAL(Direction::All.size(), 4);
+    for (size_t i = 0; i < Direction::All.size(); i++)
+    {
+        BOOST_CHECK_EQUAL(Direction::All[i], static_cast<Direction::Value>(i));
+    }
+}
+
 BOOST_AUTO_TEST_CASE(Constructors)
 {
     // Check that constructors assign the correct values
