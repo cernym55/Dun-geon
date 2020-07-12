@@ -16,9 +16,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: dependencies
-      uses: ryankurte/action-apt@v0.1.0
+      uses: DiscordPP/getpackagepp@1.1
       with:
-        packages: libncurses5 libncurses5-dev
+        apt: libncurses5 libncurses5-dev
     - name: make
       run: make
     - name: make test
