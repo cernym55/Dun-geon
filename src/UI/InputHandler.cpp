@@ -82,7 +82,7 @@ void InputHandler::ExecCommandQueue()
     {
         Command cmd = m_CommandQueue.front();
         m_CommandQueue.pop();
-        while (cmd.repeats > 0)
+        while (cmd.Repeats > 0)
         {
             // Empty queue on unsuccessful command
             if (!ExecCommand(cmd))
@@ -440,12 +440,12 @@ void InputHandler::ProcessKeypress()
 }
 
 InputHandler::Command::Command()
-    : type(CommandType::None), dir(Direction::None), repeats(1)
+    : Type(CommandType::None), Dir(Direction::None), Repeats(1)
 {
 }
 
 InputHandler::Command::Command(InputHandler::CommandType type, Direction dir, int repeats)
-    : type(type), dir(dir), repeats(repeats)
+    : Type(type), Dir(dir), Repeats(repeats)
 {
 }
 
@@ -453,17 +453,17 @@ bool InputHandler::ExecCommand(Command& command)
 {
     std::ostringstream messageStream;
     bool result = true;
-    switch (command.type)
+    switch (command.Type)
     {
     case CommandType::None:
         break;
     case CommandType::Move:
-        if (command.dir == Direction::None)
+        if (command.Dir == Direction::None)
         {
             messageStream << "No direction given.";
             result = false;
         }
-        else if (!m_PlayerController.TryMovePlayer(command.dir))
+        else if (!m_PlayerController.TryMovePlayer(command.Dir))
         {
             messageStream << "Cannot move there.";
             result = false;
@@ -494,7 +494,7 @@ bool InputHandler::ExecCommand(Command& command)
         m_Screen.PostMessage(messageStream.str());
     }
 
-    command.repeats--;
+    command.Repeats--;
     return result;
 }
 
@@ -542,7 +542,7 @@ void InputHandler::EvalWorld(std::vector<std::string>& words)
         {
             if (m_CmdDict.count(*it) > 0)
             {
-                cmd.type = m_CmdDict[*it];
+                cmd.Type = m_CmdDict[*it];
                 understood = true;
                 break;
             }
@@ -566,18 +566,18 @@ void InputHandler::EvalWorld(std::vector<std::string>& words)
             int repeats = std::atoi(it->c_str());
             if (repeats > 0)
             {
-                cmd.repeats = repeats;
+                cmd.Repeats = repeats;
                 if (lastCalled)
                 {
-                    cmd.repeats *= m_LastCommand.repeats;
+                    cmd.Repeats *= m_LastCommand.Repeats;
                 }
-                if (cmd.repeats > 500) cmd.repeats = 500;
+                if (cmd.Repeats > 500) cmd.Repeats = 500;
             }
 
             // look for direction keywords
             if (m_DirDict.count(*it) > 0)
             {
-                cmd.dir = m_DirDict[*it];
+                cmd.Dir = m_DirDict[*it];
             }
         }
 

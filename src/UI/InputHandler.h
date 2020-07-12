@@ -98,9 +98,9 @@ private:
      */
     struct Command
     {
-        CommandType type;
-        Direction dir;
-        int repeats;
+        CommandType Type;
+        Direction Dir;
+        int Repeats;
 
         /**
          * @brief Constructor
