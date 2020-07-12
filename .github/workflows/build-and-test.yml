@@ -1,0 +1,21 @@
+name: Build and Test
+
+on:
+  pull_request:
+    branches:
+      - '**/master'
+      - master
+  push:
+    branches:
+      - '**/master'
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: make
+      run: make
+    - name: make test
+      run: make test
