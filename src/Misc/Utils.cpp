@@ -19,7 +19,7 @@ std::string ShortenString(const std::string& str, size_t maxLength)
     std::string out = str;
     out.erase(out.begin() + maxLength, out.end());
     // Don't add an ellipsis if the string is very short
-    if (maxLength > 5 && str.size() > 5)
+    if (maxLength > 5)
     {
         for (size_t i = 1; i <= 3; i++)
         {
