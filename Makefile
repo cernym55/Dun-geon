@@ -40,7 +40,7 @@ test: $(OBJS) $(PROG) $(TESTBINS)
 	@echo '*****************************************'
 	@echo "  Running unit tests: $(TESTCOUNT) modules ready"
 	@echo '*****************************************'
-	@i=1 ; $(foreach testbin,$(TESTBINS),$(TESTFMT) $$i ; $(testbin) ; i=$$((i + 1)) ;)
+	@i=1 ; $(foreach testbin,$(TESTBINS),$(TESTFMT) $$i ; $(testbin) || exit 1 ; i=$$((i + 1)) ;)
 
 %.test: %Test.cpp $(filter-out %/main.o,$(OBJS)) 
 	$(CXX) $(CXXFLAGS) -Itest $(LDFLAGS) -lboost_unit_test_framework $^ -o $@
