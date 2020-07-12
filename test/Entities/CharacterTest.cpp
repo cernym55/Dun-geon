@@ -10,8 +10,9 @@ BOOST_AUTO_TEST_CASE(Move)
     Entities::Character character("Name");
     Coords originalCoords = character.GetCoords();
     BOOST_REQUIRE_EQUAL(character.GetLastMoveDirection(), Direction::None);
-    character.Move(Direction::Right);
+    const Direction direction = Direction::Right;
+    character.Move(direction);
     // Check that character's coords and last move direction have changed
-    BOOST_CHECK_EQUAL(character.GetCoords(), originalCoords.Adjacent(Direction::Right));
-    BOOST_CHECK_EQUAL(character.GetLastMoveDirection(), Direction::Right);
+    BOOST_CHECK_EQUAL(character.GetCoords(), originalCoords.Adjacent(direction));
+    BOOST_CHECK_EQUAL(character.GetLastMoveDirection(), direction);
 }
