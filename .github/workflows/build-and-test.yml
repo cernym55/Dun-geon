@@ -14,11 +14,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Get Package
-      uses: mstksg/get-package@v1
-      with:
-        apt-get: libncurses5 libncurses5-dev
     - uses: actions/checkout@v2
+    - name: dependencies
+      uses: ryankurte/action-apt@v0.1.0
+      with:
+        packages: libncurses5 libncurses5-dev
     - name: make
       run: make
     - name: make test
