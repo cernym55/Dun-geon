@@ -37,10 +37,12 @@ bool EntityManager::TryMovePlayer(Direction dir)
     {
         Direction nextRoomEntranceDir = dir.Opposite();
         Pluck(m_Player, m_WorldManager.CurrentRoom());
+        Coords offset = m_Player.GetCoords() - m_WorldManager.CurrentRoom().Entrance(dir)->GetCoords();
         Worlds::Room& nextRoom = m_WorldManager.SwitchRoom(dir);
         Coords newCoords = nextRoom
                                .Entrance(nextRoomEntranceDir)
-                               ->GetCoords();
+                               ->GetCoords() +
+                           offset;
         m_Player.SetCoords(newCoords);
         m_Player.SetLastMoveDirection(dir);
         Place(m_Player, nextRoom);
