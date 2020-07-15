@@ -201,7 +201,7 @@ void Screen::ShowMap()
     } while (!done);
 
     // Clean up the window
-    wclear(mapWindow);
+    werase(mapWindow);
     wrefresh(mapWindow);
 
     delwin(mapWindow);
@@ -295,7 +295,7 @@ bool Screen::YesNoMessageBox(const std::string& prompt, const std::string& leftO
 
     unpost_menu(menu);
     free_menu(menu);
-    wclear(boxWin);
+    werase(boxWin);
     wrefresh(boxWin);
     delwin(boxSub);
     delwin(boxWin);
@@ -451,7 +451,7 @@ int Screen::SelectViaMenu(std::map<int, std::string> options, Coords position, i
     }
 
     unpost_menu(menu);
-    wclear(menuWindow);
+    werase(menuWindow);
     wrefresh(menuWindow);
     delwin(menuSub);
     delwin(menuWindow);
@@ -474,7 +474,7 @@ void Screen::StartGame()
 
 void Screen::ResizeAndRepositionWorldWindow()
 {
-    wclear(m_GameWorldWindow);
+    werase(m_GameWorldWindow);
     wrefresh(m_GameWorldWindow);
     const Worlds::Room& currentRoom = m_WorldManager.GetCurrentRoom();
 
@@ -496,7 +496,7 @@ void Screen::ResizeAndRepositionWorldWindow()
 
 void Screen::DrawWorld()
 {
-    wclear(m_GameWorldWindow);
+    werase(m_GameWorldWindow);
     if (m_CurrentRoom != &m_WorldManager.GetCurrentRoom())
     {
         m_CurrentRoom = &m_WorldManager.GetCurrentRoom();
@@ -561,7 +561,7 @@ void Screen::DrawWorld()
 
 void Screen::DrawHUD()
 {
-    wclear(m_GameHUDWindow);
+    werase(m_GameHUDWindow);
     const auto& stats = m_Player.GetStats();
     mvwprintw(m_GameHUDWindow, 2, 4, "World %d", m_WorldManager.GetCurrentWorld().GetWorldNumber());
     mvwprintw(m_GameHUDWindow, 2, HUDPanelWidth - 10, "Room %d", m_WorldManager.GetCurrentRoom().GetRoomNumber());
@@ -614,7 +614,7 @@ void Screen::DrawHUD()
 
 void Screen::DrawMessageWindow(bool shouldPostMessage)
 {
-    wclear(m_GameMessageWindow);
+    werase(m_GameMessageWindow);
     wborder(m_GameMessageWindow, 0, 0, 0, 0, 0, ACS_PLUS, 0, ACS_BTEE);
     if (shouldPostMessage)
     {
@@ -639,7 +639,7 @@ void Screen::DrawMessageWindow(bool shouldPostMessage)
 
 void Screen::DrawMap(WINDOW* mapWindow, Coords cursor)
 {
-    wclear(mapWindow);
+    werase(mapWindow);
     wattron(mapWindow, COLOR_PAIR(ColorPairs::BlackOnYellow));
     box(mapWindow, 0, 0);
     PrintCenterAt(mapWindow, " [SPACE] to toggle cursor ", WorldMapHeight - 1);
