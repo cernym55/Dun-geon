@@ -70,8 +70,8 @@ InputHandler::InputHandler(Screen& screen, Player::Controller& playerController)
     m_DirDict["down"] = Direction::Down;
     m_DirDict["l"] = Direction::Left;
     m_DirDict["left"] = Direction::Left;
-    m_AndKeywords = { "and", "&", "then" };
-    m_LastKeywords = { "a", "last", "repeat", "again" };
+    m_AndKeywords = {"and", "&", "then"};
+    m_LastKeywords = {"a", "last", "repeat", "again"};
     makeKeyConf();
     loadKeyConf();
 }
@@ -377,8 +377,13 @@ void InputHandler::loadKeyConf()
 void InputHandler::ProcessKeypress()
 {
     static const std::string CannotMoveMessage = "Cannot move there.";
-    int key = getch();
-    switch (key)
+    std::optional<chtype> key;
+    while (!key)
+    {
+        key = ReadKeypress({'w', 'd', 's', 'a', KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT, 'q', 'e', 'c', 'z', ' ', 'm', 27});
+    }
+
+    switch (key.value())
     {
     case 'w':
     case KEY_UP:
@@ -420,7 +425,8 @@ void InputHandler::ProcessKeypress()
             m_Screen.PostMessage(CannotMoveMessage);
         }
         break;
-    case ' ': {
+    case ' ':
+    {
         std::string input = CommandInput();
         if (!input.empty())
         {
@@ -437,6 +443,13 @@ void InputHandler::ProcessKeypress()
     }
 
     if (!m_ShouldQuit) ExecCommandQueue();
+}
+
+std::optional<chtype> InputHandler::ReadKeypress(const std::vector<chtype>& validInput, WINDOW* window)
+{
+    chtype ch = wgetch(window);
+    auto it = std::find(validInput.begin(), validInput.end(), ch);
+    return it != validInput.end() ? *it : std::optional<chtype>();
 }
 
 InputHandler::Command::Command()

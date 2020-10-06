@@ -3,9 +3,10 @@
 #include "Entities/Character.h"
 #include "Misc/Direction.h"
 #include "Player/Controller.h"
-#include <queue>
 #include <iostream>
 #include <map>
+#include <optional>
+#include <queue>
 #include <string>
 #include <vector>
 
@@ -92,6 +93,13 @@ public:
      */
     void ProcessKeypress();
 
+    /**
+     * @brief Read a keypress and return the key or empty optional if not in list of valid inputs
+     * @param validInput list of valid inputs
+     * @param window window to read from
+     */
+    static std::optional<chtype> ReadKeypress(const std::vector<chtype>& validInput, WINDOW* window = stdscr);
+
 private:
     /**
      * @brief A game command issued by the player
@@ -111,8 +119,8 @@ private:
          * @brief Constructor
          * 
          * @param type type
-         * @param dir 
-         * @param repeats 
+         * @param dir direction
+         * @param repeats number of repeats
          */
         Command(CommandType type, Direction dir, int repeats);
     };
