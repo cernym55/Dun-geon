@@ -22,7 +22,7 @@ all: $(PROG)
 
 # Program target
 $(PROG): $(OBJS) $(DATADIR)
-	$(CXX) $(LDFLAGS) -o $(PROG) $(OBJS)
+	$(CXX) -o $(PROG) $(OBJS) $(LDFLAGS)
 
 $(OBJDIR) $(DATADIR):
 	@mkdir -p $@
@@ -43,7 +43,7 @@ test: $(OBJS) $(PROG) $(TESTBINS)
 	@i=1 ; $(foreach testbin,$(TESTBINS),$(TESTFMT) $$i ; $(testbin) || exit 1 ; i=$$((i + 1)) ;)
 
 %.test: %Test.cpp $(filter-out %/main.o,$(OBJS)) 
-	$(CXX) $(CXXFLAGS) -Itest $(LDFLAGS) -lboost_unit_test_framework $^ -o $@
+	$(CXX) $(CXXFLAGS) -Itest $^ -o $@ $(LDFLAGS) -lboost_unit_test_framework
 
 # Clean target
 clean:
