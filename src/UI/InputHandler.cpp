@@ -428,6 +428,7 @@ void InputHandler::ProcessKeypress()
     case ' ':
     {
         std::string input = CommandInput();
+        m_Screen.Draw();
         if (!input.empty())
         {
             Eval(input);
