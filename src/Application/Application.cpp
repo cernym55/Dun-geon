@@ -27,9 +27,9 @@ void Application::Run()
 {
     m_Screen.MainMenu();
     //TODO: move Player initialization out
-    const Worlds::World& world = const_cast<const Worlds::WorldManager&>(m_WorldManager).GetCurrentWorld();
-    m_Player.SetCoords({ static_cast<Coords::Scalar>(world.GetStartingRoom().GetWidth() / 2),
-                         static_cast<Coords::Scalar>(world.GetStartingRoom().GetHeight() / 2) });
+    const Worlds::World& world = const_cast<const Worlds::WorldManager&>(m_WorldManager).CurrentWorld();
+    m_Player.SetCoords({ static_cast<Coords::Scalar>(world.StartingRoom().GetWidth() / 2),
+                         static_cast<Coords::Scalar>(world.StartingRoom().GetHeight() / 2) });
     m_Player.GetStats().level = 1;
     m_Player.GetStats().XP = 0;
     m_Player.GetStats().XPToNextLevel = 1;
@@ -42,11 +42,11 @@ void Application::Run()
     m_Player.GetStats().valor = 5;
     m_Player.GetStats().haste = 5;
     m_Player.GetStats().magic = 10;
-    m_EntityManager.TryMovePlayerEntity(Direction::None());
+    m_EntityManager.TryMovePlayer(Direction::None);
     while (!m_InputHandler.ShouldQuit())
     {
         m_Screen.Draw();
-        m_InputHandler.HandleNextKeyInput();
+        m_InputHandler.ProcessKeypress();
     }
 }
 

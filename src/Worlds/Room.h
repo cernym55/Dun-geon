@@ -35,19 +35,6 @@ public:
          int roomNumber,
          Coords coords);
 
-    Room(const Room&) = delete;
-
-    Room(Room&&) = delete;
-
-    Room& operator=(const Room&) = delete;
-
-    Room& operator=(Room&&) = delete;
-
-    /**
-     * @brief Destructor
-     */
-    ~Room() = default;
-
     /**
      * @brief Get the coordinates
      * 
@@ -104,7 +91,7 @@ public:
      * @param dir direction
      * @return const Field& entrance field
      */
-    const Field* TryGetEntrance(Direction dir) const;
+    const Field* Entrance(Direction dir) const;
 
     /**
      * @brief Check if the room has a neighboring room in the given direction
@@ -120,7 +107,7 @@ public:
      * @param dir direction
      * @return const Room& neighboring room
      */
-    const Room& GetNeighbor(Direction dir) const;
+    const Room& Neighbor(Direction dir) const;
 
     /**
      * @brief Get the field at the specified coords
@@ -128,7 +115,7 @@ public:
      * @param coords coordinates
      * @return Field& target field
      */
-    Field& GetFieldAt(Coords coords);
+    Field& FieldAt(Coords coords);
 
     /**
      * @brief Get the field at the specified coords
@@ -136,7 +123,7 @@ public:
      * @param coords coordinates
      * @return const Field& target field
      */
-    const Field& GetFieldAt(Coords coords) const;
+    const Field& FieldAt(Coords coords) const;
 
     /**
      * @brief Check if the coords are at the edge of this room
@@ -145,7 +132,7 @@ public:
      * @param dir edge direction
      * @return true if at the edge
      */
-    bool IsPositionAtRoomEdge(Coords coords, Direction dir) const;
+    bool IsAtRoomEdge(Coords coords, Direction dir) const;
 
 protected:
     WorldManager& m_WorldManager;

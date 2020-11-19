@@ -81,14 +81,6 @@ public:
            const Entities::EntityManager& entityManager,
            const Entities::Player& player);
 
-    Screen(const Screen&) = delete;
-
-    Screen(Screen&&) = delete;
-
-    Screen& operator=(const Screen&) = delete;
-
-    Screen& operator=(Screen&&) = delete;
-
     /**
      * @brief Destructor
      */
@@ -172,7 +164,7 @@ private:
      * @param str string
      * @param yPos Y position
      */
-    void PrintCenterAt(const std::string& str, int yPos);
+    void PrintCenter(const std::string& str, int yPos);
 
     /**
      * @brief Print the string centered in given window on line yPos
@@ -181,7 +173,7 @@ private:
      * @param str string
      * @param yPos Y position
      */
-    void PrintCenterAt(WINDOW* window, const std::string& str, int yPos);
+    void PrintCenter(WINDOW* window, const std::string& str, int yPos);
 
     /**
      * @brief Draw the Dun-geon logo at the selected position
@@ -215,7 +207,7 @@ private:
     /**
      * @brief Resize and reposition the world window according to current room dimensions
      */
-    void ResizeAndRepositionWorldWindow();
+    void ResizeWorldWindow();
 
     /**
      * @brief Draw the world window
@@ -258,7 +250,7 @@ private:
      * @param field field
      * @return chtype icon
      */
-    chtype GetFieldIcon(const Worlds::Field& field) const;
+    chtype FieldIcon(const Worlds::Field& field) const;
 
     /**
      * @brief Get the icon for the field at the given coords
@@ -266,7 +258,7 @@ private:
      * @param coords coords
      * @return chtype icon
      */
-    chtype GetFieldIcon(Coords coords) const;
+    chtype FieldIcon(Coords coords) const;
 
     /**
      * @brief Get the map icon for this room
@@ -274,7 +266,7 @@ private:
      * @param room room
      * @return chtype map icon
      */
-    chtype GetRoomMapIcon(const Worlds::Room& room) const;
+    chtype RoomMapIcon(const Worlds::Room& room) const;
 
     /**
      * @brief Get the WorldMapObjectType for the given coords
@@ -282,7 +274,7 @@ private:
      * @param coords coords
      * @return WorldMapObjectType object type
      */
-    WorldMapObjectType GetWorldMapObjectType(Coords coords) const;
+    WorldMapObjectType MapObjectType(Coords coords) const;
 };
 
 } /* namespace UI */

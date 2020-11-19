@@ -62,16 +62,16 @@ InputHandler::InputHandler(Screen& screen, Player::Controller& playerController)
     m_UICmdDict["q"] = UICommandType::Quit;
     m_UICmdDict["quit"] = UICommandType::Quit;
     m_UICmdDict["exit"] = UICommandType::Quit;
-    m_DirDict["u"] = Direction::Up();
-    m_DirDict["up"] = Direction::Up();
-    m_DirDict["r"] = Direction::Right();
-    m_DirDict["right"] = Direction::Right();
-    m_DirDict["d"] = Direction::Down();
-    m_DirDict["down"] = Direction::Down();
-    m_DirDict["l"] = Direction::Left();
-    m_DirDict["left"] = Direction::Left();
-    m_AndKeywords = { "and", "&", "then" };
-    m_LastKeywords = { "a", "last", "repeat", "again" };
+    m_DirDict["u"] = Direction::Up;
+    m_DirDict["up"] = Direction::Up;
+    m_DirDict["r"] = Direction::Right;
+    m_DirDict["right"] = Direction::Right;
+    m_DirDict["d"] = Direction::Down;
+    m_DirDict["down"] = Direction::Down;
+    m_DirDict["l"] = Direction::Left;
+    m_DirDict["left"] = Direction::Left;
+    m_AndKeywords = {"and", "&", "then"};
+    m_LastKeywords = {"a", "last", "repeat", "again"};
     makeKeyConf();
     loadKeyConf();
 }
@@ -82,7 +82,7 @@ void InputHandler::ExecCommandQueue()
     {
         Command cmd = m_CommandQueue.front();
         m_CommandQueue.pop();
-        while (cmd.repeats > 0)
+        while (cmd.Repeats > 0)
         {
             // Empty queue on unsuccessful command
             if (!ExecCommand(cmd))
@@ -331,28 +331,28 @@ void InputHandler::loadKeyConf()
                 {
                     for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        m_DirDict[wordVec[i]] = Direction::Up();
+                        m_DirDict[wordVec[i]] = Direction::Up;
                     }
                 }
                 else if (wordVec[0] == "RIGHT")
                 {
                     for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        m_DirDict[wordVec[i]] = Direction::Right();
+                        m_DirDict[wordVec[i]] = Direction::Right;
                     }
                 }
                 else if (wordVec[0] == "DOWN")
                 {
                     for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        m_DirDict[wordVec[i]] = Direction::Down();
+                        m_DirDict[wordVec[i]] = Direction::Down;
                     }
                 }
                 else if (wordVec[0] == "LEFT")
                 {
                     for (size_t i = 1; i < wordVec.size(); i++)
                     {
-                        m_DirDict[wordVec[i]] = Direction::Left();
+                        m_DirDict[wordVec[i]] = Direction::Left;
                     }
                 }
                 else if (wordVec[0] == "AND")
@@ -374,54 +374,61 @@ void InputHandler::loadKeyConf()
     }
 }
 
-void InputHandler::HandleNextKeyInput()
+void InputHandler::ProcessKeypress()
 {
     static const std::string CannotMoveMessage = "Cannot move there.";
-    int key = getch();
-    switch (key)
+    std::optional<chtype> key;
+    while (!key)
+    {
+        key = ReadKeypress({'w', 'd', 's', 'a', KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT, 'q', 'e', 'c', 'z', ' ', 'm', 27});
+    }
+
+    switch (key.value())
     {
     case 'w':
     case KEY_UP:
-        m_CommandQueue.emplace(CommandType::Move, Direction::Up(), 1);
+        m_CommandQueue.emplace(CommandType::Move, Direction::Up, 1);
         break;
     case 'd':
     case KEY_RIGHT:
-        m_CommandQueue.emplace(CommandType::Move, Direction::Right(), 1);
+        m_CommandQueue.emplace(CommandType::Move, Direction::Right, 1);
         break;
     case 's':
     case KEY_DOWN:
-        m_CommandQueue.emplace(CommandType::Move, Direction::Down(), 1);
+        m_CommandQueue.emplace(CommandType::Move, Direction::Down, 1);
         break;
     case 'a':
     case KEY_LEFT:
-        m_CommandQueue.emplace(CommandType::Move, Direction::Left(), 1);
+        m_CommandQueue.emplace(CommandType::Move, Direction::Left, 1);
         break;
     case 'q':
-        if (!m_PlayerController.TryMovePlayerDiagonally(Direction::Up(), Direction::Left()))
+        if (!m_PlayerController.TryMovePlayerDiagonally(Direction::Up, Direction::Left))
         {
             m_Screen.PostMessage(CannotMoveMessage);
         }
         break;
     case 'e':
-        if (!m_PlayerController.TryMovePlayerDiagonally(Direction::Up(), Direction::Right()))
+        if (!m_PlayerController.TryMovePlayerDiagonally(Direction::Up, Direction::Right))
         {
             m_Screen.PostMessage(CannotMoveMessage);
         }
         break;
     case 'c':
-        if (!m_PlayerController.TryMovePlayerDiagonally(Direction::Down(), Direction::Right()))
+        if (!m_PlayerController.TryMovePlayerDiagonally(Direction::Down, Direction::Right))
         {
             m_Screen.PostMessage(CannotMoveMessage);
         }
         break;
     case 'z':
-        if (!m_PlayerController.TryMovePlayerDiagonally(Direction::Down(), Direction::Left()))
+        if (!m_PlayerController.TryMovePlayerDiagonally(Direction::Down, Direction::Left))
         {
             m_Screen.PostMessage(CannotMoveMessage);
         }
         break;
-    case ' ': {
-        std::string input = GetTextInputFromPrompt();
+    case ' ':
+    {
+        std::string input = CommandInput();
+        m_Screen.Draw();
         if (!input.empty())
         {
             Eval(input);
@@ -439,13 +446,20 @@ void InputHandler::HandleNextKeyInput()
     if (!m_ShouldQuit) ExecCommandQueue();
 }
 
+std::optional<chtype> InputHandler::ReadKeypress(const std::vector<chtype>& validInput, WINDOW* window)
+{
+    chtype ch = wgetch(window);
+    auto it = std::find(validInput.begin(), validInput.end(), ch);
+    return it != validInput.end() ? *it : std::optional<chtype>();
+}
+
 InputHandler::Command::Command()
-    : type(CommandType::None), dir(Direction::None()), repeats(1)
+    : Type(CommandType::None), Dir(Direction::None), Repeats(1)
 {
 }
 
 InputHandler::Command::Command(InputHandler::CommandType type, Direction dir, int repeats)
-    : type(type), dir(dir), repeats(repeats)
+    : Type(type), Dir(dir), Repeats(repeats)
 {
 }
 
@@ -453,17 +467,17 @@ bool InputHandler::ExecCommand(Command& command)
 {
     std::ostringstream messageStream;
     bool result = true;
-    switch (command.type)
+    switch (command.Type)
     {
     case CommandType::None:
         break;
     case CommandType::Move:
-        if (command.dir == Direction::None())
+        if (command.Dir == Direction::None)
         {
             messageStream << "No direction given.";
             result = false;
         }
-        else if (!m_PlayerController.TryMovePlayer(command.dir))
+        else if (!m_PlayerController.TryMovePlayer(command.Dir))
         {
             messageStream << "Cannot move there.";
             result = false;
@@ -494,7 +508,7 @@ bool InputHandler::ExecCommand(Command& command)
         m_Screen.PostMessage(messageStream.str());
     }
 
-    command.repeats--;
+    command.Repeats--;
     return result;
 }
 
@@ -542,7 +556,7 @@ void InputHandler::EvalWorld(std::vector<std::string>& words)
         {
             if (m_CmdDict.count(*it) > 0)
             {
-                cmd.type = m_CmdDict[*it];
+                cmd.Type = m_CmdDict[*it];
                 understood = true;
                 break;
             }
@@ -566,18 +580,18 @@ void InputHandler::EvalWorld(std::vector<std::string>& words)
             int repeats = std::atoi(it->c_str());
             if (repeats > 0)
             {
-                cmd.repeats = repeats;
+                cmd.Repeats = repeats;
                 if (lastCalled)
                 {
-                    cmd.repeats *= m_LastCommand.repeats;
+                    cmd.Repeats *= m_LastCommand.Repeats;
                 }
-                if (cmd.repeats > 500) cmd.repeats = 500;
+                if (cmd.Repeats > 500) cmd.Repeats = 500;
             }
 
             // look for direction keywords
             if (m_DirDict.count(*it) > 0)
             {
-                cmd.dir = m_DirDict[*it];
+                cmd.Dir = m_DirDict[*it];
             }
         }
 
@@ -593,7 +607,7 @@ void InputHandler::EvalWorld(std::vector<std::string>& words)
     } while (nextAndKeyword != words.end());
 }
 
-std::string InputHandler::GetTextInputFromPrompt()
+std::string InputHandler::CommandInput()
 {
     WINDOW* inputWindow = newwin(3,
                                  Screen::ScreenWidth - 20,

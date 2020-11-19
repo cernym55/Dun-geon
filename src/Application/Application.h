@@ -11,7 +11,7 @@ namespace Application
 {
 
 /**
- * @brief Global application class
+ * @brief Application encapsulation
  */
 class Application
 {
@@ -20,19 +20,6 @@ public:
      * @brief Constructor
      */
     Application();
-
-    Application(const Application&) = delete;
-
-    Application(Application&&) = delete;
-
-    Application& operator=(const Application&) = delete;
-
-    Application& operator=(Application&&) = delete;
-
-    /**
-     * @brief Default destructor
-     */
-    ~Application() = default;
 
     /**
      * @brief Run the application

@@ -35,19 +35,6 @@ public:
      */
     World(WorldManager& worldManager, int worldNumber);
 
-    World(const World&) = delete;
-
-    World(World&&) = delete;
-
-    World& operator=(const World&) = delete;
-
-    World& operator=(World&&) = delete;
-
-    /**
-     * @brief Destructor
-     */
-    ~World() = default;
-
     /**
      * @brief Get the world number
      * 
@@ -61,7 +48,7 @@ public:
      * @param coords coordinates
      * @return Room& room at the given grid position
      */
-    Room& GetRoomAt(Coords coords);
+    Room& RoomAt(Coords coords);
 
     /**
      * @brief Get the room at the specified position
@@ -69,7 +56,7 @@ public:
      * @param coords coordinates
      * @return const Room& room at the given position
      */
-    const Room& GetRoomAt(Coords coords) const;
+    const Room& RoomAt(Coords coords) const;
 
     /**
      * @brief Check if the coords are at the world grid edge in the given direction
@@ -78,21 +65,21 @@ public:
      * @param dir direction
      * @return true if at world grid edge
      */
-    bool IsPositionAtWorldGridEdge(Coords coords, Direction dir) const;
+    bool IsAtWorldGridEdge(Coords coords, Direction dir) const;
 
     /**
      * @brief Get the starting room of this world
      * 
      * @return Room& starting room
      */
-    Room& GetStartingRoom();
+    Room& StartingRoom();
 
     /**
      * @brief Get the starting room of this world
      * 
      * @return const Room& starting room
      */
-    const Room& GetStartingRoom() const;
+    const Room& StartingRoom() const;
 
     /**
      * @brief Create a room at the specified position
@@ -100,7 +87,7 @@ public:
      * @param coords coordinates
      * @return Room& new room
      */
-    Room& CreateRoomAt(Coords coords);
+    Room& CreateRoom(Coords coords);
 
     /**
      * @brief Check if a room exists at the given coordinates
@@ -108,7 +95,7 @@ public:
      * @param coords coordinates
      * @return true if a room exists at the given coordinates
      */
-    bool RoomExistsAt(Coords coords) const;
+    bool RoomExists(Coords coords) const;
 
 private:
     WorldManager& m_WorldManager;
@@ -122,7 +109,7 @@ private:
      * 
      * @return int next room number
      */
-    int PopNextRoomNumber();
+    int PopRoomNumber();
 
     /**
      * @brief Create the starting room for this world

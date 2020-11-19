@@ -12,14 +12,19 @@ Character::Character(const std::string& name,
                      chtype icon,
                      bool isBlocking)
     : Entity(name, description, icon, isBlocking),
-      m_LastMoveDirection(Direction::None())
+      m_LastMoveDirection(Direction::None)
 {
 }
 
 void Character::Move(Direction dir)
 {
-    m_Coords.MoveInDirection(dir);
+    m_Coords.Move(dir);
     m_LastMoveDirection = dir;
+}
+
+Direction Character::GetLastMoveDirection() const
+{
+    return m_LastMoveDirection;
 }
 
 Stats& Character::GetStats()
@@ -30,11 +35,6 @@ Stats& Character::GetStats()
 const Stats& Character::GetStats() const
 {
     return m_Stats;
-}
-
-Direction Character::GetLastMoveDirection() const
-{
-    return m_LastMoveDirection;
 }
 
 } /* namespace Entities */

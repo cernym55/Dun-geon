@@ -30,14 +30,14 @@ public:
      * 
      * @return const Entities::Entity* foreground entity
      */
-    const Entities::Entity* TryGetForegroundEntity() const;
+    const Entities::Entity* ForegroundEntity() const;
 
     /**
      * @brief Get the background entity
      * 
-     * @return const Entities::Entity& background entity
+     * @return const Entities::Entity* background entity
      */
-    const Entities::Entity* TryGetBackgroundEntity() const;
+    const Entities::Entity* BackgroundEntity() const;
 
     /**
      * @brief Place the given entity onto this field

@@ -2,7 +2,7 @@
 #include <ostream>
 
 Direction::Direction()
-    : m_Value(Value::Up)
+    : m_Value(Value::None)
 {
 }
 
@@ -11,25 +11,17 @@ Direction::Direction(Value value)
 {
 }
 
-bool Direction::operator==(const Direction& r) const
-{
-    return m_Value == r.m_Value;
-}
+const Direction Direction::None = Direction(Direction::Value::None);
 
-bool Direction::operator!=(const Direction& r) const
-{
-    return !(*this == r);
-}
+const Direction Direction::Up = Direction(Direction::Value::Up);
 
-Direction::Value Direction::operator()() const
-{
-    return m_Value;
-}
+const Direction Direction::Right = Direction(Direction::Value::Right);
 
-bool Direction::operator<(const Direction& r) const
-{
-    return ToInt() < r.ToInt();
-}
+const Direction Direction::Down = Direction(Direction::Value::Down);
+
+const Direction Direction::Left = Direction(Direction::Value::Left);
+
+const std::array<Direction, 4> Direction::All = { Up, Right, Down, Left };
 
 Direction Direction::Opposite() const
 {
@@ -46,41 +38,6 @@ Direction Direction::Opposite() const
     default:
         return None();
     }
-}
-
-int Direction::ToInt() const
-{
-    return static_cast<int>(m_Value);
-}
-
-Direction Direction::Up()
-{
-    return Direction(Value::Up);
-}
-
-Direction Direction::Right()
-{
-    return Direction(Value::Right);
-}
-
-Direction Direction::Down()
-{
-    return Direction(Value::Down);
-}
-
-Direction Direction::Left()
-{
-    return Direction(Value::Left);
-}
-
-Direction Direction::None()
-{
-    return Direction(Value::None);
-}
-
-std::array<Direction, 4> Direction::All()
-{
-    return { Up(), Right(), Down(), Left() };
 }
 
 std::ostream& operator<<(std::ostream& os, const Direction& r)

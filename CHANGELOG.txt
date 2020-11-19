@@ -4,7 +4,13 @@
 
 
 
---- v0.3.3 | 05/19/2020 (Latest)
+--- v0.3.4 | 11/19/2020 (Latest)
+ - Command Input window now correctly disappears when triggering an UI action.
+ - Entering a new room preserves the player's position in the entrance.
+ - Fixed a random crash on game startup.
+
+
+--- v0.3.3 | 05/19/2020
  - Added the world map.
      The M key and 'map' command open a world map window which shows visited
      and adjacent unexplored rooms in the world.

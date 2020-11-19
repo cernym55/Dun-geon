@@ -15,7 +15,7 @@ constexpr static const int GameVersionMinor = 3;
 /**
  * @brief Revision version number
  */
-constexpr static const int GameVersionRevision = 3;
+constexpr static const int GameVersionRevision = 4;
 
 /**
  * @brief Current game version string
@@ -45,35 +45,9 @@ bool fileExists(const std::string& filename);
 int Abs(int x);
 
 /**
- * @brief Returns the lower of the two values
- * 
- * @tparam T comparable type
- * @param first first value
- * @param second second value
- * @return const T& the lower of the two
- */
-template <typename T>
-const T& Min(const T& first, const T& second)
-{
-    return first < second ? first : second;
-}
-
-/**
- * @brief Returns the higher of the two values
- * 
- * @tparam T comparable type
- * @param first first value
- * @param second second value
- * @return const T& the higher of the two
- */
-template <typename T>
-const T& Max(const T& first, const T& second)
-{
-    return first < second ? second : first;
-}
-
-/**
  * @brief Shorten the string if it is above the maximum length
+ * If the short string is above a certain length,
+ * an ellipsis is inserted for indication.
  * 
  * @param str string
  * @param maxLength maximum length

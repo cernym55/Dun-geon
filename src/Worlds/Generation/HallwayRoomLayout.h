@@ -4,10 +4,7 @@
 #include "RoomGenerationParameters.h"
 #include "RoomLayout.h"
 
-namespace Worlds
-{
-
-namespace Generation
+namespace Worlds::Generation
 {
 
 /**
@@ -23,19 +20,6 @@ public:
      */
     HallwayRoomLayout(const RoomGenerationParameters& parameters);
 
-    HallwayRoomLayout(const HallwayRoomLayout&) = delete;
-
-    HallwayRoomLayout(HallwayRoomLayout&&) = delete;
-
-    HallwayRoomLayout& operator=(const HallwayRoomLayout&) = delete;
-
-    HallwayRoomLayout& operator=(HallwayRoomLayout&&) = delete;
-
-    /**
-     * @brief Destructor
-     */
-    virtual ~HallwayRoomLayout() = default;
-
 private:
     constexpr static const Coords::Scalar MaximumWidth = 30;
     constexpr static const Coords::Scalar MaximumHeight = 18;
@@ -48,14 +32,12 @@ private:
     /**
      * @brief Generate the layout
      */
-    void Generate() override;
+    void Generate() override final;
 
     /**
      * @brief Generate room attributes not related to the map layout
      */
-    void GenerateAttributes() override;
+    void GenerateAttributes() override final;
 };
 
-} /* namespace Generation */
-
-} /* namespace Worlds */
+} /* namespace Worlds::Generation */

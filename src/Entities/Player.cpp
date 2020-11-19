@@ -16,4 +16,9 @@ void Player::SetLastMoveDirection(Direction dir)
     m_LastMoveDirection = dir;
 }
 
+void Player::SetCoords(Coords coords)
+{
+    m_Coords = coords;
+}
+
 } /* namespace Entities */

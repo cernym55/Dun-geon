@@ -10,14 +10,15 @@
 #include <map>
 #include <vector>
 
-namespace Worlds
-{
-
-namespace Generation
+namespace Worlds::Generation
 {
 
 RoomLayout::RoomLayout(const RoomGenerationParameters& parameters)
-    : m_Width(0), m_Height(0), m_Parameters(parameters), m_VisionRadius(0)
+    : m_Width(0),
+      m_Height(0),
+      m_Parameters(parameters),
+      m_CameraStyle(UI::CameraStyle::Fixed),
+      m_VisionRadius(0)
 {
 }
 
@@ -68,7 +69,7 @@ std::vector<Direction> RoomLayout::GenerateEntranceDirections() const
 {
     // Select all directions that aren't forbidden
     std::vector<Direction> directions, viable;
-    for (const auto& dir : Direction::All())
+    for (const auto& dir : Direction::All)
     {
         if (m_Parameters.EntranceInfo.count(dir) == 0 || m_Parameters.EntranceInfo.at(dir) == true)
         {
@@ -84,11 +85,15 @@ std::vector<Direction> RoomLayout::GenerateEntranceDirections() const
             directions.push_back(dir);
         }
     }
-    // If we randomly happened to only get one but the room must continue, generate a second entrance anyway
+    // If we happened to only get at most one but the room must continue, generate a second entrance anyway
     if (directions.size() <= 1 && viable.size() > 1 && m_Parameters.ForceContinue)
     {
-        auto whereWeCameFrom = std::find(viable.begin(), viable.end(), directions.front());
-        viable.erase(whereWeCameFrom);
+        if (!directions.empty())
+        {
+            // Remove the direction of arrival from the viable pool
+            auto whereWeCameFrom = std::find(viable.begin(), viable.end(), directions.front());
+            viable.erase(whereWeCameFrom);
+        }
         auto randomDir = viable[RNG::RandomInt(viable.size())];
         directions.push_back(randomDir);
     }
@@ -115,9 +120,9 @@ Coords RoomLayout::GenerateEntranceCoords(Direction dir) const
 
 void RoomLayout::DrawMapLine(Coords from, Coords to, FieldType value)
 {
-    for (const auto& pos : from.StraightPathTo(to))
+    for (const auto& pos : from.StraightPath(to))
     {
-        m_Map[pos.GetX()][pos.GetY()] = value;
+        m_Map[pos.X][pos.Y] = value;
     }
 }
 
@@ -127,10 +132,10 @@ void RoomLayout::DrawMapBox(Coords center, Coords::Scalar radius, FieldType valu
     {
         for (Coords::Scalar j = 0; j <= radius; j++)
         {
-            Coords::Scalar left = center.GetX() - i;
-            Coords::Scalar right = center.GetX() + i;
-            Coords::Scalar up = center.GetY() - j;
-            Coords::Scalar down = center.GetY() + j;
+            Coords::Scalar left = center.X - i;
+            Coords::Scalar right = center.X + i;
+            Coords::Scalar up = center.Y - j;
+            Coords::Scalar down = center.Y + j;
             if (left < m_Width && left >= 0)
             {
                 if (up < m_Height && up >= 0) m_Map[left][up] = value;
@@ -145,6 +150,4 @@ void RoomLayout::DrawMapBox(Coords center, Coords::Scalar radius, FieldType valu
     }
 }
 
-} /* namespace Generation */
-
-} /* namespace Worlds */
+} /* namespace Worlds::Generation */
