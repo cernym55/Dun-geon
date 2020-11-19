@@ -67,8 +67,7 @@ void Screen::MainMenu()
         "I dun my robe and wizard hat.",
         "The dun shines brighter than ever before.",
         "1500 dun well spent.",
-        "Hopefully it will have been worth the wait."
-    };
+        "Hopefully it will have been worth the wait."};
     DrawLogo();
     int splashNumber = RNG::RandomInt(splashMsg.size());
     PrintCenter(splashMsg[splashNumber], 13);
@@ -76,12 +75,11 @@ void Screen::MainMenu()
     refresh();
 
     std::map<int, std::string> options = {
-        { 0, "Start Game" },
-        { 2, "Quit" }
-    };
+        {0, "Start Game"},
+        {2, "Quit"}};
     static const int menuWidth = 20;
     static const int menuHeight = 9;
-    int choice = SelectViaMenu(options, { (ScreenWidth - menuWidth) / 2 - 1, 15 }, menuWidth, menuHeight, false, 2, 1, "", true);
+    int choice = SelectViaMenu(options, {(ScreenWidth - menuWidth) / 2 - 1, 15}, menuWidth, menuHeight, false, 2, 1, "", true);
     switch (choice)
     {
     case 0:
@@ -124,7 +122,7 @@ void Screen::ShowMap()
 
     // Handle map interaction
     Coords cursor = m_CurrentRoom->GetCoords();
-    int key = 0;
+    std::optional<chtype> key;
     bool done = false;
     bool actionTaken = true;
     keypad(mapWindow, 1);
@@ -147,9 +145,11 @@ void Screen::ShowMap()
 
             actionTaken = false;
         }
-        key = wgetch(mapWindow);
 
-        switch (key)
+        key = InputHandler::ReadKeypress({'w', KEY_UP, 'd', KEY_RIGHT, 's', KEY_DOWN, 'a', KEY_LEFT, ' ', KEY_ENTER, 10, 27, 'q'}, mapWindow);
+        if (!key) continue;
+
+        switch (key.value())
         {
         case 'w':
         case KEY_UP:
@@ -235,9 +235,9 @@ bool Screen::YesNoMessageBox(const std::string& prompt, const std::string& leftO
     int height = lines.size() + 4;
     int width = neededWidth + 4;
 
-    std::vector<ITEM*> items = { new_item(left.c_str(), left.c_str()),
-                                 new_item(right.c_str(), right.c_str()),
-                                 nullptr };
+    std::vector<ITEM*> items = {new_item(left.c_str(), left.c_str()),
+                                new_item(right.c_str(), right.c_str()),
+                                nullptr};
 
     int subXPos = (width - (left.size() + right.size() + 4)) / 2;
 
@@ -264,11 +264,13 @@ bool Screen::YesNoMessageBox(const std::string& prompt, const std::string& leftO
     bool selectedLeft = true;
 
     bool pressedEnter = false;
-    int key;
+    std::optional<chtype> key;
     while (!pressedEnter)
     {
-        key = wgetch(boxWin);
-        switch (key)
+        key = InputHandler::ReadKeypress({KEY_RIGHT, 'd', KEY_LEFT, 'a', 27, KEY_ENTER, 10}, boxWin);
+        if (!key) continue;
+
+        switch (key.value())
         {
         // In a 2-button message box, the behavior depends on the selected option and not the key pressed
         case KEY_RIGHT:
@@ -418,11 +420,13 @@ int Screen::SelectViaMenu(std::map<int, std::string> options, Coords position, i
 
     auto it = options.begin();
     bool selected = false;
-    int key;
+    std::optional<chtype> key;
     while (!selected)
     {
-        key = wgetch(menuWindow);
-        switch (key)
+        key = InputHandler::ReadKeypress({KEY_DOWN, 's', KEY_UP, 'w', KEY_ENTER, 10}, menuWindow);
+        if (!key) continue;
+
+        switch (key.value())
         {
         case KEY_DOWN:
         case 's':
@@ -665,7 +669,8 @@ void Screen::DrawMap(WINDOW* mapWindow, Coords cursor)
             case WorldMapObjectType::Empty:
                 icon = ' ';
                 break;
-            case WorldMapObjectType::Room: {
+            case WorldMapObjectType::Room:
+            {
                 const auto& room = world.RoomAt(current);
                 icon = RoomMapIcon(room);
                 if (room.Entrance(Direction::Left) != nullptr)
@@ -705,7 +710,8 @@ void Screen::DrawMapTooltip(Coords cursor, WorldMapObjectType objectType)
     std::vector<std::string> lines;
     switch (objectType)
     {
-    case WorldMapObjectType::Room: {
+    case WorldMapObjectType::Room:
+    {
         const auto& room = m_WorldManager.CurrentWorld().RoomAt(cursor);
         bool isCurrentRoom = m_WorldManager.IsCurrentRoom(room);
         std::string locPronoun = isCurrentRoom ? "here" : "there";
