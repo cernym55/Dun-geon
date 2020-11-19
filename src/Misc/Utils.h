@@ -10,12 +10,12 @@ constexpr static const int GameVersionMajor = 0;
 /**
  * @brief Minor version number
  */
-constexpr static const int GameVersionMinor = 3;
+constexpr static const int GameVersionMinor = 4;
 
 /**
  * @brief Revision version number
  */
-constexpr static const int GameVersionRevision = 4;
+constexpr static const int GameVersionRevision = 0;
 
 /**
  * @brief Current game version string
