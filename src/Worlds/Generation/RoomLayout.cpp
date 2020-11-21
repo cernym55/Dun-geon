@@ -39,6 +39,9 @@ void RoomLayout::WriteToFields(std::vector<std::vector<Field>>& fields) const
             case FieldType::Wall:
                 fields[i][j].PlaceEntity(Entities::Wall);
                 break;
+            case FieldType::Column:
+                fields[i][j].PlaceEntity(Entities::Column);
+                break;
             default:
                 break;
             }
