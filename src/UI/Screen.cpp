@@ -574,7 +574,7 @@ void Screen::DrawHUD()
     PrintCenter(m_GameHUDWindow, m_Player.GetName(), 4);
 
     mvwprintw(m_GameHUDWindow, 6, 4, "Level %d", stats.level);
-    mvwprintw(m_GameHUDWindow, 6, HUDPanelWidth - 11, "XP: %3d%%", stats.XP / stats.XPToNextLevel * 100);
+    mvwprintw(m_GameHUDWindow, 6, HUDPanelWidth - 11, "XP: %3d%%", m_Player.GetXP() / m_Player.GetXPToLevelUp() * 100);
 
     mvwprintw(m_GameHUDWindow, 8, 4, "HP:  %d/%d", stats.health, stats.healthMax);
     mvwprintw(m_GameHUDWindow, 8, HUDPanelWidth - 11, "(%3d%%)", PLAYER_HEALTH_PC);
@@ -588,12 +588,12 @@ void Screen::DrawHUD()
     mvwprintw(m_GameHUDWindow, 12, 4, "Agi: %3d", stats.haste);
     mvwprintw(m_GameHUDWindow, 12, HUDPanelWidth - 11, "Int: %3d", stats.magic);
 
-    std::string wealthAmountStr = std::to_string(stats.dun);
+    std::string wealthAmountStr = std::to_string(m_Player.GetDun());
     int xPos = (HUDPanelWidth - wealthAmountStr.size() - 12) / 2;
     xPos += xPos % 2;
     mvwaddstr(m_GameHUDWindow, 14, xPos, "Wealth: ");
     wattron(m_GameHUDWindow, COLOR_PAIR(ColorPairs::YellowOnDefault) | A_BOLD);
-    wprintw(m_GameHUDWindow, "%d", stats.dun);
+    wprintw(m_GameHUDWindow, "%d", m_Player.GetDun());
     wattroff(m_GameHUDWindow, A_COLOR | A_BOLD);
     waddstr(m_GameHUDWindow, " dun");
 

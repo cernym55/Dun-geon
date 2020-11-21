@@ -27,12 +27,7 @@ Direction Character::GetLastMoveDirection() const
     return m_LastMoveDirection;
 }
 
-Stats& Character::GetStats()
-{
-    return m_Stats;
-}
-
-const Stats& Character::GetStats() const
+const Character::Stats& Character::GetStats() const
 {
     return m_Stats;
 }

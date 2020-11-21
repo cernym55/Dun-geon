@@ -11,10 +11,6 @@
 namespace Entities
 {
 
-struct Stats
-{
-    int level, XP, XPToNextLevel, dun, health, healthMax, mana, manaMax, vigor, valor, haste, magic;
-};
 
 /**
  * @brief Game character with stats and movement
@@ -22,6 +18,11 @@ struct Stats
 class Character : public Entity
 {
 public:
+    struct Stats
+    {
+        int level, health, healthMax, mana, manaMax, vigor, valor, haste, magic;
+    };
+
     /**
      * @brief Constructor
      *
@@ -49,7 +50,6 @@ public:
      */
     Direction GetLastMoveDirection() const;
 
-    Stats& GetStats();
     const Stats& GetStats() const;
 
 protected:
