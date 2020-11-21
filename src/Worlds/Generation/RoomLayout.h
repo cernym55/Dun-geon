@@ -96,7 +96,12 @@ protected:
         /**
          * @brief Wall
          */
-        Wall
+        Wall,
+
+        /**
+         * @brief Column
+         */
+        Column
     };
 
     Coords::Scalar m_Width;

@@ -10,4 +10,9 @@ namespace Entities
  */
 extern Entity Wall;
 
+/**
+ * @brief Column object
+ */
+extern Entity Column;
+
 } /* namespace Entities */
