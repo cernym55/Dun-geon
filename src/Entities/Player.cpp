@@ -6,11 +6,9 @@ namespace Entities
 {
 
 Player::Player(const std::string& name,
-               Stats initialStats,
                chtype icon)
-    : Character(name, "", icon, true), m_XP(0), m_XPToLevelUp(100), m_Dun(0)
+    : Character(name, "", icon), m_XP(0), m_XPToLevelUp(100), m_Dun(0)
 {
-    m_Stats = initialStats;
 }
 
 void Player::SetLastMoveDirection(Direction dir)

@@ -10,6 +10,7 @@ namespace Entities
 Character::Character(const std::string& name,
                      const std::string& description,
                      chtype icon,
+                     Stats initialStats,
                      bool isBlocking)
     : Entity(name, description, icon, isBlocking),
       m_LastMoveDirection(Direction::None)

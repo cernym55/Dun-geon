@@ -22,8 +22,8 @@
 #include <sstream>
 #include <string>
 
-#define PLAYER_HEALTH_PC std::lround(m_Player.GetStats().health / 1.0 / m_Player.GetStats().healthMax * 100)
-#define PLAYER_MANA_PC std::lround(m_Player.GetStats().mana / 1.0 / m_Player.GetStats().manaMax * 100)
+#define PLAYER_HEALTH_PC std::lround(m_Player.GetStats().Health / 1.0 / m_Player.GetStats().MaxHealth * 100)
+#define PLAYER_MANA_PC std::lround(m_Player.GetStats().Mana / 1.0 / m_Player.GetStats().MaxMana * 100)
 
 namespace UI
 {
@@ -573,20 +573,20 @@ void Screen::DrawHUD()
 
     PrintCenter(m_GameHUDWindow, m_Player.GetName(), 4);
 
-    mvwprintw(m_GameHUDWindow, 6, 4, "Level %d", stats.level);
+    mvwprintw(m_GameHUDWindow, 6, 4, "Level %d", stats.Level);
     mvwprintw(m_GameHUDWindow, 6, HUDPanelWidth - 11, "XP: %3d%%", m_Player.GetXP() / m_Player.GetXPToLevelUp() * 100);
 
-    mvwprintw(m_GameHUDWindow, 8, 4, "HP:  %d/%d", stats.health, stats.healthMax);
+    mvwprintw(m_GameHUDWindow, 8, 4, "HP:  %d/%d", stats.Health, stats.MaxHealth);
     mvwprintw(m_GameHUDWindow, 8, HUDPanelWidth - 11, "(%3d%%)", PLAYER_HEALTH_PC);
 
-    mvwprintw(m_GameHUDWindow, 9, 4, "MP:  %d/%d", stats.mana, stats.manaMax);
+    mvwprintw(m_GameHUDWindow, 9, 4, "MP:  %d/%d", stats.Mana, stats.MaxMana);
     mvwprintw(m_GameHUDWindow, 9, HUDPanelWidth - 11, "(%3d%%)", PLAYER_MANA_PC);
 
-    mvwprintw(m_GameHUDWindow, 11, 4, "Str: %3d", stats.vigor);
-    mvwprintw(m_GameHUDWindow, 11, HUDPanelWidth - 11, "Def: %3d", stats.valor);
+    mvwprintw(m_GameHUDWindow, 11, 4, "Str: %3d", stats.Vigor);
+    mvwprintw(m_GameHUDWindow, 11, HUDPanelWidth - 11, "Def: %3d", stats.Valor);
 
-    mvwprintw(m_GameHUDWindow, 12, 4, "Agi: %3d", stats.haste);
-    mvwprintw(m_GameHUDWindow, 12, HUDPanelWidth - 11, "Int: %3d", stats.magic);
+    mvwprintw(m_GameHUDWindow, 12, 4, "Agi: %3d", stats.Haste);
+    mvwprintw(m_GameHUDWindow, 12, HUDPanelWidth - 11, "Int: %3d", stats.Magic);
 
     std::string wealthAmountStr = std::to_string(m_Player.GetDun());
     int xPos = (HUDPanelWidth - wealthAmountStr.size() - 12) / 2;

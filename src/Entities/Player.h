@@ -18,11 +18,9 @@ public:
      * @brief Constructor
      *
      * @param name name
-     * @param initialStats initial stats
      * @param icon icon (default: set to first character of name)
      */
     Player(const std::string& name,
-           Stats initialStats,
            chtype icon = 0);
 
     /**
