@@ -13,7 +13,7 @@ Character::Character(const std::string& name,
                      Stats initialStats,
                      bool isBlocking)
     : Entity(name, description, icon, isBlocking),
-      m_LastMoveDirection(Direction::None)
+      m_LastMoveDirection(Direction::None), m_Stats(initialStats)
 {
 }
 
