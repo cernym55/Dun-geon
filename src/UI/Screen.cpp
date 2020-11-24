@@ -252,8 +252,11 @@ bool Screen::YesNoMessageBox(const std::string& prompt, const std::string& leftO
     set_menu_mark(menu, "");
     set_menu_format(menu, 1, 2);
     set_menu_spacing(menu, 1, 1, 4);
+
     box(boxWin, 0, 0);
-    if (!title.empty()) PrintCenter(boxWin, title, 0);
+    wattron(boxWin, A_REVERSE);
+    if (!title.empty()) PrintCenter(boxWin, " " + title + " ", 0);
+    wattroff(boxWin, A_REVERSE);
     for (size_t i = 0; i < lines.size(); i++)
     {
         PrintCenter(boxWin, lines[i], i + 1);
@@ -308,6 +311,56 @@ bool Screen::YesNoMessageBox(const std::string& prompt, const std::string& leftO
     }
 
     return selectedLeft;
+}
+
+void Screen::OkMessageBox(const std::string& message, const std::string& title, const std::string& buttonLabel)
+{
+    // Split the message into lines
+    std::vector<std::string> lines;
+    size_t neededWidth = 0;
+    std::string lineBuf;
+    std::istringstream iss(message);
+    while (std::getline(iss, lineBuf))
+    {
+        if (lineBuf.size() > neededWidth) neededWidth = lineBuf.size();
+        lines.push_back(std::move(lineBuf));
+    }
+
+    int height = lines.size() + 4;
+    int width = neededWidth + 4;
+    std::string button = "  " + buttonLabel + "  ";
+
+    WINDOW* boxWin = newwin(height, width, (ScreenHeight - height) / 2, (ScreenWidth - width) / 2);
+    
+    // Draw the window and contents
+    box(boxWin, 0, 0);
+    wattron(boxWin, A_REVERSE);
+    if (!title.empty()) PrintCenter(boxWin, " " + title + " ", 0);
+    wattroff(boxWin, A_REVERSE);
+    for (size_t i = 0; i < lines.size(); i++)
+    {
+        PrintCenter(boxWin, lines[i], i + 1);
+    }
+
+    // Shhhh... the button is not a real button, but no one has to be any the wiser
+    wattron(boxWin, A_REVERSE);
+    PrintCenter(boxWin, button, height - 2);
+    wattroff(boxWin, A_REVERSE);
+
+    wrefresh(boxWin);
+
+    keypad(boxWin, 1);
+
+    std::optional<chtype> key;
+    while (!key.has_value() || !(key.value() == KEY_ENTER || key.value() == 10 || key.value() == 27))
+    {
+        key = InputHandler::ReadKeypress({KEY_ENTER, 10, 27}, boxWin);
+    }
+
+    wclear(boxWin);
+    wrefresh(boxWin);
+
+    delwin(boxWin);
 }
 
 void Screen::Init()
