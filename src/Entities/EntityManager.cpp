@@ -55,9 +55,9 @@ bool EntityManager::TryMovePlayer(Direction dir)
         m_Player.SetLastMoveDirection(dir);
         Place(m_Player, nextRoom);
 
-        // Randomly spawn a NPC at an accessible location just for fun
+        // Randomly spawn NPCs in an accessible location just for fun
         // TODO: remove
-        if (RNG::Chance(0.1))
+        if (RNG::Chance(0.1) && m_EntityStorage[&nextRoom].size() < 5)
         {
             Coords spawnPosition;
             while (!nextRoom.FieldAt(spawnPosition).IsAccessible() || nextRoom.FieldAt(spawnPosition).ForegroundEntity() != nullptr)
