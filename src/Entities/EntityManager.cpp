@@ -2,6 +2,8 @@
 #include "Character.h"
 #include "Entity.h"
 #include "Misc/Direction.h"
+#include "Misc/RNG.h"
+#include "NPC/Human.h"
 #include "Player.h"
 #include "Worlds/Field.h"
 #include "Worlds/Room.h"
@@ -15,6 +17,12 @@ EntityManager::EntityManager(Worlds::WorldManager& worldManager, Player& player)
     : m_WorldManager(worldManager),
       m_Player(player)
 {
+}
+
+void EntityManager::SpawnEntity(Worlds::Room& room, Coords spawnPosition)
+{
+    auto& newEntity = m_EntityStorage[&room].emplace_back(new NPC::Human(spawnPosition, "Jackson"));
+    Place(*newEntity, room);
 }
 
 void EntityManager::Store(Worlds::Room& room, Entity& entity)
@@ -46,6 +54,19 @@ bool EntityManager::TryMovePlayer(Direction dir)
         m_Player.SetCoords(newCoords);
         m_Player.SetLastMoveDirection(dir);
         Place(m_Player, nextRoom);
+
+        // Randomly spawn a NPC at an accessible location just for fun
+        // TODO: remove
+        if (RNG::Chance(0.1))
+        {
+            Coords spawnPosition;
+            while (!nextRoom.FieldAt(spawnPosition).IsAccessible() || nextRoom.FieldAt(spawnPosition).ForegroundEntity() != nullptr)
+            {
+                spawnPosition = Coords(RNG::RandomInt(nextRoom.GetWidth()), RNG::RandomInt(nextRoom.GetHeight()));
+            }
+            SpawnEntity(nextRoom, spawnPosition);
+        }
+
         CycleCurrentRoom();
         return true;
     }
@@ -102,7 +123,7 @@ void EntityManager::Cycle(Worlds::Room& room)
     for (auto& entity : m_EntityStorage[&room])
     {
         Pluck(*entity, room);
-        //TODO: Implement NPC behavior
+        entity->PerformMovement(*this);
         //TODO: Resolve movement conflicts between player and NPCs or two NPCs
         Place(*entity, room);
     }

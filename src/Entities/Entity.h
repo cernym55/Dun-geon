@@ -8,6 +8,8 @@
 namespace Entities
 {
 
+class EntityManager;
+
 /**
  * @brief An object or character occupying fields on the game map
  */
@@ -26,6 +28,13 @@ public:
            const std::string& description = "",
            chtype icon = 0,
            bool isBlocking = true);
+
+    /**
+     * @brief Perform movement behavior
+     * 
+     * @param entityManager entity manager
+     */
+    virtual void PerformMovement(const EntityManager& entityManager);
 
     /**
      * @brief Get the coordinates

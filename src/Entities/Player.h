@@ -17,10 +17,12 @@ public:
     /**
      * @brief Constructor
      *
+     * @param initialCoords initial coords
      * @param name name
      * @param icon icon (default: set to first character of name)
      */
-    Player(const std::string& name,
+    Player(Coords initialCoords,
+           const std::string& name,
            chtype icon = 0);
 
     /**
@@ -51,6 +53,13 @@ public:
      * @brief Get dun
      */
     int GetDun() const;
+
+    /**
+     * @brief Move in the given direction
+     *
+     * @param dir direction
+     */
+    void Move(Direction dir);
 
 private:
     int m_XP;

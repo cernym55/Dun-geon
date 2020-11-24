@@ -28,6 +28,14 @@ public:
     EntityManager(Worlds::WorldManager& worldManager, Player& player);
 
     /**
+     * @brief Spawns a random entity
+     *
+     * @param room room
+     * @param spawnPosition spawn position
+     */
+    void SpawnEntity(Worlds::Room& room, Coords spawnPosition);
+
+    /**
      * @brief Take ownership of an entity and assign it to this room's storage
      *
      * @param room room
@@ -61,11 +69,6 @@ public:
      */
     const Entity* Approaching(const Character& character) const;
 
-private:
-    Worlds::WorldManager& m_WorldManager;
-    Player& m_Player;
-    std::unordered_map<Worlds::Room*, std::vector<std::unique_ptr<Entities::Entity>>> m_EntityStorage;
-
     /**
      * @brief Check if the character can move in the given direction
      *
@@ -74,6 +77,11 @@ private:
      * @return true if can move
      */
     bool CanCharacterMove(const Character& character, Direction dir) const;
+
+private:
+    Worlds::WorldManager& m_WorldManager;
+    Player& m_Player;
+    std::unordered_map<Worlds::Room*, std::vector<std::unique_ptr<Entities::Entity>>> m_EntityStorage;
 
     /**
      * @brief Get an array of fields surrounding the entity

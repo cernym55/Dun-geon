@@ -5,9 +5,10 @@
 namespace Entities
 {
 
-Player::Player(const std::string& name,
+Player::Player(Coords initialCoords,
+               const std::string& name,
                chtype icon)
-    : Character(name, "", icon), m_XP(0), m_XPToLevelUp(100), m_Dun(0)
+    : Character(initialCoords, name, "", icon), m_XP(0), m_XPToLevelUp(100), m_Dun(0)
 {
 }
 
@@ -34,6 +35,11 @@ int Player::GetXPToLevelUp() const
 int Player::GetDun() const
 {
     return m_Dun;
+}
+
+void Player::Move(Direction dir)
+{
+    Character::Move(dir);
 }
 
 } /* namespace Entities */

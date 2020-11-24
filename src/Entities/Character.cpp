@@ -1,3 +1,5 @@
+#include "NPC/Behavior/WanderingMovement.h"
+#include "EntityManager.h"
 #include "Character.h"
 #include "Misc/Direction.h"
 #include "Worlds/Room.h"
@@ -7,20 +9,23 @@
 namespace Entities
 {
 
-Character::Character(const std::string& name,
+Character::Character(Coords initialCoords,
+                     const std::string& name,
                      const std::string& description,
                      chtype icon,
                      Stats initialStats,
                      bool isBlocking)
     : Entity(name, description, icon, isBlocking),
-      m_LastMoveDirection(Direction::None), m_Stats(initialStats)
+    m_LastMoveDirection(Direction::None),
+    m_Stats(initialStats),
+    m_MovementBehavior(std::make_unique<NPC::Behavior::WanderingMovement>(*this))
 {
+    m_Coords = initialCoords;
 }
 
-void Character::Move(Direction dir)
+void Character::PerformMovement(const EntityManager& entityManager)
 {
-    m_Coords.Move(dir);
-    m_LastMoveDirection = dir;
+    Move(m_MovementBehavior->GetNextStep(entityManager));
 }
 
 Direction Character::GetLastMoveDirection() const
@@ -31,6 +36,12 @@ Direction Character::GetLastMoveDirection() const
 const Character::Stats& Character::GetStats() const
 {
     return m_Stats;
+}
+
+void Character::Move(Direction dir)
+{
+    m_Coords.Move(dir);
+    m_LastMoveDirection = dir;
 }
 
 } /* namespace Entities */
