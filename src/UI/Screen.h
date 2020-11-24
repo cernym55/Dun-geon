@@ -125,6 +125,15 @@ public:
      */
     bool YesNoMessageBox(const std::string& prompt, const std::string& leftOption = "Yes", const std::string& rightOption = "No", const std::string& title = "");
 
+    /**
+     * @brief Show a centered message box with an OK button
+     *
+     * @param message message
+     * @param title window title (default: blank)
+     * @param buttonLabel text on the button
+     */
+    void OkMessageBox(const std::string& message, const std::string& title = "", const std::string& buttonLabel = "OK");
+
 private:
     /**
      * @brief Default icon for empty fields
