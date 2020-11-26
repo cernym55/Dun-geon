@@ -17,14 +17,9 @@ Entity::Entity(const std::string& name,
 {
 }
 
-void Entity::PerformMovement(const EntityManager& entityManager)
+Direction Entity::GetNextMove(const EntityManager& entityManager)
 {
-    // Do nothing
-}
-
-Coords Entity::GetCoords() const
-{
-    return m_Coords;
+    return Direction::None;
 }
 
 bool Entity::IsBlocking() const

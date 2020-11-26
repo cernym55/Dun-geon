@@ -3,8 +3,8 @@
 namespace Entities::NPC
 {
 
-Human::Human(Coords initialCoords, const std::string& name)
-    : NPCCharacter(initialCoords, {}, name, "Human")
+Human::Human(const std::string& name)
+    : NPCCharacter({}, name, "Human")
 {
 }
 

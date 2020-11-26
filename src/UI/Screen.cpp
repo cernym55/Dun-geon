@@ -565,7 +565,7 @@ void Screen::DrawWorld()
     // How far can we draw vertically or horizontally
     Coords::Scalar rangeX = worldX / 2 - (worldX % 2 ? 0 : 1) - 1;
     Coords::Scalar rangeY = worldY / 2 - (worldY % 2 ? 0 : 1) - 1;
-    auto playerCoords = m_Player.GetCoords();
+    auto playerCoords = m_EntityManager.CoordsOf(m_Player);
     for (int i = 1; i < worldX - 1; i++)
     {
         for (int j = 1; j < worldY - 1; j++)
@@ -658,10 +658,12 @@ void Screen::DrawHUD()
 
     PrintCenter(m_GameHUDWindow, "[q]uit", 18);
 
-    if (m_EntityManager.Approaching(m_Player) != nullptr)
+    auto approachedEntity = m_EntityManager.Approaching(m_Player, m_Player.LastMoveDirection);
+
+    if (approachedEntity != nullptr)
     {
-        PrintCenter(m_GameHUDWindow, m_EntityManager.Approaching(m_Player)->GetName(), WorldPanelHeight + 1);
-        PrintCenter(m_GameHUDWindow, m_EntityManager.Approaching(m_Player)->GetDescription(), WorldPanelHeight + 2);
+        PrintCenter(m_GameHUDWindow, approachedEntity->GetName(), WorldPanelHeight + 1);
+        PrintCenter(m_GameHUDWindow, approachedEntity->GetDescription(), WorldPanelHeight + 2);
     }
 
     box(m_GameHUDWindow, 0, 0);
@@ -843,11 +845,12 @@ chtype Screen::FieldIcon(const Worlds::Field& field) const
     }
 
     // Apply highlight if the player is touching this field
-    auto lmd = m_Player.GetLastMoveDirection();
+    auto lmd = m_Player.LastMoveDirection;
+    auto playerCoords = m_EntityManager.CoordsOf(m_Player);
     if (canHaveHighlight &&
         lmd != Direction::None &&
-        !m_CurrentRoom->IsAtRoomEdge(m_Player.GetCoords(), lmd) &&
-        field.GetCoords() == m_Player.GetCoords().Adjacent(lmd))
+        !m_CurrentRoom->IsAtRoomEdge(playerCoords, lmd) &&
+        field.GetCoords() == playerCoords.Adjacent(lmd))
     {
         short highlightPair;
         // Highlight the background only if it was a non-default color

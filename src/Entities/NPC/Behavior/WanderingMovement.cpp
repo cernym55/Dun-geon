@@ -16,7 +16,7 @@ Direction WanderingMovement::GetNextStep(const EntityManager& entityManager)
 
     Direction candidateDirection = Direction::All[RNG::RandomInt(4)];
 
-    if (entityManager.CanCharacterMove(m_Character, candidateDirection))
+    if (entityManager.CanEntityMove(m_Character, candidateDirection))
     {
         return candidateDirection;
     }

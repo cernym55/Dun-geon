@@ -14,30 +14,16 @@ namespace Entities
 class Player : public Character
 {
 public:
+    Direction LastMoveDirection;
+
     /**
      * @brief Constructor
      *
-     * @param initialCoords initial coords
      * @param name name
      * @param icon icon (default: set to first character of name)
      */
-    Player(Coords initialCoords,
-           const std::string& name,
+    Player(const std::string& name,
            chtype icon = 0);
-
-    /**
-     * @brief Set the direction of the last move
-     *
-     * @param dir direction
-     */
-    void SetLastMoveDirection(Direction dir);
-
-    /**
-     * @brief Set the coordinates
-     *
-     * @param coords coords
-     */
-    void SetCoords(Coords coords);
 
     /**
      * @brief Get XP
@@ -55,11 +41,11 @@ public:
     int GetDun() const;
 
     /**
-     * @brief Move in the given direction
+     * @brief GetNextMove is unsupported for Player
      *
-     * @param dir direction
+     * @throw NotSupportedException
      */
-    void Move(Direction dir);
+    virtual Direction GetNextMove(const EntityManager& entityManager) override;
 
 private:
     int m_XP;

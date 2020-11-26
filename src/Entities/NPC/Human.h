@@ -17,7 +17,7 @@ public:
      * @param initialCoords initial coords
      * @param name name
      */
-    Human(Coords initialCoords, const std::string& name);
+    Human(const std::string& name);
 };
 
 } /* namespace Entities::NPC */

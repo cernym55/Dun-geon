@@ -18,8 +18,7 @@ Application::Application()
     : m_InputHandler(m_Screen, m_PlayerController),
     m_Screen(m_InputHandler, m_WorldManager, m_EntityManager, m_Player),
     m_WorldManager(),
-    m_Player({},
-             "Gref",
+    m_Player("Gref",
              'G' | A_BOLD | COLOR_PAIR(UI::ColorPairs::MagentaOnDefault)),
     m_EntityManager(m_WorldManager, m_Player),
     m_PlayerController(m_EntityManager, m_WorldManager, m_Player)
@@ -31,12 +30,6 @@ void Application::Run()
     try
     {
         m_Screen.MainMenu();
-
-        //TODO: move Player initialization out
-        const Worlds::World& world = const_cast<const Worlds::WorldManager&>(m_WorldManager).CurrentWorld();
-        m_Player.SetCoords({ static_cast<Coords::Scalar>(world.StartingRoom().GetWidth() / 2),
-                             static_cast<Coords::Scalar>(world.StartingRoom().GetHeight() / 2) });
-        m_EntityManager.TryMovePlayer(Direction::None);
 
         while (!m_InputHandler.ShouldQuit())
         {

@@ -30,33 +30,24 @@ public:
     /**
      * @brief Constructor
      *
-     * @param initialCoords initial coords
      * @param name name
      * @param description description (default: empty)
      * @param icon icon (default: set to first character of name)
      * @param initialStats initial stats (default: arbitrary values)
      * @param isBlocking blocking attribute (default: true)
      */
-    Character(Coords initialCoords,
-              const std::string& name,
+    Character(const std::string& name,
               const std::string& description = "",
               chtype icon = 0,
               Stats initialStats = { 1, 10, 10, 5, 10, 5, 5, 5, 10 },
               bool isBlocking = true);
 
     /**
-     * @brief Perform movement behavior
+     * @brief Get the direction of the next move
      *
      * @param entityManager entity manager
      */
-    virtual void PerformMovement(const EntityManager& entityManager) override;
-
-    /**
-     * @brief Get the direction of the last move the character performed
-     *
-     * @return Direction last move direction
-     */
-    Direction GetLastMoveDirection() const;
+    virtual Direction GetNextMove(const EntityManager& entityManager) override;
 
     /**
      * @brief Get the stats collection
@@ -66,16 +57,8 @@ public:
     const Stats& GetStats() const;
 
 protected:
-    Direction m_LastMoveDirection;
     Stats m_Stats;
     std::unique_ptr<NPC::Behavior::IMovement> m_MovementBehavior;
-
-    /**
-     * @brief Move the character position in the given direction
-     *
-     * @param dir direction
-     */
-    void Move(Direction dir);
 };
 
 } /* namespace Entities */
