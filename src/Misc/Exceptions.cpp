@@ -19,3 +19,13 @@ const char* DisplayException::what() const noexcept
 {
     return m_Message.c_str();
 }
+
+NotSupportedException::NotSupportedException(const std::string& message)
+    : m_Message(message)
+{
+}
+
+const char* NotSupportedException::what() const noexcept
+{
+    return m_Message.c_str();
+}

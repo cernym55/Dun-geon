@@ -19,12 +19,10 @@ public:
     /**
      * @brief Constructor
      *
-     * @param initialCoords initial coords
      * @param name name
      * @param icon icon (default: set to first character of name)
      */
-    Player(Coords initialCoords,
-           const std::string& name,
+    Player(const std::string& name,
            chtype icon = 0);
 
     /**
@@ -41,6 +39,13 @@ public:
      * @brief Get dun
      */
     int GetDun() const;
+
+    /**
+     * @brief GetNextMove is unsupported for Player
+     *
+     * @throw NotSupportedException
+     */
+    virtual Direction GetNextMove(const EntityManager& entityManager) override;
 
 private:
     int m_XP;
