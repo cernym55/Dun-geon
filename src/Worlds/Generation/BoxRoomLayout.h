@@ -36,10 +36,10 @@ private:
         ColumnsOnly = 1
     };
 
-    constexpr static const Coords::Scalar MaximumWidth = 30;
-    constexpr static const Coords::Scalar MaximumHeight = 16;
-    constexpr static const Coords::Scalar MinimumWidth = 20;
-    constexpr static const Coords::Scalar MinimumHeight = 12;
+    constexpr static const Coords::Scalar MaximumWidth = 24;
+    constexpr static const Coords::Scalar MaximumHeight = 14;
+    constexpr static const Coords::Scalar MinimumWidth = 12;
+    constexpr static const Coords::Scalar MinimumHeight = 8;
     constexpr static const Coords::Scalar DarknessVisionRadius = 5;
 
     Subtype m_Subtype;

@@ -110,7 +110,7 @@ void BoxRoomLayout::GenerateColumns()
     double pattern = RNG::RandomDouble();
 
     Coords::Scalar hOffset = RNG::RandomInt(2, 5);
-    Coords::Scalar vOffset = RNG::RandomInt(2, 4);
+    Coords::Scalar vOffset = 2;
 
     // Corner columns
     if (pattern > 0.4)
