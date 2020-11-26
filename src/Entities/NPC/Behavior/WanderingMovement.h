@@ -29,6 +29,7 @@ public:
 
 private:
     Character& m_Character;
+    Direction m_LastMoveDirection;
 };
 
 } /* namespace Entities::NPC::Behavior */

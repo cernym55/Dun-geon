@@ -24,7 +24,7 @@ bool Controller::TryMovePlayer(Direction dir)
 
 bool Controller::TryMovePlayerDiagonally(Direction first, Direction second)
 {
-    auto playerCoords = m_PlayerEntity.GetCoords();
+    auto playerCoords = m_EntityManager.CoordsOf(m_PlayerEntity);
     auto& room = m_WorldManager.CurrentRoom();
     auto firstNeighbor = room.IsAtRoomEdge(playerCoords, first)
             ? nullptr

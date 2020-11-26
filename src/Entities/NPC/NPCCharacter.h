@@ -15,7 +15,6 @@ public:
     /**
      * @brief Constructor
      *
-     * @param initialCoords initial coords
      * @param parameters parameters
      * @param name name
      * @param description description (default: empty)
@@ -23,8 +22,7 @@ public:
      * @param initialStats initial stats (default: arbitrary values)
      * @param isBlocking blocking attribute (default: true)
      */
-    NPCCharacter(Coords initialCoords,
-                 const CharacterGenerationParameters& parameters,
+    NPCCharacter(const CharacterGenerationParameters& parameters,
                  const std::string& name,
                  const std::string& description = "",
                  chtype icon = 0,

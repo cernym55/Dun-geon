@@ -14,6 +14,8 @@ namespace Entities
 class Player : public Character
 {
 public:
+    Direction LastMoveDirection;
+
     /**
      * @brief Constructor
      *
@@ -24,20 +26,6 @@ public:
     Player(Coords initialCoords,
            const std::string& name,
            chtype icon = 0);
-
-    /**
-     * @brief Set the direction of the last move
-     *
-     * @param dir direction
-     */
-    void SetLastMoveDirection(Direction dir);
-
-    /**
-     * @brief Set the coordinates
-     *
-     * @param coords coords
-     */
-    void SetCoords(Coords coords);
 
     /**
      * @brief Get XP
@@ -53,13 +41,6 @@ public:
      * @brief Get dun
      */
     int GetDun() const;
-
-    /**
-     * @brief Move in the given direction
-     *
-     * @param dir direction
-     */
-    void Move(Direction dir);
 
 private:
     int m_XP;

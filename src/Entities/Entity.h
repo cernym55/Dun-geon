@@ -30,18 +30,11 @@ public:
            bool isBlocking = true);
 
     /**
-     * @brief Perform movement behavior
+     * @brief Get the direction of the next move
      * 
      * @param entityManager entity manager
      */
-    virtual void PerformMovement(const EntityManager& entityManager);
-
-    /**
-     * @brief Get the coordinates
-     *
-     * @return coordinates
-     */
-    Coords GetCoords() const;
+    virtual Direction GetNextMove(const EntityManager& entityManager);
 
     /**
      * @brief Check if this entity is blocking (can't overlap with other entities)
@@ -76,7 +69,6 @@ protected:
     std::string m_Description;
     chtype m_Icon;
     bool m_Blocking;
-    Coords m_Coords;
 };
 
 } /* namespace Entities */

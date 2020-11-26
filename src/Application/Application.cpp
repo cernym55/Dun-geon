@@ -32,12 +32,6 @@ void Application::Run()
     {
         m_Screen.MainMenu();
 
-        //TODO: move Player initialization out
-        const Worlds::World& world = const_cast<const Worlds::WorldManager&>(m_WorldManager).CurrentWorld();
-        m_Player.SetCoords({ static_cast<Coords::Scalar>(world.StartingRoom().GetWidth() / 2),
-                             static_cast<Coords::Scalar>(world.StartingRoom().GetHeight() / 2) });
-        m_EntityManager.TryMovePlayer(Direction::None);
-
         while (!m_InputHandler.ShouldQuit())
         {
             m_Screen.Draw();

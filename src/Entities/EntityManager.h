@@ -61,27 +61,44 @@ public:
     bool TryMovePlayer(Direction dir);
 
     /**
-     * @brief Get the entity the character is touching
-     * This is any entity next to the character in the direction of its last move.
+     * @brief Get any entity the given entity is touching in the given direction
      *
-     * @param character character
-     * @return const Entity* entity being approached
+     * @param entity entity
+     * @param dir direction
+     * @return const Entity* entity being approached in direction
      */
-    const Entity* Approaching(const Character& character) const;
+    const Entity* Approaching(const Entity& entity, Direction dir) const;
 
     /**
-     * @brief Check if the character can move in the given direction
+     * @brief Check if the entity can move in the given direction
      *
-     * @param character character
+     * @param entity entity
      * @param dir direction
      * @return true if can move
      */
-    bool CanCharacterMove(const Character& character, Direction dir) const;
+    bool CanEntityMove(const Entity& entity, Direction dir) const;
+
+    /**
+     * @brief Get the entity's coords
+     *
+     * @param entity entity
+     * @return Coords entity coords
+     */
+    Coords CoordsOf(const Entity& entity) const;
 
 private:
     Worlds::WorldManager& m_WorldManager;
     Player& m_Player;
-    std::unordered_map<Worlds::Room*, std::vector<std::unique_ptr<Entities::Entity>>> m_EntityStorage;
+    std::unordered_map<Worlds::Room*, std::vector<std::unique_ptr<Entity>>> m_EntityStorage;
+    std::unordered_map<const Entity*, Coords> m_EntityCoords;
+
+    /**
+     * @brief Move the entity in the given direction
+     *
+     * @param entity entity
+     * @param dir direction
+     */
+    void MoveEntity(Entity& entity, Direction dir);
 
     /**
      * @brief Get an array of fields surrounding the entity
