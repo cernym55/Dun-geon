@@ -27,12 +27,14 @@ void EntityManager::SpawnEntity(Worlds::Room& room, Coords spawnPosition)
 {
     auto& newEntity = m_EntityStorage[&room].emplace_back(new NPC::Human("Jackson"));
     m_EntityCoords[newEntity.get()] = spawnPosition;
+    m_RoomsByEntity[newEntity.get()] = &room;
     Place(*newEntity, room);
 }
 
 void EntityManager::Store(Worlds::Room& room, Entity& entity)
 {
     // Storing pointers is safe because both rooms and entities are tied to the world's lifespan
+    // TODO: Fix lack of coords
     m_EntityStorage[&room].emplace_back(&entity);
 }
 
@@ -103,6 +105,11 @@ bool EntityManager::CanEntityMove(const Entity& entity, Direction dir) const
 Coords EntityManager::CoordsOf(const Entity& entity) const
 {
     return m_EntityCoords.at(&entity);
+}
+
+const Worlds::Room& EntityManager::RoomOf(const Entity& entity) const
+{
+    return *m_RoomsByEntity.at(&entity);
 }
 
 void EntityManager::MoveEntity(Entity& entity, Direction dir)
