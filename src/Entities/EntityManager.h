@@ -86,10 +86,19 @@ public:
      */
     Coords CoordsOf(const Entity& entity) const;
 
+    /**
+     * @brief Get the room the given entity is in
+     * 
+     * @param entity entity
+     * @return const Worlds::Room& entity's room
+     */
+    const Worlds::Room& RoomOf(const Entity& entity) const;
+
 private:
     Worlds::WorldManager& m_WorldManager;
     Player& m_Player;
     std::unordered_map<Worlds::Room*, std::vector<std::unique_ptr<Entity>>> m_EntityStorage;
+    std::unordered_map<const Entity*, const Worlds::Room*> m_RoomsByEntity;
     std::unordered_map<const Entity*, Coords> m_EntityCoords;
 
     /**
