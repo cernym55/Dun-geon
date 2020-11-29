@@ -1,9 +1,11 @@
 #pragma once
 
+#include "Battle/Battle.h"
 #include "Entities/EntityManager.h"
 #include "Entities/Player.h"
 #include "InputHandler.h"
 #include "Misc/Coords.h"
+#include "Subscreen.h"
 #include "WorldMapObjectType.h"
 #include "Worlds/Field.h"
 #include "Worlds/Room.h"
@@ -14,6 +16,8 @@
 
 namespace UI
 {
+
+class BattleScreen;
 
 /**
  * @brief Manager for text display and UI
@@ -40,7 +44,12 @@ public:
         /**
          * @brief World map view
          */
-        Map
+        Map,
+
+        /**
+         * @brief Battle view
+         */
+        Battle
     };
 
     /**
@@ -97,6 +106,11 @@ public:
     void Draw();
 
     /**
+     * @brief Clear the screen
+     */
+    void Clear();
+
+    /**
      * @brief Get the view
      * 
      * @return View view
@@ -134,6 +148,19 @@ public:
      */
     void OkMessageBox(const std::string& message, const std::string& title = "", const std::string& buttonLabel = "OK");
 
+    /**
+     * @brief Create a battle screen
+     * 
+     * @param battle battle
+     * @return BattleScreen& battle screen
+     */
+    BattleScreen& OpenBattleScreen(Battle::Battle& battle);
+
+    /**
+     * @brief Close the subscreen
+     */
+    void CloseSubscreen();
+
 private:
     /**
      * @brief Default icon for empty fields
@@ -156,6 +183,7 @@ private:
     const Worlds::Room* m_CurrentRoom;
     std::string m_Message;
     bool m_IsWorldMapCursorEnabled;
+    std::unique_ptr<Subscreen> m_Subscreen;
 
     /**
      * @brief Initialize the screen

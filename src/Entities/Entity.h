@@ -28,6 +28,11 @@ public:
            const std::string& description = "",
            chtype icon = 0,
            bool isBlocking = true);
+    
+    /**
+     * @brief Destructor
+     */
+    virtual ~Entity() = default;
 
     /**
      * @brief Get the direction of the next move
@@ -35,6 +40,13 @@ public:
      * @param entityManager entity manager
      */
     virtual Direction GetNextMove(const EntityManager& entityManager);
+
+    /**
+     * @brief Is this fightable?
+     * 
+     * @return true if fightable
+     */
+    virtual bool Fightable() const;
 
     /**
      * @brief Check if this entity is blocking (can't overlap with other entities)

@@ -1,4 +1,5 @@
 #include "Screen.h"
+#include "BattleScreen.h"
 #include "CameraStyle.h"
 #include "ColorPairs.h"
 #include "Entities/EntityManager.h"
@@ -98,6 +99,16 @@ void Screen::Draw()
     DrawWorld();
     DrawHUD();
     DrawMessageWindow();
+}
+
+void Screen::Clear()
+{
+    wclear(m_GameWorldWindow);
+    wrefresh(m_GameWorldWindow);
+    wclear(m_GameHUDWindow);
+    wrefresh(m_GameHUDWindow);
+    wclear(m_GameMessageWindow);
+    wrefresh(m_GameMessageWindow);
 }
 
 Screen::View Screen::GetView() const
@@ -361,6 +372,23 @@ void Screen::OkMessageBox(const std::string& message, const std::string& title, 
     wrefresh(boxWin);
 
     delwin(boxWin);
+}
+
+BattleScreen& Screen::OpenBattleScreen(Battle::Battle& battle)
+{
+    BattleScreen* battleScreen = new BattleScreen(battle, *this, m_InputHandler);
+    m_Subscreen.reset(battleScreen);
+    battle.SetBattleScreen(battleScreen);
+    //m_View = View::Battle;
+    return *battleScreen;
+}
+
+void Screen::CloseSubscreen()
+{
+    if (m_Subscreen)
+    {
+        m_Subscreen.reset(nullptr);
+    }
 }
 
 void Screen::Init()

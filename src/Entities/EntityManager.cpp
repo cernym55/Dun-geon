@@ -83,6 +83,17 @@ bool EntityManager::TryMovePlayer(Direction dir)
     return false;
 }
 
+Entity* EntityManager::Approaching(const Entity& entity, Direction dir)
+{
+    Coords targetCoords = CoordsOf(entity).Adjacent(dir);
+    for (auto& entity : m_EntityStorage.at(&m_WorldManager.CurrentRoom()))
+    {
+        if (CoordsOf(*entity) == targetCoords) return entity.get();
+    }
+
+    return nullptr;
+}
+
 const Entity* EntityManager::Approaching(const Entity& entity, Direction dir) const
 {
     const Worlds::Field* approachedField = AdjacentField(entity, dir);

@@ -28,6 +28,11 @@ public:
                  chtype icon = 0,
                  Stats initialStats = { 1, 10, 10, 5, 10, 5, 5, 5, 10 },
                  bool isBlocking = true);
+    
+    /**
+     * @brief Destructor
+     */
+    virtual ~NPCCharacter() = default;
 };
 
 } /* namespace Entities::NPC */

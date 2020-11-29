@@ -43,11 +43,23 @@ public:
               bool isBlocking = true);
 
     /**
+     * @brief Destructor
+     */
+    virtual ~Character() = default;
+
+    /**
      * @brief Get the direction of the next move
      *
      * @param entityManager entity manager
      */
     virtual Direction GetNextMove(const EntityManager& entityManager) override;
+    
+    /**
+     * @brief Is this fightable?
+     * 
+     * @return true if fightable
+     */
+    virtual bool Fightable() const override;
 
     /**
      * @brief Get the stats collection

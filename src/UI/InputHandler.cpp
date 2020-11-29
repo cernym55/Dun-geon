@@ -490,7 +490,12 @@ bool InputHandler::ExecCommand(Command& command)
         // TODO: add
         break;
     case CommandType::Battle:
-        // TODO: add
+        if (command.Dir == Direction::None)
+        {
+            messageStream << "No direction given.";
+            result = false;
+        }
+        m_PlayerController.TryFight(command.Dir);
         break;
     case CommandType::Talk:
         // TODO: add
