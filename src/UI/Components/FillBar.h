@@ -45,7 +45,7 @@ public:
      */
     void Draw();
 
-private:
+protected:
     WINDOW* m_Window;
     int m_Size, m_Value, m_MaxValue;
     short m_FillColorPair;
