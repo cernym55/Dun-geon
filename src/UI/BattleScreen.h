@@ -64,6 +64,13 @@ public:
      */
     virtual void Terminate() override;
 
+    /**
+     * @brief Select the player action via menu
+     * 
+     * @return int action code
+     */
+    int SelectPlayerAction(std::map<int, std::string> actions);
+
 private:
     Battle::Battle& m_Battle;
     WINDOW* m_ArenaPanelWindow;

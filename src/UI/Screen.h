@@ -196,7 +196,8 @@ public:
      * @return int id of the selected option
      */
     static int SelectViaMenu(std::map<int, std::string> options,
-                             Coords position,
+                             int xPos,
+                             int yPos,
                              int width,
                              int height,
                              bool drawBorder                                                       = true,

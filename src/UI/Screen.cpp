@@ -80,7 +80,7 @@ void Screen::MainMenu()
         {2, "Quit"}};
     static const int menuWidth = 20;
     static const int menuHeight = 9;
-    int choice = SelectViaMenu(options, {(ScreenWidth - menuWidth) / 2 - 1, 15}, menuWidth, menuHeight, false, 2, 1, "", true);
+    int choice = SelectViaMenu(options, (ScreenWidth - menuWidth) / 2 - 1, 15, menuWidth, menuHeight, false, 2, 1, "", true);
     switch (choice)
     {
     case 0:
@@ -450,7 +450,7 @@ void Screen::DrawLogo(int xPos, int yPos)
     attroff(A_BOLD);
 }
 
-int Screen::SelectViaMenu(std::map<int, std::string> options, Coords position, int width, int height, bool drawBorder, int padX, int padY, const std::string& title, bool spaceOptions, bool scroll, std::function<void(std::map<int, std::string>::iterator)> hoverAction)
+int Screen::SelectViaMenu(std::map<int, std::string> options, int xPos, int yPos, int width, int height, bool drawBorder, int padX, int padY, const std::string& title, bool spaceOptions, bool scroll, std::function<void(std::map<int, std::string>::iterator)> hoverAction)
 {
     if (options.empty())
     {
@@ -458,14 +458,14 @@ int Screen::SelectViaMenu(std::map<int, std::string> options, Coords position, i
         errorMessage << "Attempted display of empty "
                      << width << 'x' << height
                      << " menu at "
-                     << position;
+                     << Coords(xPos, yPos);
         if (!title.empty()) errorMessage << " (\"" << title << "\")";
         throw DisplayException(errorMessage.str());
     }
 
     const size_t subWidth = width - 2 - 2 * padX;
     const size_t subHeight = height - 2 - 2 * padY;
-    const size_t numRows = spaceOptions ? subHeight / 2 : subHeight;
+    const size_t numRows = spaceOptions ? (subHeight + subHeight % 2) / 2 : subHeight;
     const size_t numColumns = scroll ? 1 : ceil(static_cast<double>(options.size()) / numRows);
     const size_t columnWidth = subWidth / numColumns;
 
@@ -483,8 +483,8 @@ int Screen::SelectViaMenu(std::map<int, std::string> options, Coords position, i
     MENU* menu = new_menu(items.data());
     WINDOW* menuWindow = newwin(height,
                                 width,
-                                position.Y,
-                                position.X);
+                                yPos,
+                                xPos);
     WINDOW* menuSub = derwin(menuWindow,
                              subHeight,
                              subWidth,

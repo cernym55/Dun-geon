@@ -60,7 +60,7 @@ bool Controller::TryFight(Direction dir)
     Entities::Character& targetedCharacter = dynamic_cast<Entities::Character&>(*approaching);
     Battle::Battle battle(m_PlayerEntity, targetedCharacter);
     m_Screen.OpenBattleScreen(battle);
-    // do battle
+    battle.DoBattle();
     m_Screen.CloseSubscreen();
 
     return true;

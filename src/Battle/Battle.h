@@ -12,6 +12,17 @@ class Battle
 {
 public:
     /**
+     * @brief Result of the battle
+     */
+    enum class Result
+    {
+        Ongoing = -1,
+        Victory = 0,
+        GameOver = 1,
+        Escape = 2
+    };
+
+    /**
      * @brief Constructor
      *
      * @param player player
@@ -40,10 +51,26 @@ public:
      */
     const Entities::Character& GetEnemy() const;
 
+    /**
+     * @brief Conduct the battle
+     */
+    Result DoBattle();
+
 private:
     Entities::Player& m_Player;
     Entities::Character& m_Enemy;
     UI::BattleScreen* m_BattleScreen;
+    Result m_Result;
+
+    /**
+     * @brief Perform the player's turn
+     */
+    void DoPlayerTurn();
+
+    /**
+     * @brief Perform the enemy's turn
+     */
+    void DoEnemyTurn();
 };
 
 } /* namespace Battle */

@@ -1,5 +1,6 @@
 #include "BattleScreen.h"
 #include "Components/FillBar.h"
+#include <algorithm>
 #include <ncurses.h>
 
 namespace UI
@@ -60,12 +61,26 @@ void BattleScreen::Terminate()
     delwin(m_EnemyNameplate);
 }
 
+int BattleScreen::SelectPlayerAction(std::map<int, std::string> actions)
+{
+    constexpr int numColumns = 3;
+    const int columnWidth
+        = std::max_element(actions.begin(),
+                           actions.end(),
+                           [&](const auto& a, const auto& b) { return a.second.size() < b.second.size(); })
+              ->second.size()
+          + 4;
+    const int width = (columnWidth + 1) * numColumns - 1;
+
+    return Screen::SelectViaMenu(
+        actions, (ArenaPanelWidth - width) / 2, TopPanelHeight + 2, width + 2, 5, false, 0, 0, "", true, false);
+}
+
 void BattleScreen::DrawScreenLayout()
 {
     DrawArenaPanel();
     DrawBottomPanel();
     DrawLogPanel();
-    getch(); // TODO: remove
 }
 
 void BattleScreen::DrawArenaPanel()
@@ -86,8 +101,11 @@ void BattleScreen::DrawLogPanel()
 
 void BattleScreen::DrawBottomPanel()
 {
+    const auto& player = m_Battle.GetPlayer();
+
     werase(m_BottomPanelWindow);
     box(m_BottomPanelWindow, 0, 0);
+    mvwprintw(m_BottomPanelWindow, 1, 2, "What will %s do?", player.GetName().c_str());
     wrefresh(m_BottomPanelWindow);
 }
 
