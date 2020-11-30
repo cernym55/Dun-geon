@@ -9,6 +9,7 @@
 #include "WorldMapObjectType.h"
 #include "Worlds/Field.h"
 #include "Worlds/Room.h"
+#include <functional>
 #include <iostream>
 #include <map>
 #include <ncurses.h>
@@ -178,6 +179,34 @@ public:
      */
     static void PrintCenter(WINDOW* window, const std::string& str, int yPos);
 
+    /**
+     * @brief Draw a menu prompt and return the id associated with the selected option
+     *
+     * @param options map of id:label option pairs
+     * @param position position of the upper left corner of the menu
+     * @param width width of the menu (will trim option labels if too narrow)
+     * @param height height of the menu (will scroll if too short for all options)
+     * @param drawBorder whether or not to draw a border around the menu (default: true)
+     * @param padX padding between the side borders and menu options (default: 1)
+     * @param padY padding between the top and bottom borders and menu options (default: 1)
+     * @param title menu box title (default: blank)
+     * @param spaceOptions whether or not to insert a blank line between each two options (default: false)
+     * @param scroll whether the menu should scroll or have multiple columns if options won't fit (default: scroll)
+     * @param hoverAction action called with the highlighted item whenever moving the menu cursor (default: none)
+     * @return int id of the selected option
+     */
+    static int SelectViaMenu(std::map<int, std::string> options,
+                             Coords position,
+                             int width,
+                             int height,
+                             bool drawBorder                                                       = true,
+                             int padX                                                              = 0,
+                             int padY                                                              = 0,
+                             const std::string& title                                              = "",
+                             bool spaceOptions                                                     = false,
+                             bool scroll                                                           = true,
+                             std::function<void(std::map<int, std::string>::iterator)> hoverAction = {});
+
 private:
     /**
      * @brief Default icon for empty fields
@@ -219,22 +248,6 @@ private:
      * @param yPos Y
      */
     void DrawLogo(int xPos = 11, int yPos = 3);
-
-    /**
-     * @brief Draw a menu prompt and return the id associated with the selected option
-     * 
-     * @param options map of id:label option pairs
-     * @param position position of the upper left corner of the menu
-     * @param width width of the menu (will trim option labels if too narrow)
-     * @param height height of the menu (will scroll if too short for all options)
-     * @param drawBorder whether or not to draw a border around the menu (default: true)
-     * @param padX padding between the side borders and menu options (default: 1)
-     * @param padY padding between the top and bottom borders and menu options (default: 1)
-     * @param title menu box title (default: blank)
-     * @param spaceOptions whether or not to insert a blank line between each two options (default: false)
-     * @return int id of the selected option
-     */
-    int SelectViaMenu(std::map<int, std::string> options, Coords position, int width, int height, bool drawBorder = true, int padX = 0, int padY = 0, const std::string& title = "", bool spaceOptions = false);
 
     /**
      * @brief Initialize to display the game screen

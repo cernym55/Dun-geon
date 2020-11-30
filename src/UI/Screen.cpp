@@ -450,7 +450,7 @@ void Screen::DrawLogo(int xPos, int yPos)
     attroff(A_BOLD);
 }
 
-int Screen::SelectViaMenu(std::map<int, std::string> options, Coords position, int width, int height, bool drawBorder, int padX, int padY, const std::string& title, bool spaceOptions)
+int Screen::SelectViaMenu(std::map<int, std::string> options, Coords position, int width, int height, bool drawBorder, int padX, int padY, const std::string& title, bool spaceOptions, bool scroll, std::function<void(std::map<int, std::string>::iterator)> hoverAction)
 {
     if (options.empty())
     {
@@ -464,13 +464,17 @@ int Screen::SelectViaMenu(std::map<int, std::string> options, Coords position, i
     }
 
     const size_t subWidth = width - 2 - 2 * padX;
+    const size_t subHeight = height - 2 - 2 * padY;
+    const size_t numRows = spaceOptions ? subHeight / 2 : subHeight;
+    const size_t numColumns = scroll ? 1 : ceil(static_cast<double>(options.size()) / numRows);
+    const size_t columnWidth = subWidth / numColumns;
 
     std::vector<ITEM*> items;
     for (auto& pair : options)
     {
-        if (pair.second.size() + 4 > subWidth)
+        if (pair.second.size() + 4 > columnWidth)
         {
-            ShortenString(pair.second, subWidth - 4);
+            ShortenString(pair.second, columnWidth - 4);
         }
         pair.second = std::string("  ") + pair.second + "  ";
         items.push_back(new_item(pair.second.c_str(), pair.second.c_str()));
@@ -482,7 +486,7 @@ int Screen::SelectViaMenu(std::map<int, std::string> options, Coords position, i
                                 position.Y,
                                 position.X);
     WINDOW* menuSub = derwin(menuWindow,
-                             height - 2 - 2 * padY,
+                             subHeight,
                              subWidth,
                              1 + padY,
                              1 + padX);
@@ -492,7 +496,8 @@ int Screen::SelectViaMenu(std::map<int, std::string> options, Coords position, i
 
     menu_opts_off(menu, O_SHOWDESC);
     set_menu_mark(menu, "");
-    if (spaceOptions) set_menu_spacing(menu, 1, 2, 1);
+    set_menu_spacing(menu, 1, spaceOptions ? 2 : 1, 1);
+    set_menu_format(menu, numRows, numColumns);
     if (drawBorder) box(menuWindow, 0, 0);
     if (!title.empty()) PrintCenter(menuWindow, title, 0);
 
@@ -502,31 +507,55 @@ int Screen::SelectViaMenu(std::map<int, std::string> options, Coords position, i
     auto it = options.begin();
     bool selected = false;
     std::optional<chtype> key;
+    if (hoverAction) hoverAction(it);
     while (!selected)
     {
-        key = InputHandler::ReadKeypress({KEY_DOWN, 's', KEY_UP, 'w', KEY_ENTER, 10}, menuWindow);
-        if (!key) continue;
+        key = InputHandler::ReadKeypress({ KEY_DOWN, 's', KEY_UP, 'w', KEY_RIGHT, 'd', KEY_LEFT, 'a', KEY_ENTER, 10 },
+                                         menuWindow);
+        if (!key)
+            continue;
+
+        size_t currentPosition = std::distance(options.begin(), it);
 
         switch (key.value())
         {
         case KEY_DOWN:
         case 's':
-            menu_driver(menu, REQ_DOWN_ITEM);
-            if (++it == options.end())
+            if ((scroll && currentPosition != options.size() - 1) || (currentPosition % numRows != numRows - 1 && currentPosition != options.size() - 1))
             {
-                menu_driver(menu, REQ_FIRST_ITEM);
-                it = options.begin();
+                menu_driver(menu, REQ_DOWN_ITEM);
+                it++;
+                if (hoverAction) hoverAction(it);
             }
             break;
         case KEY_UP:
         case 'w':
-            menu_driver(menu, REQ_UP_ITEM);
-            if (it == options.begin())
+            if ((scroll && currentPosition != 0) || currentPosition % numRows != 0)
             {
-                menu_driver(menu, REQ_LAST_ITEM);
-                it = options.end();
+                menu_driver(menu, REQ_UP_ITEM);
+                it--;
+                if (hoverAction) hoverAction(it);
             }
-            it--;
+            break;
+        case KEY_RIGHT:
+        case 'd':
+            if (!scroll && currentPosition + numRows < options.size())
+            {
+                menu_driver(menu, REQ_RIGHT_ITEM);
+                for (size_t i = 0; i < numRows; i++)
+                    it++;
+                if (hoverAction) hoverAction(it);
+            }
+            break;
+        case KEY_LEFT:
+        case 'a':
+            if (!scroll && currentPosition >= numRows)
+            {
+                menu_driver(menu, REQ_LEFT_ITEM);
+                for (size_t i = 0; i < numRows; i++)
+                    it--;
+                if (hoverAction) hoverAction(it);
+            }
             break;
         case KEY_ENTER:
         case 10:
