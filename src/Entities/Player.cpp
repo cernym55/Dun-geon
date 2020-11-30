@@ -8,7 +8,7 @@ namespace Entities
 
 Player::Player(const std::string& name,
                chtype icon)
-    : Character(name, "", icon), m_XP(0), m_XPToLevelUp(100), m_Dun(0)
+    : Character(name, "Dun-geoneer", icon), m_XP(0), m_XPToLevelUp(100), m_Dun(0)
 {
 }
 

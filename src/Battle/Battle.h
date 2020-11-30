@@ -26,6 +26,20 @@ public:
      */
     void SetBattleScreen(UI::BattleScreen* battleScreen);
 
+    /**
+     * @brief Get the Player
+     * 
+     * @return const Entities::Player& player
+     */
+    const Entities::Player& GetPlayer() const;
+
+    /**
+     * @brief Get the Enemy
+     * 
+     * @return const Entities::Character& enemy
+     */
+    const Entities::Character& GetEnemy() const;
+
 private:
     Entities::Player& m_Player;
     Entities::Character& m_Enemy;

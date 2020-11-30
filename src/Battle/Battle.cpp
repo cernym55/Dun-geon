@@ -14,4 +14,14 @@ void Battle::SetBattleScreen(UI::BattleScreen* battleScreen)
     m_BattleScreen = battleScreen;
 }
 
+const Entities::Player& Battle::GetPlayer() const
+{
+    return m_Player;
+}
+
+const Entities::Character& Battle::GetEnemy() const
+{
+    return m_Enemy;
+}
+
 } /* namespace Battle */

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Battle/Battle.h"
+#include "ColorPairs.h"
 #include "Screen.h"
 #include "Subscreen.h"
 
@@ -28,7 +29,7 @@ public:
     /**
      * @brief Width of a nameplate
      */
-    constexpr static const int NameplateWidth = 30;
+    constexpr static const int NameplateWidth = 36;
 
     /**
      * @brief Height of a nameplate
@@ -68,6 +69,8 @@ private:
     WINDOW* m_ArenaPanelWindow;
     WINDOW* m_LogPanelWindow;
     WINDOW* m_BottomPanelWindow;
+    WINDOW* m_PlayerNameplate;
+    WINDOW* m_EnemyNameplate;
 
     /**
      * @brief Draw the layout of the panels
@@ -88,6 +91,16 @@ private:
      * @brief Draw the bottom panel
      */
     void DrawBottomPanel();
+
+    /**
+     * @brief Draw the player nameplate
+     */
+    void DrawPlayerNameplate();
+
+    /**
+     * @brief Draw the enemy nameplate
+     */
+    void DrawEnemyNameplate();
 };
 
 } /* namespace UI */

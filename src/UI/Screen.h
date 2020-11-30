@@ -161,6 +161,23 @@ public:
      */
     void CloseSubscreen();
 
+    /**
+     * @brief Print the string centered on line yPos
+     * 
+     * @param str string
+     * @param yPos Y position
+     */
+    static void PrintCenter(const std::string& str, int yPos);
+
+    /**
+     * @brief Print the string centered in given window on line yPos
+     * 
+     * @param window window
+     * @param str string
+     * @param yPos Y position
+     */
+    static void PrintCenter(WINDOW* window, const std::string& str, int yPos);
+
 private:
     /**
      * @brief Default icon for empty fields
@@ -194,23 +211,6 @@ private:
      * @brief Terminate the screen
      */
     void Terminate();
-
-    /**
-     * @brief Print the string centered on line yPos
-     * 
-     * @param str string
-     * @param yPos Y position
-     */
-    void PrintCenter(const std::string& str, int yPos);
-
-    /**
-     * @brief Print the string centered in given window on line yPos
-     * 
-     * @param window window
-     * @param str string
-     * @param yPos Y position
-     */
-    void PrintCenter(WINDOW* window, const std::string& str, int yPos);
 
     /**
      * @brief Draw the Dun-geon logo at the selected position
