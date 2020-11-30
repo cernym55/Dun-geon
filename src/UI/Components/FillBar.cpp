@@ -46,6 +46,8 @@ void FillBar::Draw()
 
     for (int i = 0; i < m_Size - 2; i++)
     {
+        if (i == filledLength) wattroff(m_Window, A_COLOR | A_REVERSE);
+
         if (i < textBeginPos || i >= textBeginPos + static_cast<int>(text.size()))
         {
             mvwaddch(m_Window, 0, i + 1, ' ');
@@ -54,9 +56,6 @@ void FillBar::Draw()
         {
             mvwaddch(m_Window, 0, i + 1, text[i - textBeginPos]);
         }
-        
-
-        if (i == filledLength) wattroff(m_Window, A_COLOR | A_REVERSE);
     }
 
     wattroff(m_Window, A_COLOR | A_REVERSE | A_BOLD);
