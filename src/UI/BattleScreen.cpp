@@ -97,29 +97,36 @@ void BattleScreen::DrawPlayerNameplate()
 
     werase(m_PlayerNameplate);
 
+    int row = 0;
+
     // Draw the box
     box(m_PlayerNameplate, 0, 0);
     std::string title = " " + player.GetName() + " ";
     wattron(m_PlayerNameplate, A_REVERSE);
-    Screen::PrintCenter(m_PlayerNameplate, title, 0);
+    Screen::PrintCenter(m_PlayerNameplate, title, NameplateHeight - 1);
     wattroff(m_PlayerNameplate, A_REVERSE);
 
     // Top row
-    mvwprintw(m_PlayerNameplate, 1, 4, "Level %d", player.GetStats().Level);
+    row++;
+    mvwprintw(m_PlayerNameplate, row, 4, "Level %d", player.GetStats().Level);
     mvwprintw(m_PlayerNameplate,
-              1,
+              row,
               NameplateWidth - 4 - player.GetDescription().size(),
               "%s",
               player.GetDescription().c_str());
 
     // Middle row
-    mvwprintw(m_PlayerNameplate, 2, 4, "HP:");
-    Components::FillBar healthBar(m_PlayerNameplate, 16, 8, 2, player.GetStats().Health, player.GetStats().MaxHealth, ColorPairs::WhiteOnGreen);
+    row++;
+    mvwprintw(m_PlayerNameplate, row, 4, "HP:");
+    Components::FillBar healthBar(
+        m_PlayerNameplate, 16, 8, row, player.GetStats().Health, player.GetStats().MaxHealth, ColorPairs::WhiteOnGreen);
     healthBar.Draw();
 
     // Bottom row
-    mvwprintw(m_PlayerNameplate, 3, 4, "MP:");
-    Components::FillBar manaBar(m_PlayerNameplate, 16, 8, 3, player.GetStats().Mana, player.GetStats().MaxMana, ColorPairs::WhiteOnBlue);
+    row++;
+    mvwprintw(m_PlayerNameplate, row, 4, "MP:");
+    Components::FillBar manaBar(
+        m_PlayerNameplate, 16, 8, row, player.GetStats().Mana, player.GetStats().MaxMana, ColorPairs::WhiteOnBlue);
     manaBar.Draw();
 
     wrefresh(m_PlayerNameplate);
@@ -131,26 +138,36 @@ void BattleScreen::DrawEnemyNameplate()
 
     werase(m_EnemyNameplate);
 
+    int row = 0;
+
     // Draw the box
     box(m_EnemyNameplate, 0, 0);
     std::string title = " " + enemy.GetName() + " ";
     wattron(m_EnemyNameplate, A_REVERSE);
-    Screen::PrintCenter(m_EnemyNameplate, title, NameplateHeight - 1);
+    Screen::PrintCenter(m_EnemyNameplate, title, 0);
     wattroff(m_EnemyNameplate, A_REVERSE);
 
     // Top row
-    mvwprintw(m_EnemyNameplate, 1, 4, "Level %d", enemy.GetStats().Level);
-    mvwprintw(
-        m_EnemyNameplate, 1, NameplateWidth - 4 - enemy.GetDescription().size(), "%s", enemy.GetDescription().c_str());
+    row++;
+    mvwprintw(m_EnemyNameplate, row, 4, "Level %d", enemy.GetStats().Level);
+    mvwprintw(m_EnemyNameplate,
+              row,
+              NameplateWidth - 4 - enemy.GetDescription().size(),
+              "%s",
+              enemy.GetDescription().c_str());
 
     // Middle row
-    mvwprintw(m_EnemyNameplate, 2, 4, "HP:");
-    Components::FillBar healthBar(m_EnemyNameplate, 16, 8, 2, enemy.GetStats().Health, enemy.GetStats().MaxHealth, ColorPairs::WhiteOnGreen);
+    row++;
+    mvwprintw(m_EnemyNameplate, row, 4, "HP:");
+    Components::FillBar healthBar(
+        m_EnemyNameplate, 16, 8, row, enemy.GetStats().Health, enemy.GetStats().MaxHealth, ColorPairs::WhiteOnGreen);
     healthBar.Draw();
 
     // Bottom row
-    mvwprintw(m_EnemyNameplate, 3, 4, "MP:");
-    Components::FillBar manaBar(m_EnemyNameplate, 16, 8, 3, enemy.GetStats().Mana, enemy.GetStats().MaxMana, ColorPairs::WhiteOnBlue);
+    row++;
+    mvwprintw(m_EnemyNameplate, row, 4, "MP:");
+    Components::FillBar manaBar(
+        m_EnemyNameplate, 16, 8, row, enemy.GetStats().Mana, enemy.GetStats().MaxMana, ColorPairs::WhiteOnBlue);
     manaBar.Draw();
 
     wrefresh(m_EnemyNameplate);
