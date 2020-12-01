@@ -56,12 +56,20 @@ bool Controller::TryFight(Direction dir)
     auto approaching = m_EntityManager.Approaching(m_PlayerEntity, dir);
     if (approaching == nullptr || !approaching->Fightable()) return false;
 
-    // TODO: remove the cast
+    // TODO: try to remove the cast
     Entities::Character& targetedCharacter = dynamic_cast<Entities::Character&>(*approaching);
+    
     Battle::Battle battle(m_PlayerEntity, targetedCharacter);
     m_Screen.OpenBattleScreen(battle);
-    battle.DoBattle();
+    Battle::Battle::Result result = battle.DoBattle();
     m_Screen.CloseSubscreen();
+
+    // TODO: Give the player some rewards
+
+    if (result == Battle::Battle::Result::Victory)
+    {
+        m_EntityManager.KillEntity(targetedCharacter);
+    }
 
     return true;
 }

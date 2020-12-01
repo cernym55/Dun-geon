@@ -8,6 +8,7 @@
 #include "Worlds/Field.h"
 #include "Worlds/Room.h"
 #include "Worlds/WorldManager.h"
+#include <algorithm>
 #include <memory>
 
 namespace Entities
@@ -29,6 +30,25 @@ void EntityManager::SpawnEntity(Worlds::Room& room, Coords spawnPosition)
     m_EntityCoords[newEntity.get()] = spawnPosition;
     m_RoomsByEntity[newEntity.get()] = &room;
     Place(*newEntity, room);
+}
+
+void EntityManager::KillEntity(Entity& entity)
+{
+    auto room = m_RoomsByEntity.at(&entity);
+    auto& storage = m_EntityStorage.at(room);
+    
+    auto it = std::find_if(storage.begin(), storage.end(), [&](const auto& p)
+    {
+        return p.get() == &entity;
+    });
+
+    if (it != storage.end())
+    {
+        Pluck(entity, *room);
+        m_RoomsByEntity.erase(it->get());
+        m_EntityCoords.erase(it->get());
+        storage.erase(it);
+    }
 }
 
 void EntityManager::Store(Worlds::Room& room, Entity& entity)

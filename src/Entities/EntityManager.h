@@ -36,6 +36,13 @@ public:
     void SpawnEntity(Worlds::Room& room, Coords spawnPosition);
 
     /**
+     * @brief Kill the given (managed) entity, removing it from the world
+     * 
+     * @param entity entity to kill
+     */
+    void KillEntity(Entity& entity);
+
+    /**
      * @brief Take ownership of an entity and assign it to this room's storage
      *
      * @param room room
@@ -107,7 +114,7 @@ private:
     Worlds::WorldManager& m_WorldManager;
     Player& m_Player;
     std::unordered_map<const Worlds::Room*, std::vector<std::unique_ptr<Entity>>> m_EntityStorage;
-    std::unordered_map<const Entity*, const Worlds::Room*> m_RoomsByEntity;
+    std::unordered_map<const Entity*, Worlds::Room*> m_RoomsByEntity;
     std::unordered_map<const Entity*, Coords> m_EntityCoords;
 
     /**
