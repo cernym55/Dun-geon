@@ -66,10 +66,27 @@ public:
 
     /**
      * @brief Select the player action via menu
-     * 
+     *
      * @return int action code
      */
-    int SelectPlayerAction(std::map<int, std::string> actions);
+    int SelectPlayerAction(const std::map<int, std::string>& actions);
+
+    /**
+     * @brief Select an option within the bottom panel with a hover action
+     *
+     * @param options options
+     * @param hoverAction hover action
+     * @return int option code
+     */
+    int SelectWithHoverAction(const std::map<int, std::string>& options,
+                              std::function<void(std::map<int, std::string>::iterator)> hoverAction = {});
+
+    /**
+     * @brief Write a message in the upper left corner of the bottom panel
+     * 
+     * @param message message
+     */
+    void PostMessage(const std::string& message);
 
 private:
     Battle::Battle& m_Battle;
@@ -98,6 +115,11 @@ private:
      * @brief Draw the bottom panel
      */
     void DrawBottomPanel();
+
+    /**
+     * @brief Clear the bottom panel contents
+     */
+    void ClearBottomPanel();
 
     /**
      * @brief Draw the player nameplate

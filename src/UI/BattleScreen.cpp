@@ -61,7 +61,7 @@ void BattleScreen::Terminate()
     delwin(m_EnemyNameplate);
 }
 
-int BattleScreen::SelectPlayerAction(std::map<int, std::string> actions)
+int BattleScreen::SelectPlayerAction(const std::map<int, std::string>& actions)
 {
     constexpr int numColumns = 3;
     const int columnWidth
@@ -73,7 +73,22 @@ int BattleScreen::SelectPlayerAction(std::map<int, std::string> actions)
     const int width = (columnWidth + 1) * numColumns - 1;
 
     return Screen::SelectViaMenu(
-        actions, (ArenaPanelWidth - width) / 2, TopPanelHeight + 2, width + 2, 5, false, 0, 0, "", true, false);
+        actions, (ArenaPanelWidth - width) / 2 - 1, TopPanelHeight + 2, width + 2, 5, false, 0, 0, "", true, false);
+}
+
+int BattleScreen::SelectWithHoverAction(const std::map<int, std::string>& options,
+                                        std::function<void(std::map<int, std::string>::iterator)> hoverAction)
+{
+    constexpr int width = 20;
+    return Screen::SelectViaMenu(
+        options, 2, TopPanelHeight + 2, width, BottomPanelHeight - 3, true, 0, 0, "", false, true, hoverAction);
+}
+
+void BattleScreen::PostMessage(const std::string& message)
+{
+    mvwhline(m_BottomPanelWindow, 1, 1, ' ', ArenaPanelWidth - 2);
+    mvwprintw(m_BottomPanelWindow, 1, 2, message.c_str());
+    wrefresh(m_BottomPanelWindow);
 }
 
 void BattleScreen::DrawScreenLayout()
@@ -105,7 +120,16 @@ void BattleScreen::DrawBottomPanel()
 
     werase(m_BottomPanelWindow);
     box(m_BottomPanelWindow, 0, 0);
-    mvwprintw(m_BottomPanelWindow, 1, 2, "What will %s do?", player.GetName().c_str());
+    mvwprintw(m_BottomPanelWindow, 1, 3, "What will %s do?", player.GetName().c_str());
+    wrefresh(m_BottomPanelWindow);
+}
+
+void BattleScreen::ClearBottomPanel()
+{
+    for (int i = 1; i < BottomPanelHeight - 1; i++)
+    {
+        mvwhline(m_BottomPanelWindow, i, 1, ' ', ArenaPanelWidth - 2);
+    }
     wrefresh(m_BottomPanelWindow);
 }
 

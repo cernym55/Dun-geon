@@ -48,17 +48,31 @@ void Battle::DoPlayerTurn()
     // TODO: Filter actions based on what the player can actually do
 
 ACTION_CHOICE:
-    int choice = m_BattleScreen->SelectPlayerAction(actions);
+    constexpr int RethinkCode = 1000;
+    m_BattleScreen->PostMessage("What will " + m_Player.GetName() + " do?");
 
+    int choice = m_BattleScreen->SelectPlayerAction(actions);
     switch (choice)
     {
     case 0:
     {
-        int damage = m_Player.GetStats().Vigor;
+        m_BattleScreen->PostMessage("Which attack?");
+        std::map<int, std::string> options = { { 0, "Swing" }, { RethinkCode, "<rethink>" } };
 
-        // select melee attack
+        int choice = m_BattleScreen->SelectWithHoverAction(options);
+        switch (choice)
+        {
+        case 0:
+        {
+            int damage = m_Player.GetStats().Vigor;
+            // attack
+            break;
+        }
+        case RethinkCode:
+            goto ACTION_CHOICE;
+        }
+        break;
     }
-    break;
     case 4:
         m_Result = Result::Escape;
         break;

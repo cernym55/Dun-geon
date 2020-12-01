@@ -472,11 +472,12 @@ int Screen::SelectViaMenu(std::map<int, std::string> options, int xPos, int yPos
     std::vector<ITEM*> items;
     for (auto& pair : options)
     {
-        if (pair.second.size() + 4 > columnWidth)
+        if (pair.second.size() > columnWidth)
         {
-            ShortenString(pair.second, columnWidth - 4);
+            ShortenString(pair.second, columnWidth);
         }
-        pair.second = std::string("  ") + pair.second + "  ";
+        size_t totalPad = columnWidth - pair.second.size();
+        pair.second = std::string(totalPad / 2, ' ') + pair.second + std::string(totalPad / 2 + totalPad % 2, ' ');
         items.push_back(new_item(pair.second.c_str(), pair.second.c_str()));
     }
     items.push_back(nullptr);

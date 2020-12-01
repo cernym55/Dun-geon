@@ -183,7 +183,8 @@ public:
      * @brief Draw a menu prompt and return the id associated with the selected option
      *
      * @param options map of id:label option pairs
-     * @param position position of the upper left corner of the menu
+     * @param xPos X position
+     * @param yPos Y position
      * @param width width of the menu (will trim option labels if too narrow)
      * @param height height of the menu (will scroll if too short for all options)
      * @param drawBorder whether or not to draw a border around the menu (default: true)
