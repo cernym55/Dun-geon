@@ -91,6 +91,26 @@ void BattleScreen::PostMessage(const std::string& message)
     wrefresh(m_BottomPanelWindow);
 }
 
+void BattleScreen::ProjectAttack(int damage, int hitChancePercent)
+{
+    constexpr size_t arrowXPos = NameplateWidth / 2 + 6;
+    mvwaddch(m_ArenaPanelWindow, NameplateHeight, arrowXPos, ACS_UARROW);
+    mvwaddch(m_ArenaPanelWindow, NameplateHeight + 1, arrowXPos, '|');
+    mvwaddch(m_ArenaPanelWindow, NameplateHeight + 2, arrowXPos, '|');
+    mvwprintw(m_ArenaPanelWindow, NameplateHeight + 1, arrowXPos + 2, "* %d *", damage);
+    mvwprintw(m_ArenaPanelWindow, NameplateHeight, arrowXPos - 5, "Hit:");
+    mvwprintw(m_ArenaPanelWindow, NameplateHeight + 1, arrowXPos - 5, "%3d%%", hitChancePercent);
+    wrefresh(m_ArenaPanelWindow);
+}
+
+void BattleScreen::ClearProjectionArea()
+{
+    mvwhline(m_ArenaPanelWindow, NameplateHeight, 0, ' ', NameplateWidth);
+    mvwhline(m_ArenaPanelWindow, NameplateHeight + 1, 0, ' ', NameplateWidth);
+    mvwhline(m_ArenaPanelWindow, NameplateHeight + 2, 0, ' ', NameplateWidth);
+    wrefresh(m_ArenaPanelWindow);
+}
+
 void BattleScreen::DrawScreenLayout()
 {
     DrawArenaPanel();

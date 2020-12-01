@@ -88,6 +88,19 @@ public:
      */
     void PostMessage(const std::string& message);
 
+    /**
+     * @brief Project an attack against the enemy
+     * 
+     * @param damage damage
+     * @param hitChancePercent chance to hit in percent
+     */
+    void ProjectAttack(int damage, int hitChancePercent);
+
+    /**
+     * @brief Clear the projection area
+     */
+    void ClearProjectionArea();
+
 private:
     Battle::Battle& m_Battle;
     WINDOW* m_ArenaPanelWindow;
