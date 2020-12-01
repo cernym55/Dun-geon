@@ -1,6 +1,8 @@
 #include "BattleScreen.h"
 #include "Components/FillBar.h"
 #include <algorithm>
+#include <chrono>
+#include <thread>
 #include <ncurses.h>
 
 namespace UI
@@ -94,12 +96,14 @@ void BattleScreen::PostMessage(const std::string& message)
 void BattleScreen::ProjectAttack(int damage, int hitChancePercent)
 {
     constexpr size_t arrowXPos = NameplateWidth / 2 + 6;
+    wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::BlackOnDefault) | A_BOLD);
     mvwaddch(m_ArenaPanelWindow, NameplateHeight, arrowXPos, ACS_UARROW);
     mvwaddch(m_ArenaPanelWindow, NameplateHeight + 1, arrowXPos, '|');
     mvwaddch(m_ArenaPanelWindow, NameplateHeight + 2, arrowXPos, '|');
     mvwprintw(m_ArenaPanelWindow, NameplateHeight + 1, arrowXPos + 2, "* %d *", damage);
     mvwprintw(m_ArenaPanelWindow, NameplateHeight, arrowXPos - 5, "Hit:");
     mvwprintw(m_ArenaPanelWindow, NameplateHeight + 1, arrowXPos - 5, "%3d%%", hitChancePercent);
+    wattroff(m_ArenaPanelWindow, A_COLOR | A_BOLD);
     wrefresh(m_ArenaPanelWindow);
 }
 
@@ -109,6 +113,73 @@ void BattleScreen::ClearProjectionArea()
     mvwhline(m_ArenaPanelWindow, NameplateHeight + 1, 0, ' ', NameplateWidth);
     mvwhline(m_ArenaPanelWindow, NameplateHeight + 2, 0, ' ', NameplateWidth);
     wrefresh(m_ArenaPanelWindow);
+}
+
+void BattleScreen::AnimatePlayerAttack(int damage, bool hit)
+{
+    constexpr size_t arrowXPos = NameplateWidth / 2 + 6;
+    constexpr int animationPeriodMs = 100;
+    constexpr int afterDelayMs = 1200;
+
+    wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::YellowOnDefault) | A_BOLD);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
+    mvwaddch(m_ArenaPanelWindow, NameplateHeight + 2, arrowXPos, '|');
+    wrefresh(m_ArenaPanelWindow);
+    std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
+    mvwaddch(m_ArenaPanelWindow, NameplateHeight + 1, arrowXPos, '|');
+    wrefresh(m_ArenaPanelWindow);
+    std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
+
+    if (hit)
+    {
+        mvwaddch(m_ArenaPanelWindow, NameplateHeight, arrowXPos, '^');
+        wrefresh(m_ArenaPanelWindow);
+        std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
+        wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::RedOnDefault));
+        mvwprintw(m_ArenaPanelWindow, NameplateHeight + 1, arrowXPos - 5, "Hit!");
+
+        mvwaddch(m_ArenaPanelWindow, NameplateHeight + 1, arrowXPos + 2, '*');
+        wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::YellowOnDefault));
+        wprintw(m_ArenaPanelWindow, " %d ", damage);
+        waddch(m_ArenaPanelWindow, '*' | COLOR_PAIR(ColorPairs::RedOnDefault));
+        wrefresh(m_ArenaPanelWindow);
+
+        // Flash enemy nameplate border
+        std::string title = " " + m_Battle.GetEnemy().GetName() + " ";
+        for (int i = 0; i < 2; i++)
+        {
+            wattron(m_EnemyNameplate, COLOR_PAIR(ColorPairs::RedOnDefault));
+            box(m_EnemyNameplate, 0, 0);
+            wattron(m_EnemyNameplate, A_REVERSE);
+            Screen::PrintCenter(m_EnemyNameplate, title, 0);
+            wattroff(m_EnemyNameplate, A_COLOR | A_REVERSE);
+            wrefresh(m_ArenaPanelWindow);
+            
+            std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
+
+            box(m_EnemyNameplate, 0, 0);
+            wattron(m_EnemyNameplate, A_REVERSE);
+            Screen::PrintCenter(m_EnemyNameplate, title, 0);
+            wattroff(m_EnemyNameplate, A_REVERSE);
+            wrefresh(m_ArenaPanelWindow);
+            std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
+        }
+    }
+    else
+    {
+        wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::RedOnDefault));
+        mvwaddch(m_ArenaPanelWindow, NameplateHeight + 1, arrowXPos, 'X');
+        wrefresh(m_ArenaPanelWindow);
+        std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
+        mvwprintw(m_ArenaPanelWindow, NameplateHeight + 1, arrowXPos - 6, "Miss!");
+    }
+    wattroff(m_ArenaPanelWindow, A_COLOR | A_BOLD);
+    wrefresh(m_ArenaPanelWindow);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(afterDelayMs));
+
+    ClearProjectionArea();
 }
 
 void BattleScreen::DrawScreenLayout()

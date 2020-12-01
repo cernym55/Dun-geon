@@ -71,6 +71,14 @@ private:
      * @brief Perform the enemy's turn
      */
     void DoEnemyTurn();
+
+    /**
+     * @brief Launch a player attack against the enemy
+     * 
+     * @param damage attack damage
+     * @param hitChancePercent hit chance in percent
+     */
+    void LaunchPlayerAttack(int damage, int hitChancePercent);
 };
 
 } /* namespace Battle */

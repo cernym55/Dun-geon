@@ -101,6 +101,14 @@ public:
      */
     void ClearProjectionArea();
 
+    /**
+     * @brief Animate a player attack
+     * 
+     * @param damage damage number
+     * @param hit whether the attack hit or missed
+     */
+    void AnimatePlayerAttack(int damage, bool hit);
+
 private:
     Battle::Battle& m_Battle;
     WINDOW* m_ArenaPanelWindow;
