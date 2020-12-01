@@ -69,6 +69,7 @@ ACTION_CHOICE:
             m_BattleScreen->ProjectAttack(stats.first, stats.second);
         });
         if (choice == RethinkCode) goto ACTION_CHOICE;
+        m_BattleScreen->PostMessage("");
 
         m_BattleScreen->ClearProjectionArea();
         LaunchPlayerAttack(attackStats.at(choice).first, attackStats.at(choice).second);

@@ -2,6 +2,7 @@
 
 #include "Battle/Battle.h"
 #include "ColorPairs.h"
+#include "Components/Nameplate.h"
 #include "Screen.h"
 #include "Subscreen.h"
 
@@ -27,14 +28,9 @@ public:
     constexpr static const int LogPanelWidth = Screen::ScreenWidth - ArenaPanelWidth;
 
     /**
-     * @brief Width of a nameplate
+     * @brief Width of a nameplate in the arena panel
      */
-    constexpr static const int NameplateWidth = 36;
-
-    /**
-     * @brief Height of a nameplate
-     */
-    constexpr static const int NameplateHeight = 5;
+    constexpr static const int ArenaNameplateWidth = 36;
 
     /**
      * @brief Height of the bottom panel
@@ -114,8 +110,8 @@ private:
     WINDOW* m_ArenaPanelWindow;
     WINDOW* m_LogPanelWindow;
     WINDOW* m_BottomPanelWindow;
-    WINDOW* m_PlayerNameplate;
-    WINDOW* m_EnemyNameplate;
+    Components::Nameplate m_PlayerNameplate;
+    Components::Nameplate m_EnemyNameplate;
 
     /**
      * @brief Draw the layout of the panels
@@ -141,16 +137,6 @@ private:
      * @brief Clear the bottom panel contents
      */
     void ClearBottomPanel();
-
-    /**
-     * @brief Draw the player nameplate
-     */
-    void DrawPlayerNameplate();
-
-    /**
-     * @brief Draw the enemy nameplate
-     */
-    void DrawEnemyNameplate();
 };
 
 } /* namespace UI */

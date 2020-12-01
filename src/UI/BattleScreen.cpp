@@ -2,8 +2,8 @@
 #include "Components/FillBar.h"
 #include <algorithm>
 #include <chrono>
-#include <thread>
 #include <ncurses.h>
+#include <thread>
 
 namespace UI
 {
@@ -14,8 +14,12 @@ BattleScreen::BattleScreen(Battle::Battle& battle, Screen& screen, InputHandler&
       m_ArenaPanelWindow(nullptr),
       m_LogPanelWindow(nullptr),
       m_BottomPanelWindow(nullptr),
-      m_PlayerNameplate(nullptr),
-      m_EnemyNameplate(nullptr)
+      m_PlayerNameplate(m_Battle.GetPlayer(),
+                        (ArenaPanelWidth - ArenaNameplateWidth) / 2,
+                        2 + Components::Nameplate::Height + 3,
+                        ArenaNameplateWidth,
+                        false),
+      m_EnemyNameplate(m_Battle.GetEnemy(), (ArenaPanelWidth - ArenaNameplateWidth) / 2, 2, ArenaNameplateWidth, true)
 {
     Init();
 }
@@ -30,16 +34,12 @@ void BattleScreen::Init()
     m_Screen.Clear();
 
     if (m_ArenaPanelWindow == nullptr)
-        m_ArenaPanelWindow = newwin(NameplateHeight * 2 + 3, NameplateWidth, 2, (ArenaPanelWidth - NameplateWidth) / 2);
+        m_ArenaPanelWindow = newwin(
+            Components::Nameplate::Height * 2 + 3, ArenaNameplateWidth, 2, (ArenaPanelWidth - ArenaNameplateWidth) / 2);
     if (m_LogPanelWindow == nullptr)
         m_LogPanelWindow = newwin(TopPanelHeight + 1, LogPanelWidth, 0, ArenaPanelWidth);
     if (m_BottomPanelWindow == nullptr)
         m_BottomPanelWindow = newwin(BottomPanelHeight, Screen::ScreenWidth, TopPanelHeight, 0);
-
-    if (m_PlayerNameplate == nullptr)
-        m_PlayerNameplate = derwin(m_ArenaPanelWindow, NameplateHeight, NameplateWidth, NameplateHeight + 3, 0);
-    if (m_EnemyNameplate == nullptr)
-        m_EnemyNameplate = derwin(m_ArenaPanelWindow, NameplateHeight, NameplateWidth, 0, 0);
 
     DrawScreenLayout();
 }
@@ -55,12 +55,6 @@ void BattleScreen::Terminate()
     wclear(m_BottomPanelWindow);
     wrefresh(m_BottomPanelWindow);
     delwin(m_BottomPanelWindow);
-    wclear(m_PlayerNameplate);
-    wrefresh(m_PlayerNameplate);
-    delwin(m_PlayerNameplate);
-    wclear(m_EnemyNameplate);
-    wrefresh(m_EnemyNameplate);
-    delwin(m_EnemyNameplate);
 }
 
 int BattleScreen::SelectPlayerAction(const std::map<int, std::string>& actions)
@@ -95,84 +89,65 @@ void BattleScreen::PostMessage(const std::string& message)
 
 void BattleScreen::ProjectAttack(int damage, int hitChancePercent)
 {
-    constexpr size_t arrowXPos = NameplateWidth / 2 + 6;
+    constexpr size_t arrowXPos = ArenaNameplateWidth / 2 + 6;
     wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::BlackOnDefault) | A_BOLD);
-    mvwaddch(m_ArenaPanelWindow, NameplateHeight, arrowXPos, ACS_UARROW);
-    mvwaddch(m_ArenaPanelWindow, NameplateHeight + 1, arrowXPos, '|');
-    mvwaddch(m_ArenaPanelWindow, NameplateHeight + 2, arrowXPos, '|');
-    mvwprintw(m_ArenaPanelWindow, NameplateHeight + 1, arrowXPos + 2, "* %d *", damage);
-    mvwprintw(m_ArenaPanelWindow, NameplateHeight, arrowXPos - 5, "Hit:");
-    mvwprintw(m_ArenaPanelWindow, NameplateHeight + 1, arrowXPos - 5, "%3d%%", hitChancePercent);
+    mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height, arrowXPos, ACS_UARROW);
+    mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos, '|');
+    mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height + 2, arrowXPos, '|');
+    mvwprintw(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos + 2, "* %d *", damage);
+    mvwprintw(m_ArenaPanelWindow, Components::Nameplate::Height, arrowXPos - 5, "Hit:");
+    mvwprintw(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos - 5, "%3d%%", hitChancePercent);
     wattroff(m_ArenaPanelWindow, A_COLOR | A_BOLD);
     wrefresh(m_ArenaPanelWindow);
 }
 
 void BattleScreen::ClearProjectionArea()
 {
-    mvwhline(m_ArenaPanelWindow, NameplateHeight, 0, ' ', NameplateWidth);
-    mvwhline(m_ArenaPanelWindow, NameplateHeight + 1, 0, ' ', NameplateWidth);
-    mvwhline(m_ArenaPanelWindow, NameplateHeight + 2, 0, ' ', NameplateWidth);
+    mvwhline(m_ArenaPanelWindow, Components::Nameplate::Height, 0, ' ', ArenaNameplateWidth);
+    mvwhline(m_ArenaPanelWindow, Components::Nameplate::Height + 1, 0, ' ', ArenaNameplateWidth);
+    mvwhline(m_ArenaPanelWindow, Components::Nameplate::Height + 2, 0, ' ', ArenaNameplateWidth);
     wrefresh(m_ArenaPanelWindow);
 }
 
 void BattleScreen::AnimatePlayerAttack(int damage, bool hit)
 {
-    constexpr size_t arrowXPos = NameplateWidth / 2 + 6;
-    constexpr int animationPeriodMs = 100;
-    constexpr int afterDelayMs = 1200;
+    constexpr size_t arrowXPos      = ArenaNameplateWidth / 2 + 6;
+    constexpr int animationPeriodMs = 80;
+    constexpr int afterDelayMs      = 1200;
 
     wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::YellowOnDefault) | A_BOLD);
 
     std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
-    mvwaddch(m_ArenaPanelWindow, NameplateHeight + 2, arrowXPos, '|');
+    mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height + 2, arrowXPos, '|');
     wrefresh(m_ArenaPanelWindow);
     std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
-    mvwaddch(m_ArenaPanelWindow, NameplateHeight + 1, arrowXPos, '|');
+    mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos, '|');
     wrefresh(m_ArenaPanelWindow);
     std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
 
     if (hit)
     {
-        mvwaddch(m_ArenaPanelWindow, NameplateHeight, arrowXPos, '^');
+        mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height, arrowXPos, '^');
         wrefresh(m_ArenaPanelWindow);
         std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
         wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::RedOnDefault));
-        mvwprintw(m_ArenaPanelWindow, NameplateHeight + 1, arrowXPos - 5, "Hit!");
+        mvwprintw(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos - 5, "Hit!");
 
-        mvwaddch(m_ArenaPanelWindow, NameplateHeight + 1, arrowXPos + 2, '*');
+        mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos + 2, '*');
         wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::YellowOnDefault));
         wprintw(m_ArenaPanelWindow, " %d ", damage);
         waddch(m_ArenaPanelWindow, '*' | COLOR_PAIR(ColorPairs::RedOnDefault));
         wrefresh(m_ArenaPanelWindow);
 
-        // Flash enemy nameplate border
-        std::string title = " " + m_Battle.GetEnemy().GetName() + " ";
-        for (int i = 0; i < 2; i++)
-        {
-            wattron(m_EnemyNameplate, COLOR_PAIR(ColorPairs::RedOnDefault));
-            box(m_EnemyNameplate, 0, 0);
-            wattron(m_EnemyNameplate, A_REVERSE);
-            Screen::PrintCenter(m_EnemyNameplate, title, 0);
-            wattroff(m_EnemyNameplate, A_COLOR | A_REVERSE);
-            wrefresh(m_ArenaPanelWindow);
-            
-            std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
-
-            box(m_EnemyNameplate, 0, 0);
-            wattron(m_EnemyNameplate, A_REVERSE);
-            Screen::PrintCenter(m_EnemyNameplate, title, 0);
-            wattroff(m_EnemyNameplate, A_REVERSE);
-            wrefresh(m_ArenaPanelWindow);
-            std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
-        }
+        m_EnemyNameplate.FlashBorder(ColorPairs::RedOnDefault, 2, animationPeriodMs - 20);
     }
     else
     {
         wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::RedOnDefault));
-        mvwaddch(m_ArenaPanelWindow, NameplateHeight + 1, arrowXPos, 'X');
+        mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos, 'X');
         wrefresh(m_ArenaPanelWindow);
         std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
-        mvwprintw(m_ArenaPanelWindow, NameplateHeight + 1, arrowXPos - 6, "Miss!");
+        mvwprintw(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos - 6, "Miss!");
     }
     wattroff(m_ArenaPanelWindow, A_COLOR | A_BOLD);
     wrefresh(m_ArenaPanelWindow);
@@ -194,8 +169,8 @@ void BattleScreen::DrawArenaPanel()
     werase(m_ArenaPanelWindow);
     wrefresh(m_ArenaPanelWindow);
 
-    DrawPlayerNameplate();
-    DrawEnemyNameplate();
+    m_PlayerNameplate.Draw();
+    m_EnemyNameplate.Draw();
 }
 
 void BattleScreen::DrawLogPanel()
@@ -222,88 +197,6 @@ void BattleScreen::ClearBottomPanel()
         mvwhline(m_BottomPanelWindow, i, 1, ' ', ArenaPanelWidth - 2);
     }
     wrefresh(m_BottomPanelWindow);
-}
-
-void BattleScreen::DrawPlayerNameplate()
-{
-    const auto& player = m_Battle.GetPlayer();
-
-    werase(m_PlayerNameplate);
-
-    int row = 0;
-
-    // Draw the box
-    box(m_PlayerNameplate, 0, 0);
-    std::string title = " " + player.GetName() + " ";
-    wattron(m_PlayerNameplate, A_REVERSE);
-    Screen::PrintCenter(m_PlayerNameplate, title, NameplateHeight - 1);
-    wattroff(m_PlayerNameplate, A_REVERSE);
-
-    // Top row
-    row++;
-    mvwprintw(m_PlayerNameplate, row, 4, "Level %d", player.GetStats().Level);
-    mvwprintw(m_PlayerNameplate,
-              row,
-              NameplateWidth - 4 - player.GetDescription().size(),
-              "%s",
-              player.GetDescription().c_str());
-
-    // Middle row
-    row++;
-    mvwprintw(m_PlayerNameplate, row, 4, "HP:");
-    Components::FillBar healthBar(
-        m_PlayerNameplate, 16, 8, row, player.GetStats().Health, player.GetStats().MaxHealth, ColorPairs::WhiteOnGreen);
-    healthBar.Draw();
-
-    // Bottom row
-    row++;
-    mvwprintw(m_PlayerNameplate, row, 4, "MP:");
-    Components::FillBar manaBar(
-        m_PlayerNameplate, 16, 8, row, player.GetStats().Mana, player.GetStats().MaxMana, ColorPairs::WhiteOnBlue);
-    manaBar.Draw();
-
-    wrefresh(m_PlayerNameplate);
-}
-
-void BattleScreen::DrawEnemyNameplate()
-{
-    const auto& enemy = m_Battle.GetEnemy();
-
-    werase(m_EnemyNameplate);
-
-    int row = 0;
-
-    // Draw the box
-    box(m_EnemyNameplate, 0, 0);
-    std::string title = " " + enemy.GetName() + " ";
-    wattron(m_EnemyNameplate, A_REVERSE);
-    Screen::PrintCenter(m_EnemyNameplate, title, 0);
-    wattroff(m_EnemyNameplate, A_REVERSE);
-
-    // Top row
-    row++;
-    mvwprintw(m_EnemyNameplate, row, 4, "Level %d", enemy.GetStats().Level);
-    mvwprintw(m_EnemyNameplate,
-              row,
-              NameplateWidth - 4 - enemy.GetDescription().size(),
-              "%s",
-              enemy.GetDescription().c_str());
-
-    // Middle row
-    row++;
-    mvwprintw(m_EnemyNameplate, row, 4, "HP:");
-    Components::FillBar healthBar(
-        m_EnemyNameplate, 16, 8, row, enemy.GetStats().Health, enemy.GetStats().MaxHealth, ColorPairs::WhiteOnGreen);
-    healthBar.Draw();
-
-    // Bottom row
-    row++;
-    mvwprintw(m_EnemyNameplate, row, 4, "MP:");
-    Components::FillBar manaBar(
-        m_EnemyNameplate, 16, 8, row, enemy.GetStats().Mana, enemy.GetStats().MaxMana, ColorPairs::WhiteOnBlue);
-    manaBar.Draw();
-
-    wrefresh(m_EnemyNameplate);
 }
 
 } /* namespace UI */
