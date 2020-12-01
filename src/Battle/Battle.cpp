@@ -9,7 +9,9 @@ Battle::Battle(Entities::Player& player, Entities::Character& enemy)
     : m_Player(player),
       m_Enemy(enemy),
       m_BattleScreen(nullptr),
-      m_Result(Result::Ongoing)
+      m_Result(Result::Ongoing),
+      m_PlayerStats(m_Player.GetStats()),
+      m_EnemyStats(m_Enemy.GetStats())
 {
 }
 
@@ -30,22 +32,36 @@ const Entities::Character& Battle::GetEnemy() const
 
 Battle::Result Battle::DoBattle()
 {
+    bool playerTurn = true;
     while (m_Result == Result::Ongoing)
     {
-        DoPlayerTurn();
-        DoEnemyTurn();
+        if (playerTurn)
+        {
+            DoPlayerTurn();
+        }
+        else
+        {
+            DoEnemyTurn();
+        }
+        playerTurn = !playerTurn;
     }
 
-    // FinishBattle();
+    FinishBattle();
     return m_Result;
 }
 
 void Battle::DoPlayerTurn()
 {
-    std::map<int, std::string> actions
+    if (m_PlayerStats.Health <= 0)
+    {
+        m_Result = Result::GameOver;
+        return;
+    }
+
+    static std::map<int, std::string> actions
         = { { 0, "Melee" }, { 1, "Ranged" }, { 2, "Spell" }, { 3, "Brace" }, { 4, "Escape" } };
-    // actions.erase(1);
-    // actions.erase(2);
+    actions.erase(1);
+    actions.erase(2);
     // TODO: Filter actions based on what the player can actually do
 
 ACTION_CHOICE:
@@ -68,7 +84,8 @@ ACTION_CHOICE:
             const auto& stats = attackStats.at(it->first);
             m_BattleScreen->ProjectAttack(stats.first, stats.second);
         });
-        if (choice == RethinkCode) goto ACTION_CHOICE;
+        if (choice == RethinkCode)
+            goto ACTION_CHOICE;
         m_BattleScreen->PostMessage("");
 
         m_BattleScreen->ClearProjectionArea();
@@ -87,6 +104,12 @@ ACTION_CHOICE:
 
 void Battle::DoEnemyTurn()
 {
+    if (m_EnemyStats.Health <= 0)
+    {
+        m_Result = Result::Victory;
+        return;
+    }
+
     // TODO
 }
 
@@ -94,6 +117,15 @@ void Battle::LaunchPlayerAttack(int damage, int hitChancePercent)
 {
     bool hit = RNG::Chance(hitChancePercent / 100.);
     m_BattleScreen->AnimatePlayerAttack(damage, hit);
+    if (hit)
+    {
+        m_EnemyStats.Health -= damage;
+    }
+}
+
+void Battle::FinishBattle()
+{
+    m_BattleScreen->BattleEndMessage(m_Result);
 }
 
 } /* namespace Battle */

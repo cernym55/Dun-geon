@@ -61,6 +61,8 @@ private:
     Entities::Character& m_Enemy;
     UI::BattleScreen* m_BattleScreen;
     Result m_Result;
+    Entities::Character::Stats m_PlayerStats;
+    Entities::Character::Stats m_EnemyStats;
 
     /**
      * @brief Perform the player's turn
@@ -79,6 +81,11 @@ private:
      * @param hitChancePercent hit chance in percent
      */
     void LaunchPlayerAttack(int damage, int hitChancePercent);
+
+    /**
+     * @brief Wrap up
+     */
+    void FinishBattle();
 };
 
 } /* namespace Battle */

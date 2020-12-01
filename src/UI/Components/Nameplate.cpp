@@ -12,7 +12,15 @@ Nameplate::Nameplate(const Entities::Character& character, int xPos, int yPos, i
     : m_Character(character),
       m_Width(width),
       m_IsTitleOnTop(isTitleOnTop),
-      m_Window(newwin(Height, width, yPos, xPos))
+      m_Window(newwin(Height, width, yPos, xPos)),
+      HealthBar(m_Window,
+                16,
+                8,
+                2,
+                m_Character.GetStats().Health,
+                m_Character.GetStats().MaxHealth,
+                ColorPairs::WhiteOnGreen),
+      ManaBar(m_Window, 16, 8, 3, m_Character.GetStats().Mana, m_Character.GetStats().MaxMana, ColorPairs::WhiteOnBlue)
 {
 }
 
@@ -39,21 +47,12 @@ void Nameplate::Draw()
     // Middle row
     row++;
     mvwprintw(m_Window, row, 4, "HP:");
-    FillBar healthBar(m_Window,
-                      16,
-                      8,
-                      row,
-                      m_Character.GetStats().Health,
-                      m_Character.GetStats().MaxHealth,
-                      ColorPairs::WhiteOnGreen);
-    healthBar.Draw();
+    HealthBar.Draw();
 
     // Bottom row
     row++;
     mvwprintw(m_Window, row, 4, "MP:");
-    FillBar manaBar(
-        m_Window, 16, 8, row, m_Character.GetStats().Mana, m_Character.GetStats().MaxMana, ColorPairs::WhiteOnBlue);
-    manaBar.Draw();
+    ManaBar.Draw();
 
     wrefresh(m_Window);
 }

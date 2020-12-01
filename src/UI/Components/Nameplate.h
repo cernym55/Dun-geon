@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Entities/Character.h"
+#include "FillBar.h"
 #include <ncurses.h>
 
 namespace UI::Components
@@ -12,11 +13,14 @@ namespace UI::Components
 class Nameplate
 {
 public:
+    /**
+     * @brief Height of the nameplate
+     */
     constexpr static const int Height = 5;
 
     /**
      * @brief Constructor
-     * 
+     *
      * @param character character displayed
      * @param xPos X position
      * @param yPos Y position
@@ -37,7 +41,7 @@ public:
 
     /**
      * @brief Flash the nameplate border
-     * 
+     *
      * @param colorPair flash color
      * @param count how many times to flash
      * @param periodMs period between flashes in milliseconds
@@ -54,6 +58,17 @@ private:
      * @brief Draw the border
      */
     void DrawBorder();
+
+public:
+    /**
+     * @brief Health bar
+     */
+    FillBar HealthBar;
+
+    /**
+     * @brief Mana bar
+     */
+    FillBar ManaBar;
 };
 
 } /* namespace UI::Components */

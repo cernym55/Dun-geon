@@ -5,6 +5,8 @@
 #include <ncurses.h>
 #include <thread>
 
+using BattleResult = Battle::Battle::Result;
+
 namespace UI
 {
 
@@ -139,7 +141,8 @@ void BattleScreen::AnimatePlayerAttack(int damage, bool hit)
         waddch(m_ArenaPanelWindow, '*' | COLOR_PAIR(ColorPairs::RedOnDefault));
         wrefresh(m_ArenaPanelWindow);
 
-        m_EnemyNameplate.FlashBorder(ColorPairs::RedOnDefault, 2, animationPeriodMs - 20);
+        m_EnemyNameplate.HealthBar.MoveBy(-damage);
+        m_EnemyNameplate.FlashBorder(ColorPairs::RedOnDefault, 2, animationPeriodMs);
     }
     else
     {
@@ -155,6 +158,35 @@ void BattleScreen::AnimatePlayerAttack(int damage, bool hit)
     std::this_thread::sleep_for(std::chrono::milliseconds(afterDelayMs));
 
     ClearProjectionArea();
+}
+
+void BattleScreen::BattleEndMessage(BattleResult result)
+{
+    ClearBottomPanel();
+
+    switch (result)
+    {
+    case BattleResult::Victory:
+        mvwprintw(m_BottomPanelWindow,
+                  1,
+                  2,
+                  "%s has defeated %s!",
+                  m_Battle.GetPlayer().GetName().c_str(),
+                  m_Battle.GetEnemy().GetName().c_str());
+        break;
+    case BattleResult::GameOver:
+        mvwprintw(m_BottomPanelWindow,
+                  1,
+                  2,
+                  "%s has been slain by %s...",
+                  m_Battle.GetPlayer().GetName().c_str(),
+                  m_Battle.GetEnemy().GetName().c_str());
+        break;
+    default:
+        break;
+    }
+
+    wgetch(m_BottomPanelWindow);
 }
 
 void BattleScreen::DrawScreenLayout()

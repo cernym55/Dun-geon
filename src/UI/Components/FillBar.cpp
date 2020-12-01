@@ -46,7 +46,8 @@ void FillBar::Draw()
 
     for (int i = 0; i < m_Size - 2; i++)
     {
-        if (i == filledLength) wattroff(m_Window, A_COLOR | A_REVERSE);
+        if (i == filledLength)
+            wattroff(m_Window, A_COLOR | A_REVERSE);
 
         if (i < textBeginPos || i >= textBeginPos + static_cast<int>(text.size()))
         {
@@ -60,6 +61,16 @@ void FillBar::Draw()
 
     wattroff(m_Window, A_COLOR | A_REVERSE | A_BOLD);
     wrefresh(m_Window);
+}
+
+void FillBar::MoveBy(int value)
+{
+    m_Value += value;
+    if (m_Value < 0)
+        m_Value = 0;
+    else if (m_Value > m_MaxValue)
+        m_Value = m_MaxValue;
+    Draw();
 }
 
 int FillBar::FilledLength() const
@@ -76,7 +87,7 @@ std::string FillBar::TextRepresentation() const
 {
     if (!m_TextInPercent)
         return std::to_string(m_Value) + "/" + std::to_string(m_MaxValue);
-    
+
     int intPercentage = static_cast<int>(ceil(Ratio() * 100));
     return std::to_string(intPercentage) + "%";
 }

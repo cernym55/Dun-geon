@@ -105,6 +105,13 @@ public:
      */
     void AnimatePlayerAttack(int damage, bool hit);
 
+    /**
+     * @brief Display the message after the battle
+     * 
+     * @param result battle result
+     */
+    void BattleEndMessage(Battle::Battle::Result result);
+
 private:
     Battle::Battle& m_Battle;
     WINDOW* m_ArenaPanelWindow;

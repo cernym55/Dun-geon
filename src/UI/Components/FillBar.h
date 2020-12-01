@@ -45,6 +45,13 @@ public:
      */
     void Draw();
 
+    /**
+     * @brief Move the bar by the amount specified
+     * 
+     * @param value value
+     */
+    void MoveBy(int value);
+
 protected:
     WINDOW* m_Window;
     int m_Size, m_Value, m_MaxValue;
