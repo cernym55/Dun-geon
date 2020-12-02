@@ -166,6 +166,7 @@ void BattleScreen::AnimatePlayerAttack(int damage, bool hit)
         wrefresh(m_ArenaPanelWindow);
         std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
         mvwprintw(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos - 6, "Miss!");
+        wrefresh(m_ArenaPanelWindow);
     }
 
     // Wait a bit, delay is shorter if hit due to animations
