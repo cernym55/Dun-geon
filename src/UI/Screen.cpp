@@ -516,45 +516,46 @@ int Screen::SelectViaMenu(std::map<int, std::string> options, int xPos, int yPos
         if (!key)
             continue;
 
+        // Position ascends horizontally
         size_t currentPosition = std::distance(options.begin(), it);
 
         switch (key.value())
         {
         case KEY_DOWN:
         case 's':
-            if ((scroll && currentPosition != options.size() - 1) || (currentPosition % numRows != numRows - 1 && currentPosition != options.size() - 1))
+            if (currentPosition + numColumns < options.size())
             {
                 menu_driver(menu, REQ_DOWN_ITEM);
-                it++;
+                for (size_t i = 0; i < numColumns; i++)
+                    it++;
                 if (hoverAction) hoverAction(it);
             }
             break;
         case KEY_UP:
         case 'w':
-            if ((scroll && currentPosition != 0) || currentPosition % numRows != 0)
+            if (currentPosition / numColumns > 0)
             {
                 menu_driver(menu, REQ_UP_ITEM);
-                it--;
+                for (size_t i = 0; i < numColumns; i++)
+                    it--;
                 if (hoverAction) hoverAction(it);
             }
             break;
         case KEY_RIGHT:
         case 'd':
-            if (!scroll && currentPosition + numRows < options.size())
+            if (!scroll && currentPosition % numColumns != numColumns - 1 && currentPosition + 1 < options.size())
             {
                 menu_driver(menu, REQ_RIGHT_ITEM);
-                for (size_t i = 0; i < numRows; i++)
-                    it++;
+                it++;
                 if (hoverAction) hoverAction(it);
             }
             break;
         case KEY_LEFT:
         case 'a':
-            if (!scroll && currentPosition >= numRows)
+            if (!scroll && currentPosition % numColumns != 0)
             {
                 menu_driver(menu, REQ_LEFT_ITEM);
-                for (size_t i = 0; i < numRows; i++)
-                    it--;
+                it--;
                 if (hoverAction) hoverAction(it);
             }
             break;
@@ -693,10 +694,10 @@ void Screen::DrawHUD()
     mvwprintw(m_GameHUDWindow, 9, 4, "MP:  %d/%d", stats.Mana, stats.MaxMana);
     mvwprintw(m_GameHUDWindow, 9, HUDPanelWidth - 11, "(%3d%%)", PLAYER_MANA_PC);
 
-    mvwprintw(m_GameHUDWindow, 11, 4, "Str: %3d", stats.Vigor);
-    mvwprintw(m_GameHUDWindow, 11, HUDPanelWidth - 11, "Def: %3d", stats.Valor);
+    mvwprintw(m_GameHUDWindow, 11, 4, "Str: %3d", stats.Strength);
+    mvwprintw(m_GameHUDWindow, 11, HUDPanelWidth - 11, "Def: %3d", stats.Toughness);
 
-    mvwprintw(m_GameHUDWindow, 12, 4, "Agi: %3d", stats.Haste);
+    mvwprintw(m_GameHUDWindow, 12, 4, "Agi: %3d", stats.Dexterity);
     mvwprintw(m_GameHUDWindow, 12, HUDPanelWidth - 11, "Int: %3d", stats.Magic);
 
     std::string wealthAmountStr = std::to_string(m_Player.GetDun());

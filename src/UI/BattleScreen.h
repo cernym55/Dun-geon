@@ -117,6 +117,7 @@ private:
     WINDOW* m_ArenaPanelWindow;
     WINDOW* m_LogPanelWindow;
     WINDOW* m_BottomPanelWindow;
+    WINDOW* m_StatPanelWindow;
     Components::Nameplate m_PlayerNameplate;
     Components::Nameplate m_EnemyNameplate;
 
@@ -139,6 +140,11 @@ private:
      * @brief Draw the bottom panel
      */
     void DrawBottomPanel();
+
+    /**
+     * @brief Draw the stat panel
+     */
+    void DrawStatPanel();
 
     /**
      * @brief Clear the bottom panel contents

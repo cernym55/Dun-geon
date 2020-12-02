@@ -16,6 +16,7 @@ BattleScreen::BattleScreen(Battle::Battle& battle, Screen& screen, InputHandler&
       m_ArenaPanelWindow(nullptr),
       m_LogPanelWindow(nullptr),
       m_BottomPanelWindow(nullptr),
+      m_StatPanelWindow(nullptr),
       m_PlayerNameplate(m_Battle.GetPlayer(),
                         (ArenaPanelWidth - ArenaNameplateWidth) / 2,
                         2 + Components::Nameplate::Height + 3,
@@ -39,9 +40,11 @@ void BattleScreen::Init()
         m_ArenaPanelWindow = newwin(
             Components::Nameplate::Height * 2 + 3, ArenaNameplateWidth, 2, (ArenaPanelWidth - ArenaNameplateWidth) / 2);
     if (m_LogPanelWindow == nullptr)
-        m_LogPanelWindow = newwin(TopPanelHeight + 1, LogPanelWidth, 0, ArenaPanelWidth);
+        m_LogPanelWindow = newwin(TopPanelHeight, LogPanelWidth, 0, ArenaPanelWidth);
     if (m_BottomPanelWindow == nullptr)
-        m_BottomPanelWindow = newwin(BottomPanelHeight, Screen::ScreenWidth, TopPanelHeight, 0);
+        m_BottomPanelWindow = newwin(BottomPanelHeight, ArenaPanelWidth, TopPanelHeight, 0);
+    if (m_StatPanelWindow == nullptr)
+        m_StatPanelWindow = newwin(BottomPanelHeight, LogPanelWidth, TopPanelHeight, ArenaPanelWidth);
 
     DrawScreenLayout();
 }
@@ -70,8 +73,18 @@ int BattleScreen::SelectPlayerAction(const std::map<int, std::string>& actions)
           + 4;
     const int width = (columnWidth + 1) * numColumns - 1;
 
-    return Screen::SelectViaMenu(
-        actions, (ArenaPanelWidth - width) / 2 - 1, TopPanelHeight + 2, width + 2, 5, false, 0, 0, "", true, false);
+    return Screen::SelectViaMenu(actions,
+                                 (ArenaPanelWidth - width) / 2 - 1,
+                                 TopPanelHeight + 2,
+                                 width + 2,
+                                 5,
+                                 false,
+                                 0,
+                                 0,
+                                 "",
+                                 true,
+                                 false,
+                                 [&](auto it) { PostMessage(std::to_string(it->first)); });
 }
 
 int BattleScreen::SelectWithHoverAction(const std::map<int, std::string>& options,
@@ -113,49 +126,59 @@ void BattleScreen::ClearProjectionArea()
 
 void BattleScreen::AnimatePlayerAttack(int damage, bool hit)
 {
+    // Constants
     constexpr size_t arrowXPos      = ArenaNameplateWidth / 2 + 6;
-    constexpr int animationPeriodMs = 80;
-    constexpr int afterDelayMs      = 1200;
+    constexpr int animationPeriodMs = 100;
+    constexpr int missDelayMs       = 1200;
 
+    // Begin drawing the arrow
     wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::YellowOnDefault) | A_BOLD);
 
     std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
     mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height + 2, arrowXPos, '|');
     wrefresh(m_ArenaPanelWindow);
     std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
-    mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos, '|');
-    wrefresh(m_ArenaPanelWindow);
-    std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
 
     if (hit)
     {
+        // Finish drawing the arrow
+        mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos, '|');
+        wrefresh(m_ArenaPanelWindow);
+        std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
+
         mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height, arrowXPos, '^');
         wrefresh(m_ArenaPanelWindow);
         std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
+
+        // "Hit!"
         wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::RedOnDefault));
         mvwprintw(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos - 5, "Hit!");
 
+        // Damage number
         mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos + 2, '*');
         wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::YellowOnDefault));
         wprintw(m_ArenaPanelWindow, " %d ", damage);
         waddch(m_ArenaPanelWindow, '*' | COLOR_PAIR(ColorPairs::RedOnDefault));
         wrefresh(m_ArenaPanelWindow);
 
-        m_EnemyNameplate.HealthBar.MoveBy(-damage);
+        // Nameplate animations
         m_EnemyNameplate.FlashBorder(ColorPairs::RedOnDefault, 2, animationPeriodMs);
+        m_EnemyNameplate.HealthBar.RollBy(-damage);
     }
     else
     {
+        // Draw X and "Miss!" text
         wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::RedOnDefault));
         mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos, 'X');
         wrefresh(m_ArenaPanelWindow);
         std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
         mvwprintw(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos - 6, "Miss!");
     }
+
+    // Wait a bit, delay is shorter if hit due to animations
+    std::this_thread::sleep_for(std::chrono::milliseconds(missDelayMs / (hit ? 2 : 1)));
     wattroff(m_ArenaPanelWindow, A_COLOR | A_BOLD);
     wrefresh(m_ArenaPanelWindow);
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(afterDelayMs));
 
     ClearProjectionArea();
 }
@@ -182,9 +205,13 @@ void BattleScreen::BattleEndMessage(BattleResult result)
                   m_Battle.GetPlayer().GetName().c_str(),
                   m_Battle.GetEnemy().GetName().c_str());
         break;
+    case BattleResult::Escape:
+        mvwprintw(m_BottomPanelWindow, 1, 2, "%s runs away from the battle!", m_Battle.GetPlayer().GetName().c_str());
+        break;
     default:
         break;
     }
+    wrefresh(m_BottomPanelWindow);
 
     wgetch(m_BottomPanelWindow);
 }
@@ -192,8 +219,9 @@ void BattleScreen::BattleEndMessage(BattleResult result)
 void BattleScreen::DrawScreenLayout()
 {
     DrawArenaPanel();
-    DrawBottomPanel();
     DrawLogPanel();
+    DrawBottomPanel();
+    DrawStatPanel();
 }
 
 void BattleScreen::DrawArenaPanel()
@@ -208,18 +236,23 @@ void BattleScreen::DrawArenaPanel()
 void BattleScreen::DrawLogPanel()
 {
     werase(m_LogPanelWindow);
-    wborder(m_LogPanelWindow, 0, 0, 0, 0, 0, 0, ACS_BTEE, ACS_RTEE);
+    box(m_LogPanelWindow, 0, 0);
+    wborder(m_LogPanelWindow, 0, 0, 0, ' ', 0, 0, ACS_VLINE, ACS_VLINE);
     wrefresh(m_LogPanelWindow);
 }
 
 void BattleScreen::DrawBottomPanel()
 {
-    const auto& player = m_Battle.GetPlayer();
-
     werase(m_BottomPanelWindow);
-    box(m_BottomPanelWindow, 0, 0);
-    mvwprintw(m_BottomPanelWindow, 1, 3, "What will %s do?", player.GetName().c_str());
+    wborder(m_BottomPanelWindow, 0, ' ', 0, 0, 0, ACS_HLINE, 0, ACS_HLINE);
     wrefresh(m_BottomPanelWindow);
+}
+
+void BattleScreen::DrawStatPanel()
+{
+    werase(m_StatPanelWindow);
+    wborder(m_StatPanelWindow, 0, 0, 0, 0, ACS_PLUS, ACS_RTEE, ACS_BTEE, 0);
+    wrefresh(m_StatPanelWindow);
 }
 
 void BattleScreen::ClearBottomPanel()

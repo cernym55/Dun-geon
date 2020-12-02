@@ -75,21 +75,21 @@ ACTION_CHOICE:
     {
         m_BattleScreen->PostMessage("Which attack?");
         std::map<int, std::string> options             = { { 0, "Swing" }, { RethinkCode, "<rethink>" } };
-        std::map<int, std::pair<int, int>> attackStats = { { 0, { m_Player.GetStats().Vigor, 95 } } };
+        std::map<int, std::pair<int, int>> attackStats = { { 0, { m_Player.GetStats().Strength, 95 } } };
 
-        int choice = m_BattleScreen->SelectWithHoverAction(options, [&](auto it) {
+        int meleeChoice = m_BattleScreen->SelectWithHoverAction(options, [&](auto it) {
             m_BattleScreen->ClearProjectionArea();
             if (it->first == RethinkCode)
                 return;
             const auto& stats = attackStats.at(it->first);
             m_BattleScreen->ProjectAttack(stats.first, stats.second);
         });
-        if (choice == RethinkCode)
+        if (meleeChoice == RethinkCode)
             goto ACTION_CHOICE;
         m_BattleScreen->PostMessage("");
 
         m_BattleScreen->ClearProjectionArea();
-        LaunchPlayerAttack(attackStats.at(choice).first, attackStats.at(choice).second);
+        LaunchPlayerAttack(attackStats.at(meleeChoice).first, attackStats.at(meleeChoice).second);
 
         break;
     }
