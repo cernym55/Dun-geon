@@ -30,9 +30,9 @@ FillBar::~FillBar()
     delwin(m_Window);
 }
 
-void FillBar::Draw()
+void FillBar::Draw(int highlightFillBeyondValue)
 {
-    wclear(m_Window);
+    werase(m_Window);
     mvwaddch(m_Window, 0, 0, '[' | A_BOLD);
     mvwaddch(m_Window, 0, m_Size - 1, ']' | A_BOLD);
 
@@ -43,11 +43,23 @@ void FillBar::Draw()
 
     std::string text = TextRepresentation();
     int filledLength = FilledLength();
+    int nonHighlightedLength = filledLength;
+
+    if (highlightFillBeyondValue >= 0)
+    {
+        nonHighlightedLength = ceil((m_Size - 2) * static_cast<double>(highlightFillBeyondValue) / m_MaxValue);
+    }
 
     int textBeginPos = (m_Size - text.size()) / 2 - 1;
 
     for (int i = 0; i < m_Size - 2; i++)
     {
+        if (i == nonHighlightedLength)
+        {
+            wattroff(m_Window, A_COLOR);
+            wattron(m_Window, A_REVERSE);
+        }
+
         if (i == filledLength)
             wattroff(m_Window, A_COLOR | A_REVERSE);
 
@@ -94,7 +106,7 @@ void FillBar::RollBy(int value)
             m_Value = targetValue;
         if (sgn > 0 && m_Value > targetValue)
             m_Value = targetValue;
-        Draw();
+        Draw(targetValue);
         std::this_thread::sleep_for(std::chrono::milliseconds(delayMs));
     }
 }

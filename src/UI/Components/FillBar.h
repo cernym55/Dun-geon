@@ -42,8 +42,10 @@ public:
 
     /**
      * @brief Draw the bar
+     * 
+     * @param highlightFillBeyondValue highlight the bar fill beyond this value (default: -1 = no highlight)
      */
-    void Draw();
+    void Draw(int highlightFillBeyondValue = -1);
 
     /**
      * @brief Move the bar by the amount specified
