@@ -103,9 +103,9 @@ void Screen::Draw()
 
 void Screen::Clear()
 {
-    wclear(m_GameWorldWindow);
+    werase(m_GameWorldWindow);
     wrefresh(m_GameWorldWindow);
-    wclear(m_GameHUDWindow);
+    werase(m_GameHUDWindow);
     wrefresh(m_GameHUDWindow);
     wclear(m_GameMessageWindow);
     wrefresh(m_GameMessageWindow);
@@ -568,7 +568,7 @@ int Screen::SelectViaMenu(std::map<int, std::string> options, int xPos, int yPos
     }
 
     unpost_menu(menu);
-    wclear(menuWindow);
+    werase(menuWindow);
     wrefresh(menuWindow);
     delwin(menuSub);
     delwin(menuWindow);
@@ -591,7 +591,7 @@ void Screen::StartGame()
 
 void Screen::ResizeWorldWindow()
 {
-    wclear(m_GameWorldWindow);
+    werase(m_GameWorldWindow);
     wrefresh(m_GameWorldWindow);
     const Worlds::Room& currentRoom = m_WorldManager.CurrentRoom();
 
@@ -613,7 +613,7 @@ void Screen::ResizeWorldWindow()
 
 void Screen::DrawWorld()
 {
-    wclear(m_GameWorldWindow);
+    werase(m_GameWorldWindow);
     if (m_CurrentRoom != &m_WorldManager.CurrentRoom())
     {
         m_CurrentRoom = &m_WorldManager.CurrentRoom();
@@ -678,7 +678,7 @@ void Screen::DrawWorld()
 
 void Screen::DrawHUD()
 {
-    wclear(m_GameHUDWindow);
+    werase(m_GameHUDWindow);
     const auto& stats = m_Player.GetStats();
     mvwprintw(m_GameHUDWindow, 2, 4, "World %d", m_WorldManager.CurrentWorld().GetWorldNumber());
     mvwprintw(m_GameHUDWindow, 2, HUDPanelWidth - 10, "Room %d", m_WorldManager.CurrentRoom().GetRoomNumber());
@@ -733,7 +733,7 @@ void Screen::DrawHUD()
 
 void Screen::DrawMessageWindow(bool shouldPostMessage)
 {
-    wclear(m_GameMessageWindow);
+    werase(m_GameMessageWindow);
     wborder(m_GameMessageWindow, 0, 0, 0, 0, 0, ACS_PLUS, 0, ACS_BTEE);
     if (shouldPostMessage)
     {
@@ -758,7 +758,7 @@ void Screen::DrawMessageWindow(bool shouldPostMessage)
 
 void Screen::DrawMap(WINDOW* mapWindow, Coords cursor)
 {
-    wclear(mapWindow);
+    werase(mapWindow);
     wattron(mapWindow, COLOR_PAIR(ColorPairs::BlackOnYellow));
     box(mapWindow, 0, 0);
     PrintCenter(mapWindow, " [SPACE] to toggle cursor ", WorldMapHeight - 1);

@@ -51,15 +51,18 @@ void BattleScreen::Init()
 
 void BattleScreen::Terminate()
 {
-    wclear(m_ArenaPanelWindow);
+    werase(m_ArenaPanelWindow);
     wrefresh(m_ArenaPanelWindow);
     delwin(m_ArenaPanelWindow);
-    wclear(m_LogPanelWindow);
+    werase(m_LogPanelWindow);
     wrefresh(m_LogPanelWindow);
     delwin(m_LogPanelWindow);
-    wclear(m_BottomPanelWindow);
+    werase(m_BottomPanelWindow);
     wrefresh(m_BottomPanelWindow);
     delwin(m_BottomPanelWindow);
+    werase(m_StatPanelWindow);
+    wrefresh(m_StatPanelWindow);
+    delwin(m_StatPanelWindow);
 }
 
 int BattleScreen::SelectPlayerAction(const std::map<int, std::string>& actions)
