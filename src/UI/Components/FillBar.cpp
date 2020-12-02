@@ -1,5 +1,7 @@
 #include "FillBar.h"
+#include <chrono>
 #include <cmath>
+#include <thread>
 
 namespace UI::Components
 {
@@ -30,7 +32,7 @@ FillBar::~FillBar()
 
 void FillBar::Draw()
 {
-    werase(m_Window);
+    wclear(m_Window);
     mvwaddch(m_Window, 0, 0, '[' | A_BOLD);
     mvwaddch(m_Window, 0, m_Size - 1, ']' | A_BOLD);
 
@@ -71,6 +73,30 @@ void FillBar::MoveBy(int value)
     else if (m_Value > m_MaxValue)
         m_Value = m_MaxValue;
     Draw();
+}
+
+void FillBar::RollBy(int value)
+{
+    constexpr int delayMs = 60;
+    int targetValue            = m_Value + value;
+    if (targetValue < 0)
+        targetValue = 0;
+    else if (targetValue > m_MaxValue)
+        targetValue = m_MaxValue;
+    int sgn = value >= 0 ? 1 : -1;
+
+    while (m_Value != targetValue)
+    {
+        int diff = abs(m_Value - targetValue);
+        m_Value += diff != 1 ? sgn * ceil(diff / 10.0) : sgn;
+
+        if (sgn < 0 && m_Value < targetValue)
+            m_Value = targetValue;
+        if (sgn > 0 && m_Value > targetValue)
+            m_Value = targetValue;
+        Draw();
+        std::this_thread::sleep_for(std::chrono::milliseconds(delayMs));
+    }
 }
 
 int FillBar::FilledLength() const

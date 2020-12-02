@@ -52,6 +52,13 @@ public:
      */
     void MoveBy(int value);
 
+    /**
+     * @brief Roll the bar by the amount specified
+     * 
+     * @param value value
+     */
+    void RollBy(int value);
+
 protected:
     WINDOW* m_Window;
     int m_Size, m_Value, m_MaxValue;
