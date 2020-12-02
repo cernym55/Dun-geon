@@ -73,18 +73,8 @@ int BattleScreen::SelectPlayerAction(const std::map<int, std::string>& actions)
           + 4;
     const int width = (columnWidth + 1) * numColumns - 1;
 
-    return Screen::SelectViaMenu(actions,
-                                 (ArenaPanelWidth - width) / 2 - 1,
-                                 TopPanelHeight + 2,
-                                 width + 2,
-                                 5,
-                                 false,
-                                 0,
-                                 0,
-                                 "",
-                                 true,
-                                 false,
-                                 [&](auto it) { PostMessage(std::to_string(it->first)); });
+    return Screen::SelectViaMenu(
+        actions, (ArenaPanelWidth - width) / 2 - 1, TopPanelHeight + 2, width + 2, 5, false, 0, 0, "", true, false);
 }
 
 int BattleScreen::SelectWithHoverAction(const std::map<int, std::string>& options,
