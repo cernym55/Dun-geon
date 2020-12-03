@@ -50,6 +50,11 @@ Battle::Result Battle::DoBattle()
     return m_Result;
 }
 
+const Entities::Character::Stats& Battle::GetPlayerStats() const
+{
+    return m_PlayerStats;
+}
+
 void Battle::DoPlayerTurn()
 {
     if (m_PlayerStats.Health <= 0)

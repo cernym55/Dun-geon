@@ -24,7 +24,7 @@ public:
      */
     struct Stats
     {
-        int Level, Health, MaxHealth, Mana, MaxMana, Strength, Toughness, Dexterity, Magic;
+        int Level, Health, MaxHealth, Mana, MaxMana, Strength, Toughness, Dexterity, Intelligence;
     };
 
     /**

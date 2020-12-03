@@ -112,6 +112,11 @@ public:
      */
     void BattleEndMessage(Battle::Battle::Result result);
 
+    /**
+     * @brief Display the player stats in the stat window
+     */
+    void DisplayPlayerStats();
+
 private:
     Battle::Battle& m_Battle;
     WINDOW* m_ArenaPanelWindow;

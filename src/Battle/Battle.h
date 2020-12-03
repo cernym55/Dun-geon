@@ -56,6 +56,8 @@ public:
      */
     Result DoBattle();
 
+    const Entities::Character::Stats& GetPlayerStats() const;
+
 private:
     Entities::Player& m_Player;
     Entities::Character& m_Enemy;

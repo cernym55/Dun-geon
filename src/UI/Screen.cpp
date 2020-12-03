@@ -698,7 +698,7 @@ void Screen::DrawHUD()
     mvwprintw(m_GameHUDWindow, 11, HUDPanelWidth - 11, "Def: %3d", stats.Toughness);
 
     mvwprintw(m_GameHUDWindow, 12, 4, "Agi: %3d", stats.Dexterity);
-    mvwprintw(m_GameHUDWindow, 12, HUDPanelWidth - 11, "Int: %3d", stats.Magic);
+    mvwprintw(m_GameHUDWindow, 12, HUDPanelWidth - 11, "Int: %3d", stats.Intelligence);
 
     std::string wealthAmountStr = std::to_string(m_Player.GetDun());
     int xPos = (HUDPanelWidth - wealthAmountStr.size() - 12) / 2;

@@ -210,6 +210,38 @@ void BattleScreen::BattleEndMessage(BattleResult result)
     wgetch(m_BottomPanelWindow);
 }
 
+void BattleScreen::DisplayPlayerStats()
+{
+    auto& stats = m_Battle.GetPlayerStats();
+
+    for (int i = 1; i <= 6; i++)
+    {
+        mvwhline(m_StatPanelWindow, i, 1, ' ', LogPanelWidth - 2);
+    }
+
+    mvwaddstr(m_StatPanelWindow, 2, 5, "Strength: ");
+    wattron(m_StatPanelWindow, A_BOLD | COLOR_PAIR(ColorPairs::RedOnDefault));
+    wprintw(m_StatPanelWindow, "%9d", stats.Strength);
+    wattroff(m_StatPanelWindow, A_BOLD | A_COLOR);
+
+    mvwaddstr(m_StatPanelWindow, 3, 5, "Toughness: ");
+    wattron(m_StatPanelWindow, A_BOLD | COLOR_PAIR(ColorPairs::YellowOnDefault));
+    wprintw(m_StatPanelWindow, "%8d", stats.Toughness);
+    wattroff(m_StatPanelWindow, A_BOLD | A_COLOR);
+
+    mvwaddstr(m_StatPanelWindow, 4, 5, "Dexterity: ");
+    wattron(m_StatPanelWindow, A_BOLD | COLOR_PAIR(ColorPairs::GreenOnDefault));
+    wprintw(m_StatPanelWindow, "%8d", stats.Dexterity);
+    wattroff(m_StatPanelWindow, A_BOLD | A_COLOR);
+
+    mvwaddstr(m_StatPanelWindow, 5, 5, "Intelligence: ");
+    wattron(m_StatPanelWindow, A_BOLD | COLOR_PAIR(ColorPairs::BlueOnDefault));
+    wprintw(m_StatPanelWindow, "%5d", stats.Intelligence);
+    wattroff(m_StatPanelWindow, A_BOLD | A_COLOR);
+
+    wrefresh(m_StatPanelWindow);
+}
+
 void BattleScreen::DrawScreenLayout()
 {
     DrawArenaPanel();
@@ -244,8 +276,11 @@ void BattleScreen::DrawBottomPanel()
 
 void BattleScreen::DrawStatPanel()
 {
-    werase(m_StatPanelWindow);
     wborder(m_StatPanelWindow, 0, 0, 0, 0, ACS_PLUS, ACS_RTEE, ACS_BTEE, 0);
+    wattron(m_StatPanelWindow, A_REVERSE);
+    Screen::PrintCenter(m_StatPanelWindow, " About " + m_Battle.GetPlayer().GetName() + " ", 0);
+    wattroff(m_StatPanelWindow, A_REVERSE);
+    DisplayPlayerStats();
     wrefresh(m_StatPanelWindow);
 }
 
