@@ -90,7 +90,7 @@ bool EntityManager::TryMovePlayer(Direction dir)
             Coords spawnPosition;
             while (!nextRoom.FieldAt(spawnPosition).IsAccessible() || nextRoom.FieldAt(spawnPosition).ForegroundEntity() != nullptr)
             {
-                spawnPosition = Coords(RNG::RandomInt(nextRoom.GetWidth()), RNG::RandomInt(nextRoom.GetHeight()));
+                spawnPosition = Coords(RNG::RandomInt(nextRoom.GetWidth() - 2) + 1, RNG::RandomInt(nextRoom.GetHeight() - 2) + 1);
             }
             SpawnEntity(nextRoom, spawnPosition);
         }
