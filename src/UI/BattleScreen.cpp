@@ -95,14 +95,13 @@ void BattleScreen::PostMessage(const std::string& message)
     wrefresh(m_BottomPanelWindow);
 }
 
-void BattleScreen::ProjectAttack(int damage, int hitChancePercent)
+void BattleScreen::ProjectAttack(int hitChancePercent)
 {
     constexpr size_t arrowXPos = ArenaNameplateWidth / 2 + 6;
     wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::BlackOnDefault) | A_BOLD);
     mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height, arrowXPos, ACS_UARROW);
     mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos, '|');
     mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height + 2, arrowXPos, '|');
-    mvwprintw(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos + 2, "* %d *", damage);
     mvwprintw(m_ArenaPanelWindow, Components::Nameplate::Height, arrowXPos - 5, "Hit:");
     mvwprintw(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos - 5, "%3d%%", hitChancePercent);
     wattroff(m_ArenaPanelWindow, A_COLOR | A_BOLD);
@@ -139,7 +138,7 @@ void BattleScreen::AnimatePlayerAttack(int damage, bool hit)
         wrefresh(m_ArenaPanelWindow);
         std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
 
-        mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height, arrowXPos, '^');
+        mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height, arrowXPos, ACS_UARROW);
         wrefresh(m_ArenaPanelWindow);
         std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
 
@@ -166,6 +165,69 @@ void BattleScreen::AnimatePlayerAttack(int damage, bool hit)
         wrefresh(m_ArenaPanelWindow);
         std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
         mvwprintw(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos - 6, "Miss!");
+        wrefresh(m_ArenaPanelWindow);
+    }
+
+    // Wait a bit, delay is shorter if hit due to animations
+    std::this_thread::sleep_for(std::chrono::milliseconds(missDelayMs / (hit ? 2 : 1)));
+    wattroff(m_ArenaPanelWindow, A_COLOR | A_BOLD);
+    wrefresh(m_ArenaPanelWindow);
+
+    ClearProjectionArea();
+}
+
+void BattleScreen::AnimateEnemyAttack(int damage, bool hit)
+{
+    // Constants
+    constexpr size_t arrowXPos      = ArenaNameplateWidth / 2 - 7;
+    constexpr int animationPeriodMs = 100;
+    constexpr int missDelayMs       = 1200;
+    constexpr int preAttackDelayMs  = 800;
+
+    // Skill name
+    wattron(m_ArenaPanelWindow, A_BOLD);
+    Screen::PrintCenter(m_ArenaPanelWindow, "Punch!", Components::Nameplate::Height);
+    std::this_thread::sleep_for(std::chrono::milliseconds(preAttackDelayMs));
+
+    // Begin drawing the arrow
+    wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::YellowOnDefault));
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
+    mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height, arrowXPos, '|');
+    wrefresh(m_ArenaPanelWindow);
+    std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
+
+    if (hit)
+    {
+        // Finish drawing the arrow
+        mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos, '|');
+        wrefresh(m_ArenaPanelWindow);
+        std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
+
+        mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height + 2, arrowXPos, ACS_DARROW);
+        wrefresh(m_ArenaPanelWindow);
+        std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
+
+        // Damage number
+        wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::RedOnDefault));
+        mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos + 2, '*');
+        wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::YellowOnDefault));
+        wprintw(m_ArenaPanelWindow, " %d ", damage);
+        waddch(m_ArenaPanelWindow, '*' | COLOR_PAIR(ColorPairs::RedOnDefault));
+        wrefresh(m_ArenaPanelWindow);
+
+        // Nameplate animations
+        m_PlayerNameplate.FlashBorder(ColorPairs::RedOnDefault, 2, animationPeriodMs);
+        m_PlayerNameplate.HealthBar.RollBy(-damage);
+    }
+    else
+    {
+        // Draw X and "Miss!" text
+        wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::RedOnDefault));
+        mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos, 'X');
+        wrefresh(m_ArenaPanelWindow);
+        std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
+        mvwprintw(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos + 2, "Miss!");
         wrefresh(m_ArenaPanelWindow);
     }
 

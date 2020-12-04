@@ -79,15 +79,15 @@ ACTION_CHOICE:
     case 0:
     {
         m_BattleScreen->PostMessage("Which attack?");
-        std::map<int, std::string> options             = { { 0, "Swing" }, { RethinkCode, "<rethink>" } };
-        std::map<int, std::pair<int, int>> attackStats = { { 0, { m_Player.GetStats().Strength, 95 } } };
+        std::map<int, std::string> options = { { 0, "Swing" }, { RethinkCode, "<rethink>" } };
+        std::map<int, std::pair<std::pair<int, int>, int>> attackStats = { { 0, { { 2, 5 }, 90 } } };
 
         int meleeChoice = m_BattleScreen->SelectWithHoverAction(options, [&](auto it) {
             m_BattleScreen->ClearProjectionArea();
             if (it->first == RethinkCode)
                 return;
             const auto& stats = attackStats.at(it->first);
-            m_BattleScreen->ProjectAttack(stats.first, stats.second);
+            m_BattleScreen->ProjectAttack(stats.second);
         });
         if (meleeChoice == RethinkCode)
             goto ACTION_CHOICE;
@@ -115,11 +115,16 @@ void Battle::DoEnemyTurn()
         return;
     }
 
-    // TODO
+    std::pair<std::pair<int, int>, int> attackStats = { { 2, 4 }, 60 };
+
+    m_BattleScreen->PostMessage(m_Enemy.GetName() + " attacks!");
+
+    LaunchEnemyAttack(attackStats.first, attackStats.second);
 }
 
-void Battle::LaunchPlayerAttack(int damage, int hitChancePercent)
+void Battle::LaunchPlayerAttack(std::pair<int, int> damageRange, int hitChancePercent)
 {
+    int damage = RNG::RandomInt(damageRange.first, damageRange.second) + m_PlayerStats.Strength / 10;
     bool hit = RNG::Chance(hitChancePercent / 100.);
     m_BattleScreen->AnimatePlayerAttack(damage, hit);
     if (hit)
@@ -128,9 +133,24 @@ void Battle::LaunchPlayerAttack(int damage, int hitChancePercent)
     }
 }
 
+void Battle::LaunchEnemyAttack(std::pair<int, int> damageRange, int hitChancePercent)
+{
+    int damage = RNG::RandomInt(damageRange.first, damageRange.second) + m_EnemyStats.Strength / 10;
+    bool hit = RNG::Chance(hitChancePercent / 100.);
+    m_BattleScreen->AnimateEnemyAttack(damage, hit);
+    if (hit)
+    {
+        m_PlayerStats.Health -= damage;
+    }
+}
+
 void Battle::FinishBattle()
 {
     m_BattleScreen->BattleEndMessage(m_Result);
+
+    // Update remaining player HP/MP
+    m_Player.SetHealth(m_PlayerStats.Health);
+    m_Player.SetMana(m_PlayerStats.Mana);
 }
 
 } /* namespace Battle */

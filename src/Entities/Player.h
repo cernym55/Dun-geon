@@ -47,6 +47,20 @@ public:
      */
     virtual Direction GetNextMove(const EntityManager& entityManager) override;
 
+    /**
+     * @brief Set player health
+     * 
+     * @param value value
+     */
+    void SetHealth(int value);
+
+    /**
+     * @brief Set player mana
+     * 
+     * @param value value
+     */
+    void SetMana(int value);
+
 private:
     int m_XP;
     int m_XPToLevelUp;

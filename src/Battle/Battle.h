@@ -79,10 +79,18 @@ private:
     /**
      * @brief Launch a player attack against the enemy
      * 
-     * @param damage attack damage
+     * @param damage range of damage the attack can deal: [lower, upper)
      * @param hitChancePercent hit chance in percent
      */
-    void LaunchPlayerAttack(int damage, int hitChancePercent);
+    void LaunchPlayerAttack(std::pair<int, int> damageRange, int hitChancePercent);
+
+    /**
+     * @brief Launch an enemy attack against the player
+     * 
+     * @param damageRange range of damage the attack can deal: [lower, upper)
+     * @param hitChancePercent hit chance in percent
+     */
+    void LaunchEnemyAttack(std::pair<int, int> damageRange, int hitChancePercent);
 
     /**
      * @brief Wrap up

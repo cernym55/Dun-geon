@@ -87,10 +87,9 @@ public:
     /**
      * @brief Project an attack against the enemy
      * 
-     * @param damage damage
      * @param hitChancePercent chance to hit in percent
      */
-    void ProjectAttack(int damage, int hitChancePercent);
+    void ProjectAttack(int hitChancePercent);
 
     /**
      * @brief Clear the projection area
@@ -104,6 +103,14 @@ public:
      * @param hit whether the attack hit or missed
      */
     void AnimatePlayerAttack(int damage, bool hit);
+
+    /**
+     * @brief Animate an enemy attack
+     * 
+     * @param damage damage number
+     * @param hit whether the attack hit or missed
+     */
+    void AnimateEnemyAttack(int damage, bool hit);
 
     /**
      * @brief Display the message after the battle

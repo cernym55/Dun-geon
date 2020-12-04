@@ -39,7 +39,7 @@ public:
     Character(const std::string& name,
               const std::string& description = "",
               chtype icon = 0,
-              Stats initialStats = { 1, 10, 10, 10, 10, 5, 5, 5, 10 },
+              Stats initialStats = { 1, 30, 30, 10, 10, 25, 20, 20, 10 },
               bool isBlocking = true);
 
     /**

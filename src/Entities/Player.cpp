@@ -32,4 +32,14 @@ Direction Player::GetNextMove(const EntityManager& entityManager)
     throw NotSupportedException("Attempted to make unsupported call: Player::GetNextMove()");
 }
 
+void Player::SetHealth(int value)
+{
+    m_Stats.Health = value;
+}
+
+void Player::SetMana(int value)
+{
+    m_Stats.Mana = value;
+}
+
 } /* namespace Entities */

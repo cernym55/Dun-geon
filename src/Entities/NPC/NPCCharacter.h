@@ -26,7 +26,7 @@ public:
                  const std::string& name,
                  const std::string& description = "",
                  chtype icon = 0,
-                 Stats initialStats = { 1, 10, 10, 10, 10, 5, 5, 5, 10 },
+                 Stats initialStats = { 1, 5, 5, 0, 0, 5, 5, 5, 5 },
                  bool isBlocking = true);
     
     /**
