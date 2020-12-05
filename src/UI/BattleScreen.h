@@ -2,6 +2,7 @@
 
 #include "Battle/Battle.h"
 #include "ColorPairs.h"
+#include "Components/LogWindow.h"
 #include "Components/Nameplate.h"
 #include "Screen.h"
 #include "Subscreen.h"
@@ -79,14 +80,14 @@ public:
 
     /**
      * @brief Write a message in the upper left corner of the bottom panel
-     * 
+     *
      * @param message message
      */
     void PostMessage(const std::string& message);
 
     /**
      * @brief Project an attack against the enemy
-     * 
+     *
      * @param hitChancePercent chance to hit in percent
      */
     void ProjectAttack(int hitChancePercent);
@@ -103,7 +104,7 @@ public:
 
     /**
      * @brief Animate a player attack
-     * 
+     *
      * @param damage damage number
      * @param hit whether the attack hit or missed
      */
@@ -111,7 +112,7 @@ public:
 
     /**
      * @brief Animate an enemy attack
-     * 
+     *
      * @param damage damage number
      * @param hit whether the attack hit or missed
      */
@@ -119,7 +120,7 @@ public:
 
     /**
      * @brief Display the message after the battle
-     * 
+     *
      * @param result battle result
      */
     void BattleEndMessage(Battle::Battle::Result result);
@@ -134,14 +135,21 @@ public:
      */
     void DrawSkillHoverThumbnail();
 
+    /**
+     * @brief Add a message to the battle log
+     * 
+     * @param message message
+     */
+    void AppendToLog(const std::string& message);
+
 private:
     Battle::Battle& m_Battle;
     WINDOW* m_ArenaPanelWindow;
-    WINDOW* m_LogPanelWindow;
     WINDOW* m_BottomPanelWindow;
     WINDOW* m_StatPanelWindow;
     Components::Nameplate m_PlayerNameplate;
     Components::Nameplate m_EnemyNameplate;
+    Components::LogWindow m_LogWindow;
 
     /**
      * @brief Draw the layout of the panels

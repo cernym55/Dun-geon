@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <chrono>
 #include <ncurses.h>
+#include <sstream>
 #include <thread>
 
 using BattleResult = Battle::Battle::Result;
@@ -14,7 +15,6 @@ BattleScreen::BattleScreen(Battle::Battle& battle, Screen& screen, InputHandler&
     : Subscreen(screen, inputHandler),
       m_Battle(battle),
       m_ArenaPanelWindow(nullptr),
-      m_LogPanelWindow(nullptr),
       m_BottomPanelWindow(nullptr),
       m_StatPanelWindow(nullptr),
       m_PlayerNameplate(m_Battle.GetPlayer(),
@@ -22,7 +22,8 @@ BattleScreen::BattleScreen(Battle::Battle& battle, Screen& screen, InputHandler&
                         2 + Components::Nameplate::Height + 3,
                         ArenaNameplateWidth,
                         false),
-      m_EnemyNameplate(m_Battle.GetEnemy(), (ArenaPanelWidth - ArenaNameplateWidth) / 2, 2, ArenaNameplateWidth, true)
+      m_EnemyNameplate(m_Battle.GetEnemy(), (ArenaPanelWidth - ArenaNameplateWidth) / 2, 2, ArenaNameplateWidth, true),
+      m_LogWindow(ArenaPanelWidth, 0, LogPanelWidth, TopPanelHeight)
 {
     Init();
 }
@@ -39,8 +40,6 @@ void BattleScreen::Init()
     if (m_ArenaPanelWindow == nullptr)
         m_ArenaPanelWindow = newwin(
             Components::Nameplate::Height * 2 + 3, ArenaNameplateWidth, 2, (ArenaPanelWidth - ArenaNameplateWidth) / 2);
-    if (m_LogPanelWindow == nullptr)
-        m_LogPanelWindow = newwin(TopPanelHeight, LogPanelWidth, 0, ArenaPanelWidth);
     if (m_BottomPanelWindow == nullptr)
         m_BottomPanelWindow = newwin(BottomPanelHeight, ArenaPanelWidth, TopPanelHeight, 0);
     if (m_StatPanelWindow == nullptr)
@@ -54,12 +53,11 @@ void BattleScreen::Terminate()
     werase(m_ArenaPanelWindow);
     wrefresh(m_ArenaPanelWindow);
     delwin(m_ArenaPanelWindow);
-    werase(m_LogPanelWindow);
-    wrefresh(m_LogPanelWindow);
-    delwin(m_LogPanelWindow);
+
     werase(m_BottomPanelWindow);
     wrefresh(m_BottomPanelWindow);
     delwin(m_BottomPanelWindow);
+
     werase(m_StatPanelWindow);
     wrefresh(m_StatPanelWindow);
     delwin(m_StatPanelWindow);
@@ -166,6 +164,12 @@ void BattleScreen::AnimatePlayerAttack(int damage, bool hit)
         waddch(m_ArenaPanelWindow, '*' | COLOR_PAIR(ColorPairs::RedOnDefault));
         wrefresh(m_ArenaPanelWindow);
 
+        // Log
+        std::ostringstream ossLog;
+        ossLog << m_Battle.GetPlayer().GetName() << " hit " << m_Battle.GetEnemy().GetName() << " for " << damage
+               << " damage!";
+        AppendToLog(ossLog.str());
+
         // Nameplate animations
         m_EnemyNameplate.FlashBorder(ColorPairs::RedOnDefault, 2, animationPeriodMs);
         m_EnemyNameplate.HealthBar.RollBy(-damage);
@@ -179,6 +183,12 @@ void BattleScreen::AnimatePlayerAttack(int damage, bool hit)
         std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
         mvwprintw(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos - 6, "Miss!");
         wrefresh(m_ArenaPanelWindow);
+
+        // Log
+        std::ostringstream ossLog;
+        ossLog << m_Battle.GetPlayer().GetName() << " missed " << m_Battle.GetEnemy().GetName()
+               << " with their attack!";
+        AppendToLog(ossLog.str());
     }
 
     // Wait a bit, delay is shorter if hit due to animations
@@ -230,6 +240,12 @@ void BattleScreen::AnimateEnemyAttack(int damage, bool hit)
         waddch(m_ArenaPanelWindow, '*' | COLOR_PAIR(ColorPairs::RedOnDefault));
         wrefresh(m_ArenaPanelWindow);
 
+        // Log
+        std::ostringstream ossLog;
+        ossLog << m_Battle.GetEnemy().GetName() << " hit " << m_Battle.GetPlayer().GetName() << " for " << damage
+               << " damage!";
+        AppendToLog(ossLog.str());
+
         // Nameplate animations
         m_PlayerNameplate.FlashBorder(ColorPairs::RedOnDefault, 2, animationPeriodMs);
         m_PlayerNameplate.HealthBar.RollBy(-damage);
@@ -243,6 +259,12 @@ void BattleScreen::AnimateEnemyAttack(int damage, bool hit)
         std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
         mvwprintw(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos + 2, "Miss!");
         wrefresh(m_ArenaPanelWindow);
+
+        // Log
+        std::ostringstream ossLog;
+        ossLog << m_Battle.GetEnemy().GetName() << " missed " << m_Battle.GetPlayer().GetName()
+               << " with their attack!";
+        AppendToLog(ossLog.str());
     }
 
     // Wait a bit, delay is shorter if hit due to animations
@@ -384,6 +406,12 @@ void BattleScreen::DrawSkillHoverThumbnail()
     wrefresh(m_BottomPanelWindow);
 }
 
+void BattleScreen::AppendToLog(const std::string& message)
+{
+    m_LogWindow.Append(message);
+    m_LogWindow.RefreshContent();
+}
+
 void BattleScreen::DrawScreenLayout()
 {
     DrawArenaPanel();
@@ -403,10 +431,12 @@ void BattleScreen::DrawArenaPanel()
 
 void BattleScreen::DrawLogPanel()
 {
-    werase(m_LogPanelWindow);
-    box(m_LogPanelWindow, 0, 0);
-    wborder(m_LogPanelWindow, 0, 0, 0, ' ', 0, 0, ACS_VLINE, ACS_VLINE);
-    wrefresh(m_LogPanelWindow);
+    WINDOW* logWindow = m_LogWindow.Draw();
+    // Connect borders with the stat panel
+    mvwhline(logWindow, TopPanelHeight - 1, 1, ' ', LogPanelWidth - 2);
+    mvwaddch(logWindow, TopPanelHeight - 1, 0, ACS_VLINE);
+    mvwaddch(logWindow, TopPanelHeight - 1, LogPanelWidth - 1, ACS_VLINE);
+    wrefresh(logWindow);
 }
 
 void BattleScreen::DrawBottomPanel()

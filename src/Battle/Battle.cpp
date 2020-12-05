@@ -1,6 +1,7 @@
 #include "Battle.h"
 #include "Misc/RNG.h"
 #include "UI/BattleScreen.h"
+#include <sstream>
 
 namespace Battle
 {
@@ -106,7 +107,6 @@ ACTION_CHOICE:
         m_Result = Result::Escape;
         break;
     default:
-        m_Result = Result::Victory;
         break;
     }
 }
