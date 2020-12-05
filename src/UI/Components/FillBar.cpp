@@ -36,13 +36,20 @@ void FillBar::Draw(int highlightFillBeyondValue)
     mvwaddch(m_Window, 0, 0, '[' | A_BOLD);
     mvwaddch(m_Window, 0, m_Size - 1, ']' | A_BOLD);
 
+    if (m_MaxValue == 0)
+    {
+        mvwaddstr(m_Window, 0, (m_Size - 3) / 2, "N/A");
+        wrefresh(m_Window);
+        return;
+    }
+
     if (m_FillColorPair != 0)
         wattron(m_Window, COLOR_PAIR(m_FillColorPair) | A_BOLD);
     else
         wattron(m_Window, A_REVERSE);
 
-    std::string text = TextRepresentation();
-    int filledLength = FilledLength();
+    std::string text         = TextRepresentation();
+    int filledLength         = FilledLength();
     int nonHighlightedLength = filledLength;
 
     if (highlightFillBeyondValue >= 0)
@@ -90,7 +97,7 @@ void FillBar::MoveBy(int value)
 void FillBar::RollBy(int value)
 {
     constexpr int delayMs = 60;
-    int targetValue            = m_Value + value;
+    int targetValue       = m_Value + value;
     if (targetValue < 0)
         targetValue = 0;
     else if (targetValue > m_MaxValue)

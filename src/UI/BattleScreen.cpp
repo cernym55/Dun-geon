@@ -199,7 +199,8 @@ void BattleScreen::AnimateEnemyAttack(int damage, bool hit)
 
     // Skill name
     wattron(m_ArenaPanelWindow, A_BOLD);
-    Screen::PrintCenter(m_ArenaPanelWindow, "Punch!", Components::Nameplate::Height);
+    mvwaddstr(m_ArenaPanelWindow, Components::Nameplate::Height, arrowXPos + 2, "Punch!");
+    wrefresh(m_ArenaPanelWindow);
     std::this_thread::sleep_for(std::chrono::milliseconds(preAttackDelayMs));
 
     // Begin drawing the arrow
