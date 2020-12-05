@@ -110,10 +110,23 @@ void BattleScreen::ProjectAttack(int hitChancePercent)
 
 void BattleScreen::ClearProjectionArea()
 {
-    mvwhline(m_ArenaPanelWindow, Components::Nameplate::Height, 0, ' ', ArenaNameplateWidth);
-    mvwhline(m_ArenaPanelWindow, Components::Nameplate::Height + 1, 0, ' ', ArenaNameplateWidth);
-    mvwhline(m_ArenaPanelWindow, Components::Nameplate::Height + 2, 0, ' ', ArenaNameplateWidth);
+    for (int i = 0; i < 3; i++)
+    {
+        mvwhline(m_ArenaPanelWindow, Components::Nameplate::Height + i, 0, ' ', ArenaNameplateWidth);
+    }
     wrefresh(m_ArenaPanelWindow);
+}
+
+void BattleScreen::ClearThumbnailArea()
+{
+    for (int i = 0; i < BottomPanelHeight - 2; i++)
+    {
+        mvwhline(m_BottomPanelWindow, i + 1, 22, ' ', ArenaPanelWidth - 22);
+    }
+    mvwhline(m_BottomPanelWindow, 0, 23, ACS_HLINE, ArenaPanelWidth - 23);
+    mvwvline(m_BottomPanelWindow, 1, 23, ' ', BottomPanelHeight - 1);
+    mvwhline(m_BottomPanelWindow, BottomPanelHeight - 1, 23, ACS_HLINE, ArenaPanelWidth - 23);
+    wrefresh(m_BottomPanelWindow);
 }
 
 void BattleScreen::AnimatePlayerAttack(int damage, bool hit)
@@ -302,6 +315,72 @@ void BattleScreen::DisplayPlayerStats()
     wattroff(m_StatPanelWindow, A_BOLD | A_COLOR);
 
     wrefresh(m_StatPanelWindow);
+}
+
+void BattleScreen::DrawSkillHoverThumbnail()
+{
+    // TODO: rework when skills are formally implemented, this is a mockup
+    constexpr int xPos = 23;
+
+    // Borders
+    mvwvline(m_BottomPanelWindow, 1, xPos, ACS_VLINE, BottomPanelHeight - 1);
+    mvwaddch(m_BottomPanelWindow, 0, xPos, ACS_TTEE);
+    mvwaddch(m_BottomPanelWindow, BottomPanelHeight - 1, xPos, ACS_BTEE);
+
+    // Thumbnail title
+    std::string title = " Swing ";
+    wattron(m_BottomPanelWindow, A_REVERSE);
+    mvwaddstr(m_BottomPanelWindow, 0, (xPos + ArenaPanelWidth - title.size()) / 2, title.c_str());
+    wattroff(m_BottomPanelWindow, A_REVERSE);
+
+    // Contents
+    const auto& playerStats         = m_Battle.GetPlayerStats();
+    std::pair<int, int> damageRange = { 2, 5 };
+    // Weapon
+    std::string weaponName = "Unarmed";
+    mvwaddstr(m_BottomPanelWindow, 1, xPos + 2, weaponName.c_str());
+    // Attack damage
+    wattron(m_BottomPanelWindow, A_BOLD);
+    mvwprintw(m_BottomPanelWindow, 2, xPos + 2, "%d", damageRange.first + playerStats.Strength / 10);
+    wattroff(m_BottomPanelWindow, A_BOLD);
+    waddstr(m_BottomPanelWindow, " - ");
+    wattron(m_BottomPanelWindow, A_BOLD);
+    wprintw(m_BottomPanelWindow, "%d ", damageRange.second - 1 + playerStats.Strength / 10);
+    waddstr(m_BottomPanelWindow, "Physical");
+    wattroff(m_BottomPanelWindow, A_BOLD);
+    // Hit & crit
+    int hitChance  = 90;
+    int critChance = 0;
+    mvwaddstr(m_BottomPanelWindow, 4, xPos + 2, "Hit:");
+    mvwaddstr(m_BottomPanelWindow, 4, xPos + 16, "Crit:");
+    short hitColor  = ColorPairs::GreenOnDefault;
+    short critColor = ColorPairs::GreenOnDefault;
+    if (hitChance <= 80)
+        hitColor = ColorPairs::YellowOnDefault;
+    if (hitChance <= 40)
+        hitColor = ColorPairs::RedOnDefault;
+    wattron(m_BottomPanelWindow, COLOR_PAIR(hitColor) | A_BOLD);
+    mvwprintw(m_BottomPanelWindow, 4, xPos + 7, "%3d%%", hitChance);
+    if (critChance <= 25)
+        critColor = ColorPairs::YellowOnDefault;
+    if (critChance <= 10)
+        critColor = ColorPairs::RedOnDefault;
+    wattron(m_BottomPanelWindow, COLOR_PAIR(critColor));
+    mvwprintw(m_BottomPanelWindow, 4, xPos + 22, "%3d%%", critChance);
+    wattroff(m_BottomPanelWindow, A_COLOR | A_BOLD);
+    // Cost
+    int manaCost = 0;
+    if (manaCost > 0)
+    {
+        mvwaddstr(m_BottomPanelWindow, 5, xPos + 2, "Cost: ");
+        wattron(m_BottomPanelWindow, COLOR_PAIR(ColorPairs::BlueOnDefault) | A_BOLD);
+        wprintw(m_BottomPanelWindow, "%d", manaCost);
+        wattroff(m_BottomPanelWindow, A_COLOR | A_BOLD);
+    }
+    // Flavor text
+    mvwaddstr(m_BottomPanelWindow, 6, xPos + 2, "Take a swing at your foe");
+
+    wrefresh(m_BottomPanelWindow);
 }
 
 void BattleScreen::DrawScreenLayout()

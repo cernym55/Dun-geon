@@ -84,16 +84,20 @@ ACTION_CHOICE:
 
         int meleeChoice = m_BattleScreen->SelectWithHoverAction(options, [&](auto it) {
             m_BattleScreen->ClearProjectionArea();
+            m_BattleScreen->ClearThumbnailArea();
             if (it->first == RethinkCode)
                 return;
             const auto& stats = attackStats.at(it->first);
             m_BattleScreen->ProjectAttack(stats.second);
+            m_BattleScreen->DrawSkillHoverThumbnail();
         });
+
         if (meleeChoice == RethinkCode)
             goto ACTION_CHOICE;
         m_BattleScreen->PostMessage("");
 
         m_BattleScreen->ClearProjectionArea();
+        m_BattleScreen->ClearThumbnailArea();
         LaunchPlayerAttack(attackStats.at(meleeChoice).first, attackStats.at(meleeChoice).second);
 
         break;

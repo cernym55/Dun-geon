@@ -97,6 +97,11 @@ public:
     void ClearProjectionArea();
 
     /**
+     * @brief Clear the skill thumbnail area
+     */
+    void ClearThumbnailArea();
+
+    /**
      * @brief Animate a player attack
      * 
      * @param damage damage number
@@ -123,6 +128,11 @@ public:
      * @brief Display the player stats in the stat window
      */
     void DisplayPlayerStats();
+
+    /**
+     * @brief Draw the skill thumbnail for the skill being hovered over
+     */
+    void DrawSkillHoverThumbnail();
 
 private:
     Battle::Battle& m_Battle;
