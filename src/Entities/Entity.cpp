@@ -22,6 +22,11 @@ Direction Entity::GetNextMove(const EntityManager& entityManager)
     return Direction::None;
 }
 
+bool Entity::Fightable() const
+{
+    return false;
+}
+
 bool Entity::IsBlocking() const
 {
     return m_Blocking;

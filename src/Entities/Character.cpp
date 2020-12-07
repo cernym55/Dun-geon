@@ -25,6 +25,11 @@ Direction Character::GetNextMove(const EntityManager& entityManager)
     return m_MovementBehavior->GetNextStep(entityManager);
 }
 
+bool Character::Fightable() const
+{
+    return true;
+}
+
 const Character::Stats& Character::GetStats() const
 {
     return m_Stats;

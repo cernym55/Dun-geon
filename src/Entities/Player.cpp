@@ -8,7 +8,7 @@ namespace Entities
 
 Player::Player(const std::string& name,
                chtype icon)
-    : Character(name, "", icon), m_XP(0), m_XPToLevelUp(100), m_Dun(0)
+    : Character(name, "Dun-geoneer", icon), m_XP(0), m_XPToLevelUp(100), m_Dun(0)
 {
 }
 
@@ -30,6 +30,16 @@ int Player::GetDun() const
 Direction Player::GetNextMove(const EntityManager& entityManager)
 {
     throw NotSupportedException("Attempted to make unsupported call: Player::GetNextMove()");
+}
+
+void Player::SetHealth(int value)
+{
+    m_Stats.Health = value;
+}
+
+void Player::SetMana(int value)
+{
+    m_Stats.Mana = value;
 }
 
 } /* namespace Entities */

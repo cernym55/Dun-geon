@@ -14,6 +14,11 @@ class IMovement
 {
 public:
     /**
+     * @brief Destructor
+     */
+    virtual ~IMovement() = default;
+
+    /**
      * @brief Get the next step direction
      *
      * @param entityManager entity manager

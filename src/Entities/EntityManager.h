@@ -36,6 +36,13 @@ public:
     void SpawnEntity(Worlds::Room& room, Coords spawnPosition);
 
     /**
+     * @brief Kill the given (managed) entity, removing it from the world
+     * 
+     * @param entity entity to kill
+     */
+    void KillEntity(Entity& entity);
+
+    /**
      * @brief Take ownership of an entity and assign it to this room's storage
      *
      * @param room room
@@ -59,6 +66,15 @@ public:
      * @return true if move successful
      */
     bool TryMovePlayer(Direction dir);
+
+     /**
+     * @brief Get any entity the given entity is touching in the given direction
+     *
+     * @param entity entity
+     * @param dir direction
+     * @return Entity* entity being approached in direction
+     */
+    Entity* Approaching(const Entity& entity, Direction dir);
 
     /**
      * @brief Get any entity the given entity is touching in the given direction
@@ -97,8 +113,8 @@ public:
 private:
     Worlds::WorldManager& m_WorldManager;
     Player& m_Player;
-    std::unordered_map<Worlds::Room*, std::vector<std::unique_ptr<Entity>>> m_EntityStorage;
-    std::unordered_map<const Entity*, const Worlds::Room*> m_RoomsByEntity;
+    std::unordered_map<const Worlds::Room*, std::vector<std::unique_ptr<Entity>>> m_EntityStorage;
+    std::unordered_map<const Entity*, Worlds::Room*> m_RoomsByEntity;
     std::unordered_map<const Entity*, Coords> m_EntityCoords;
 
     /**

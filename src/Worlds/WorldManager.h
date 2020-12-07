@@ -30,6 +30,13 @@ public:
     const World& CurrentWorld() const;
 
     /**
+     * @brief Get the world where the player is present
+     * 
+     * @return World& current world
+     */
+    World& CurrentWorld();
+
+    /**
      * @brief Get the room where the player is present
      * 
      * @return Room& current room
@@ -64,13 +71,6 @@ private:
     int m_NextWorldNumber;
     World* m_CurrentWorld;
     Coords m_CurrentRoomCoords;
-
-    /**
-     * @brief Get the world where the player is present
-     * 
-     * @return World& current world
-     */
-    World& CurrentWorld();
 
     /**
      * @brief Create a new world

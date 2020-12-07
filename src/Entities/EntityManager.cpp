@@ -8,6 +8,7 @@
 #include "Worlds/Field.h"
 #include "Worlds/Room.h"
 #include "Worlds/WorldManager.h"
+#include <algorithm>
 #include <memory>
 
 namespace Entities
@@ -29,6 +30,25 @@ void EntityManager::SpawnEntity(Worlds::Room& room, Coords spawnPosition)
     m_EntityCoords[newEntity.get()] = spawnPosition;
     m_RoomsByEntity[newEntity.get()] = &room;
     Place(*newEntity, room);
+}
+
+void EntityManager::KillEntity(Entity& entity)
+{
+    auto room = m_RoomsByEntity.at(&entity);
+    auto& storage = m_EntityStorage.at(room);
+    
+    auto it = std::find_if(storage.begin(), storage.end(), [&](const auto& p)
+    {
+        return p.get() == &entity;
+    });
+
+    if (it != storage.end())
+    {
+        Pluck(entity, *room);
+        m_RoomsByEntity.erase(it->get());
+        m_EntityCoords.erase(it->get());
+        storage.erase(it);
+    }
 }
 
 void EntityManager::Store(Worlds::Room& room, Entity& entity)
@@ -70,7 +90,7 @@ bool EntityManager::TryMovePlayer(Direction dir)
             Coords spawnPosition;
             while (!nextRoom.FieldAt(spawnPosition).IsAccessible() || nextRoom.FieldAt(spawnPosition).ForegroundEntity() != nullptr)
             {
-                spawnPosition = Coords(RNG::RandomInt(nextRoom.GetWidth()), RNG::RandomInt(nextRoom.GetHeight()));
+                spawnPosition = Coords(RNG::RandomInt(nextRoom.GetWidth() - 2) + 1, RNG::RandomInt(nextRoom.GetHeight() - 2) + 1);
             }
             SpawnEntity(nextRoom, spawnPosition);
         }
@@ -81,6 +101,17 @@ bool EntityManager::TryMovePlayer(Direction dir)
 
     m_Player.LastMoveDirection = dir;
     return false;
+}
+
+Entity* EntityManager::Approaching(const Entity& entity, Direction dir)
+{
+    Coords targetCoords = CoordsOf(entity).Adjacent(dir);
+    for (auto& entity : m_EntityStorage.at(&m_WorldManager.CurrentRoom()))
+    {
+        if (CoordsOf(*entity) == targetCoords) return entity.get();
+    }
+
+    return nullptr;
 }
 
 const Entity* EntityManager::Approaching(const Entity& entity, Direction dir) const

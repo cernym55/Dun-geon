@@ -21,7 +21,7 @@ Application::Application()
     m_Player("Gref",
              'G' | A_BOLD | COLOR_PAIR(UI::ColorPairs::MagentaOnDefault)),
     m_EntityManager(m_WorldManager, m_Player),
-    m_PlayerController(m_EntityManager, m_WorldManager, m_Player)
+    m_PlayerController(m_EntityManager, m_WorldManager, m_Player, m_Screen)
 {
 }
 
