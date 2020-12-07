@@ -1,12 +1,13 @@
-#include "Battle/Battle.h"
 #include "Controller.h"
+#include "Battle/Battle.h"
 #include "Entities/EntityManager.h"
 #include "Entities/Player.h"
 #include "Misc/Direction.h"
-#include "Worlds/Field.h"
-#include "Worlds/WorldManager.h"
 #include "UI/BattleScreen.h"
 #include "UI/Screen.h"
+#include "Worlds/Field.h"
+#include "Worlds/WorldManager.h"
+#include <sstream>
 
 namespace Player
 {
@@ -29,17 +30,14 @@ bool Controller::TryMovePlayer(Direction dir)
 
 bool Controller::TryMovePlayerDiagonally(Direction first, Direction second)
 {
-    auto playerCoords = m_EntityManager.CoordsOf(m_PlayerEntity);
-    auto& room = m_WorldManager.CurrentRoom();
-    auto firstNeighbor = room.IsAtRoomEdge(playerCoords, first)
-            ? nullptr
-            : &room.FieldAt(playerCoords.Adjacent(first));
-    auto secondNeighbor = room.IsAtRoomEdge(playerCoords, second)
-            ? nullptr
-            : &room.FieldAt(playerCoords.Adjacent(second));
+    auto playerCoords  = m_EntityManager.CoordsOf(m_PlayerEntity);
+    auto& room         = m_WorldManager.CurrentRoom();
+    auto firstNeighbor = room.IsAtRoomEdge(playerCoords, first) ? nullptr : &room.FieldAt(playerCoords.Adjacent(first));
+    auto secondNeighbor
+        = room.IsAtRoomEdge(playerCoords, second) ? nullptr : &room.FieldAt(playerCoords.Adjacent(second));
     auto target = firstNeighbor == nullptr || secondNeighbor == nullptr
-            ? nullptr
-            : &room.FieldAt(playerCoords.Adjacent(first).Adjacent(second));
+                      ? nullptr
+                      : &room.FieldAt(playerCoords.Adjacent(first).Adjacent(second));
     if (target != nullptr && target->ForegroundEntity() != nullptr)
         return false;
 
@@ -54,11 +52,12 @@ bool Controller::TryMovePlayerDiagonally(Direction first, Direction second)
 bool Controller::TryFight(Direction dir)
 {
     auto approaching = m_EntityManager.Approaching(m_PlayerEntity, dir);
-    if (approaching == nullptr || !approaching->Fightable()) return false;
+    if (approaching == nullptr || !approaching->Fightable())
+        return false;
 
     // TODO: try to remove the cast
     Entities::Character& targetedCharacter = dynamic_cast<Entities::Character&>(*approaching);
-    
+
     Battle::Battle battle(m_PlayerEntity, targetedCharacter);
     m_Screen.OpenBattleScreen(battle);
     Battle::Battle::Result result = battle.DoBattle();
@@ -66,9 +65,23 @@ bool Controller::TryFight(Direction dir)
 
     // TODO: Give the player some rewards
 
-    if (result == Battle::Battle::Result::Victory)
+    switch (result)
     {
+    case Battle::Battle::Result::Victory:
         m_EntityManager.KillEntity(targetedCharacter);
+        break;
+    case Battle::Battle::Result::GameOver:
+    {
+        // TODO: Parameterize class name
+        std::ostringstream epitaph;
+        epitaph << m_PlayerEntity.GetName() << " did not make it past\n"
+                << "World " << m_WorldManager.CurrentWorld().GetWorldNumber() << " of the Dun-geon.\n"
+                << "The duelist was defeated\n"
+                << "in battle by " << targetedCharacter.GetName() << ".";
+        m_Screen.GameOver(epitaph.str());
+    }
+    default:
+        break;
     }
 
     return true;

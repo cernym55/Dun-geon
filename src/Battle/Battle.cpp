@@ -119,7 +119,7 @@ void Battle::DoEnemyTurn()
         return;
     }
 
-    std::pair<std::pair<int, int>, int> attackStats = { { 2, 4 }, 60 };
+    std::pair<std::pair<int, int>, int> attackStats = { { 2, 4 }, 70 };
 
     m_BattleScreen->PostMessage(m_Enemy.GetName() + " attacks!");
 

@@ -163,6 +163,13 @@ public:
     void CloseSubscreen();
 
     /**
+     * @brief Display a game over message and end the game
+     * 
+     * @param epitaph description of death
+     */
+    void GameOver(const std::string& epitaph);
+
+    /**
      * @brief Print the string centered on line yPos
      * 
      * @param str string

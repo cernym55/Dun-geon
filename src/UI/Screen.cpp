@@ -24,7 +24,7 @@
 #include <string>
 
 #define PLAYER_HEALTH_PC std::lround(m_Player.GetStats().Health / 1.0 / m_Player.GetStats().MaxHealth * 100)
-#define PLAYER_MANA_PC std::lround(m_Player.GetStats().Mana / 1.0 / m_Player.GetStats().MaxMana * 100)
+#define PLAYER_MANA_PC   std::lround(m_Player.GetStats().Mana / 1.0 / m_Player.GetStats().MaxMana * 100)
 
 namespace UI
 {
@@ -54,33 +54,31 @@ Screen::~Screen()
 
 void Screen::MainMenu()
 {
-    m_View = View::MainMenu;
-    static const std::vector<std::string> splashMsg = {
-        "Speakest not of it.",
-        "And you thought you'd seen it all...",
-        "Enough dun for everyone.",
-        "Not nearly as much mashing required this time.",
-        "Have you brought your sporks?",
-        "The gate opens, and dun awaits.",
-        "Not to be confused with a Dun-gen.",
-        "...Maybe this time they'll explain what dun is?",
-        "Your dun is no longer your own.",
-        "I dun my robe and wizard hat.",
-        "The dun shines brighter than ever before.",
-        "1500 dun well spent.",
-        "Hopefully it will have been worth the wait."};
+    m_View                                          = View::MainMenu;
+    static const std::vector<std::string> splashMsg = { "Speakest not of it.",
+                                                        "And you thought you'd seen it all...",
+                                                        "Enough dun for everyone.",
+                                                        "Not nearly as much mashing required this time.",
+                                                        "Have you brought your sporks?",
+                                                        "The gate opens, and dun awaits.",
+                                                        "Not to be confused with a Dun-gen.",
+                                                        "...Maybe this time they'll explain what dun is?",
+                                                        "Your dun is no longer your own.",
+                                                        "I dun my robe and wizard hat.",
+                                                        "The dun shines brighter than ever before.",
+                                                        "1500 dun well spent.",
+                                                        "Hopefully it will have been worth the wait." };
     DrawLogo();
     int splashNumber = RNG::RandomInt(splashMsg.size());
     PrintCenter(splashMsg[splashNumber], 13);
 
     refresh();
 
-    std::map<int, std::string> options = {
-        {0, "Start Game"},
-        {2, "Quit"}};
-    static const int menuWidth = 20;
-    static const int menuHeight = 9;
-    int choice = SelectViaMenu(options, (ScreenWidth - menuWidth) / 2 - 1, 15, menuWidth, menuHeight, false, 2, 1, "", true);
+    std::map<int, std::string> options = { { 0, "Start Game" }, { 2, "Quit" } };
+    static const int menuWidth         = 20;
+    static const int menuHeight        = 9;
+    int choice
+        = SelectViaMenu(options, (ScreenWidth - menuWidth) / 2 - 1, 15, menuWidth, menuHeight, false, 2, 1, "", true);
     switch (choice)
     {
     case 0:
@@ -124,7 +122,7 @@ void Screen::PostMessage(const std::string& message)
 void Screen::ShowMap()
 {
     View previousView = m_View;
-    m_View = View::Map;
+    m_View            = View::Map;
 
     // Prepare window
     // Every room icon is 1 char wide and has 1 char of spacing on both sides horizontally
@@ -134,7 +132,7 @@ void Screen::ShowMap()
     // Handle map interaction
     Coords cursor = m_CurrentRoom->GetCoords();
     std::optional<chtype> key;
-    bool done = false;
+    bool done        = false;
     bool actionTaken = true;
     keypad(mapWindow, 1);
 
@@ -157,15 +155,16 @@ void Screen::ShowMap()
             actionTaken = false;
         }
 
-        key = InputHandler::ReadKeypress({'w', KEY_UP, 'd', KEY_RIGHT, 's', KEY_DOWN, 'a', KEY_LEFT, ' ', KEY_ENTER, 10, 27, 'q'}, mapWindow);
-        if (!key) continue;
+        key = InputHandler::ReadKeypress(
+            { 'w', KEY_UP, 'd', KEY_RIGHT, 's', KEY_DOWN, 'a', KEY_LEFT, ' ', KEY_ENTER, 10, 27, 'q' }, mapWindow);
+        if (!key)
+            continue;
 
         switch (key.value())
         {
         case 'w':
         case KEY_UP:
-            if (m_IsWorldMapCursorEnabled &&
-                !m_WorldManager.CurrentWorld().IsAtWorldGridEdge(cursor, Direction::Up))
+            if (m_IsWorldMapCursorEnabled && !m_WorldManager.CurrentWorld().IsAtWorldGridEdge(cursor, Direction::Up))
             {
                 cursor.Move(Direction::Up);
                 actionTaken = true;
@@ -173,8 +172,7 @@ void Screen::ShowMap()
             break;
         case 'd':
         case KEY_RIGHT:
-            if (m_IsWorldMapCursorEnabled &&
-                !m_WorldManager.CurrentWorld().IsAtWorldGridEdge(cursor, Direction::Right))
+            if (m_IsWorldMapCursorEnabled && !m_WorldManager.CurrentWorld().IsAtWorldGridEdge(cursor, Direction::Right))
             {
                 cursor.Move(Direction::Right);
                 actionTaken = true;
@@ -182,8 +180,7 @@ void Screen::ShowMap()
             break;
         case 's':
         case KEY_DOWN:
-            if (m_IsWorldMapCursorEnabled &&
-                !m_WorldManager.CurrentWorld().IsAtWorldGridEdge(cursor, Direction::Down))
+            if (m_IsWorldMapCursorEnabled && !m_WorldManager.CurrentWorld().IsAtWorldGridEdge(cursor, Direction::Down))
             {
                 cursor.Move(Direction::Down);
                 actionTaken = true;
@@ -191,8 +188,7 @@ void Screen::ShowMap()
             break;
         case 'a':
         case KEY_LEFT:
-            if (m_IsWorldMapCursorEnabled &&
-                !m_WorldManager.CurrentWorld().IsAtWorldGridEdge(cursor, Direction::Left))
+            if (m_IsWorldMapCursorEnabled && !m_WorldManager.CurrentWorld().IsAtWorldGridEdge(cursor, Direction::Left))
             {
                 cursor.Move(Direction::Left);
                 actionTaken = true;
@@ -200,7 +196,7 @@ void Screen::ShowMap()
             break;
         case ' ':
             m_IsWorldMapCursorEnabled = !m_IsWorldMapCursorEnabled;
-            actionTaken = true;
+            actionTaken               = true;
             break;
         case KEY_ENTER:
         case 10:
@@ -219,7 +215,10 @@ void Screen::ShowMap()
     m_View = previousView;
 }
 
-bool Screen::YesNoMessageBox(const std::string& prompt, const std::string& leftOption, const std::string& rightOption, const std::string& title)
+bool Screen::YesNoMessageBox(const std::string& prompt,
+                             const std::string& leftOption,
+                             const std::string& rightOption,
+                             const std::string& title)
 {
     // Split the prompt into lines
     std::vector<std::string> lines;
@@ -228,15 +227,16 @@ bool Screen::YesNoMessageBox(const std::string& prompt, const std::string& leftO
     std::istringstream iss(prompt);
     while (std::getline(iss, lineBuf))
     {
-        if (lineBuf.size() > neededWidth) neededWidth = lineBuf.size();
+        if (lineBuf.size() > neededWidth)
+            neededWidth = lineBuf.size();
         lines.push_back(std::move(lineBuf));
     }
 
-    std::string left = "  " + leftOption + "  ";
+    std::string left  = "  " + leftOption + "  ";
     std::string right = "  " + rightOption + "  ";
     // The ncurses menu forces all option boxes to be the same size.
     // Thus we should give the shorter option some padding
-    std::string& longer = left.size() > right.size() ? left : right;
+    std::string& longer  = left.size() > right.size() ? left : right;
     std::string& shorter = left.size() > right.size() ? right : left;
     for (size_t i = 0; i < (longer.size() - shorter.size()) / 2; i++)
     {
@@ -244,17 +244,16 @@ bool Screen::YesNoMessageBox(const std::string& prompt, const std::string& leftO
     }
 
     int height = lines.size() + 4;
-    int width = neededWidth + 4;
+    int width  = neededWidth + 4;
 
-    std::vector<ITEM*> items = {new_item(left.c_str(), left.c_str()),
-                                new_item(right.c_str(), right.c_str()),
-                                nullptr};
+    std::vector<ITEM*> items
+        = { new_item(left.c_str(), left.c_str()), new_item(right.c_str(), right.c_str()), nullptr };
 
     int subXPos = (width - (left.size() + right.size() + 4)) / 2;
 
     WINDOW* boxWin = newwin(height, width, (ScreenHeight - height) / 2, (ScreenWidth - width) / 2);
     WINDOW* boxSub = derwin(boxWin, 1, width - subXPos - 3, height - 2, subXPos);
-    MENU* menu = new_menu(items.data());
+    MENU* menu     = new_menu(items.data());
 
     set_menu_win(menu, boxWin);
     set_menu_sub(menu, boxSub);
@@ -266,7 +265,8 @@ bool Screen::YesNoMessageBox(const std::string& prompt, const std::string& leftO
 
     box(boxWin, 0, 0);
     wattron(boxWin, A_REVERSE);
-    if (!title.empty()) PrintCenter(boxWin, " " + title + " ", 0);
+    if (!title.empty())
+        PrintCenter(boxWin, " " + title + " ", 0);
     wattroff(boxWin, A_REVERSE);
     for (size_t i = 0; i < lines.size(); i++)
     {
@@ -281,8 +281,9 @@ bool Screen::YesNoMessageBox(const std::string& prompt, const std::string& leftO
     std::optional<chtype> key;
     while (!pressedEnter)
     {
-        key = InputHandler::ReadKeypress({KEY_RIGHT, 'd', KEY_LEFT, 'a', 27, KEY_ENTER, 10}, boxWin);
-        if (!key) continue;
+        key = InputHandler::ReadKeypress({ KEY_RIGHT, 'd', KEY_LEFT, 'a', 27, KEY_ENTER, 10 }, boxWin);
+        if (!key)
+            continue;
 
         switch (key.value())
         {
@@ -333,24 +334,26 @@ void Screen::OkMessageBox(const std::string& message, const std::string& title, 
     std::istringstream iss(message);
     while (std::getline(iss, lineBuf))
     {
-        if (lineBuf.size() > neededWidth) neededWidth = lineBuf.size();
+        if (lineBuf.size() > neededWidth)
+            neededWidth = lineBuf.size();
         lines.push_back(std::move(lineBuf));
     }
 
-    int height = lines.size() + 4;
-    int width = neededWidth + 4;
+    int height         = lines.size() + 5;
+    int width          = neededWidth + 4;
     std::string button = "  " + buttonLabel + "  ";
 
     WINDOW* boxWin = newwin(height, width, (ScreenHeight - height) / 2, (ScreenWidth - width) / 2);
-    
+
     // Draw the window and contents
     box(boxWin, 0, 0);
     wattron(boxWin, A_REVERSE);
-    if (!title.empty()) PrintCenter(boxWin, " " + title + " ", 0);
+    if (!title.empty())
+        PrintCenter(boxWin, " " + title + " ", 0);
     wattroff(boxWin, A_REVERSE);
     for (size_t i = 0; i < lines.size(); i++)
     {
-        PrintCenter(boxWin, lines[i], i + 1);
+        PrintCenter(boxWin, lines[i], i + 2);
     }
 
     // Shhhh... the button is not a real button, but no one has to be any the wiser
@@ -365,7 +368,7 @@ void Screen::OkMessageBox(const std::string& message, const std::string& title, 
     std::optional<chtype> key;
     while (!key.has_value() || !(key.value() == KEY_ENTER || key.value() == 10 || key.value() == 27))
     {
-        key = InputHandler::ReadKeypress({KEY_ENTER, 10, 27}, boxWin);
+        key = InputHandler::ReadKeypress({ KEY_ENTER, 10, 27 }, boxWin);
     }
 
     wclear(boxWin);
@@ -379,7 +382,7 @@ BattleScreen& Screen::OpenBattleScreen(Battle::Battle& battle)
     BattleScreen* battleScreen = new BattleScreen(battle, *this, m_InputHandler);
     m_Subscreen.reset(battleScreen);
     battle.SetBattleScreen(battleScreen);
-    //m_View = View::Battle;
+    // m_View = View::Battle;
     return *battleScreen;
 }
 
@@ -389,6 +392,17 @@ void Screen::CloseSubscreen()
     {
         m_Subscreen.reset(nullptr);
     }
+}
+
+void Screen::GameOver(const std::string& epitaph)
+{
+    std::ostringstream additionalDeathInfo;
+    additionalDeathInfo << "At the time of death, " << m_Player.GetName() << "\nwas carrying a sum of " << m_Player.GetDun()
+                        << " dun.";
+
+    OkMessageBox(epitaph + "\n\n" + additionalDeathInfo.str(), "GAME OVER", "R.I.P.");
+
+    m_InputHandler.SetQuit();
 }
 
 void Screen::Init()
@@ -407,9 +421,12 @@ void Screen::Init()
 
 void Screen::Terminate()
 {
-    if (m_GameWorldWindow != nullptr) delwin(m_GameWorldWindow);
-    if (m_GameHUDWindow != nullptr) delwin(m_GameHUDWindow);
-    if (m_GameMessageWindow != nullptr) delwin(m_GameMessageWindow);
+    if (m_GameWorldWindow != nullptr)
+        delwin(m_GameWorldWindow);
+    if (m_GameHUDWindow != nullptr)
+        delwin(m_GameHUDWindow);
+    if (m_GameMessageWindow != nullptr)
+        delwin(m_GameMessageWindow);
     endwin();
 }
 
@@ -450,23 +467,32 @@ void Screen::DrawLogo(int xPos, int yPos)
     attroff(A_BOLD);
 }
 
-int Screen::SelectViaMenu(std::map<int, std::string> options, int xPos, int yPos, int width, int height, bool drawBorder, int padX, int padY, const std::string& title, bool spaceOptions, bool scroll, std::function<void(std::map<int, std::string>::iterator)> hoverAction)
+int Screen::SelectViaMenu(std::map<int, std::string> options,
+                          int xPos,
+                          int yPos,
+                          int width,
+                          int height,
+                          bool drawBorder,
+                          int padX,
+                          int padY,
+                          const std::string& title,
+                          bool spaceOptions,
+                          bool scroll,
+                          std::function<void(std::map<int, std::string>::iterator)> hoverAction)
 {
     if (options.empty())
     {
         std::ostringstream errorMessage;
-        errorMessage << "Attempted display of empty "
-                     << width << 'x' << height
-                     << " menu at "
-                     << Coords(xPos, yPos);
-        if (!title.empty()) errorMessage << " (\"" << title << "\")";
+        errorMessage << "Attempted display of empty " << width << 'x' << height << " menu at " << Coords(xPos, yPos);
+        if (!title.empty())
+            errorMessage << " (\"" << title << "\")";
         throw DisplayException(errorMessage.str());
     }
 
-    const size_t subWidth = width - 2 - 2 * padX;
-    const size_t subHeight = height - 2 - 2 * padY;
-    const size_t numRows = spaceOptions ? (subHeight + subHeight % 2) / 2 : subHeight;
-    const size_t numColumns = scroll ? 1 : ceil(static_cast<double>(options.size()) / numRows);
+    const size_t subWidth    = width - 2 - 2 * padX;
+    const size_t subHeight   = height - 2 - 2 * padY;
+    const size_t numRows     = spaceOptions ? (subHeight + subHeight % 2) / 2 : subHeight;
+    const size_t numColumns  = scroll ? 1 : ceil(static_cast<double>(options.size()) / numRows);
     const size_t columnWidth = subWidth / numColumns;
 
     std::vector<ITEM*> items;
@@ -477,20 +503,13 @@ int Screen::SelectViaMenu(std::map<int, std::string> options, int xPos, int yPos
             ShortenString(pair.second, columnWidth);
         }
         size_t totalPad = columnWidth - pair.second.size();
-        pair.second = std::string(totalPad / 2, ' ') + pair.second + std::string(totalPad / 2 + totalPad % 2, ' ');
+        pair.second     = std::string(totalPad / 2, ' ') + pair.second + std::string(totalPad / 2 + totalPad % 2, ' ');
         items.push_back(new_item(pair.second.c_str(), pair.second.c_str()));
     }
     items.push_back(nullptr);
-    MENU* menu = new_menu(items.data());
-    WINDOW* menuWindow = newwin(height,
-                                width,
-                                yPos,
-                                xPos);
-    WINDOW* menuSub = derwin(menuWindow,
-                             subHeight,
-                             subWidth,
-                             1 + padY,
-                             1 + padX);
+    MENU* menu         = new_menu(items.data());
+    WINDOW* menuWindow = newwin(height, width, yPos, xPos);
+    WINDOW* menuSub    = derwin(menuWindow, subHeight, subWidth, 1 + padY, 1 + padX);
     set_menu_win(menu, menuWindow);
     set_menu_sub(menu, menuSub);
     keypad(menuWindow, 1);
@@ -499,16 +518,19 @@ int Screen::SelectViaMenu(std::map<int, std::string> options, int xPos, int yPos
     set_menu_mark(menu, "");
     set_menu_spacing(menu, 1, spaceOptions ? 2 : 1, 1);
     set_menu_format(menu, numRows, numColumns);
-    if (drawBorder) box(menuWindow, 0, 0);
-    if (!title.empty()) PrintCenter(menuWindow, title, 0);
+    if (drawBorder)
+        box(menuWindow, 0, 0);
+    if (!title.empty())
+        PrintCenter(menuWindow, title, 0);
 
     post_menu(menu);
     wrefresh(menuWindow);
 
-    auto it = options.begin();
+    auto it       = options.begin();
     bool selected = false;
     std::optional<chtype> key;
-    if (hoverAction) hoverAction(it);
+    if (hoverAction)
+        hoverAction(it);
     while (!selected)
     {
         key = InputHandler::ReadKeypress({ KEY_DOWN, 's', KEY_UP, 'w', KEY_RIGHT, 'd', KEY_LEFT, 'a', KEY_ENTER, 10 },
@@ -528,7 +550,8 @@ int Screen::SelectViaMenu(std::map<int, std::string> options, int xPos, int yPos
                 menu_driver(menu, REQ_DOWN_ITEM);
                 for (size_t i = 0; i < numColumns; i++)
                     it++;
-                if (hoverAction) hoverAction(it);
+                if (hoverAction)
+                    hoverAction(it);
             }
             break;
         case KEY_UP:
@@ -538,7 +561,8 @@ int Screen::SelectViaMenu(std::map<int, std::string> options, int xPos, int yPos
                 menu_driver(menu, REQ_UP_ITEM);
                 for (size_t i = 0; i < numColumns; i++)
                     it--;
-                if (hoverAction) hoverAction(it);
+                if (hoverAction)
+                    hoverAction(it);
             }
             break;
         case KEY_RIGHT:
@@ -547,7 +571,8 @@ int Screen::SelectViaMenu(std::map<int, std::string> options, int xPos, int yPos
             {
                 menu_driver(menu, REQ_RIGHT_ITEM);
                 it++;
-                if (hoverAction) hoverAction(it);
+                if (hoverAction)
+                    hoverAction(it);
             }
             break;
         case KEY_LEFT:
@@ -556,7 +581,8 @@ int Screen::SelectViaMenu(std::map<int, std::string> options, int xPos, int yPos
             {
                 menu_driver(menu, REQ_LEFT_ITEM);
                 it--;
-                if (hoverAction) hoverAction(it);
+                if (hoverAction)
+                    hoverAction(it);
             }
             break;
         case KEY_ENTER:
@@ -581,12 +607,12 @@ int Screen::SelectViaMenu(std::map<int, std::string> options, int xPos, int yPos
 
 void Screen::StartGame()
 {
-    m_View = View::InGame;
+    m_View            = View::InGame;
     m_GameWorldWindow = newwin(1, 1, 0, 0);
     ResizeWorldWindow();
-    m_GameHUDWindow = newwin(ScreenHeight, HUDPanelWidth, 0, WorldPanelWidth);
+    m_GameHUDWindow     = newwin(ScreenHeight, HUDPanelWidth, 0, WorldPanelWidth);
     m_GameMessageWindow = newwin(ScreenHeight - WorldPanelHeight, WorldPanelWidth + 1, WorldPanelHeight, 0);
-    m_Message = "Welcome to the Dun-geon.";
+    m_Message           = "Welcome to the Dun-geon.";
 }
 
 void Screen::ResizeWorldWindow()
@@ -595,13 +621,12 @@ void Screen::ResizeWorldWindow()
     wrefresh(m_GameWorldWindow);
     const Worlds::Room& currentRoom = m_WorldManager.CurrentRoom();
 
-    Coords::Scalar windowLines = currentRoom.GetHeight() + 2;
+    Coords::Scalar windowLines   = currentRoom.GetHeight() + 2;
     Coords::Scalar windowColumns = currentRoom.GetWidth() + 2;
 
-    if (currentRoom.GetCameraStyle() != CameraStyle::Fixed &&
-        currentRoom.GetVisionRadius() > 0)
+    if (currentRoom.GetCameraStyle() != CameraStyle::Fixed && currentRoom.GetVisionRadius() > 0)
     {
-        windowLines = currentRoom.GetVisionRadius() * 2 + 3;
+        windowLines   = currentRoom.GetVisionRadius() * 2 + 3;
         windowColumns = windowLines;
     }
 
@@ -624,7 +649,7 @@ void Screen::DrawWorld()
     // How far can we draw vertically or horizontally
     Coords::Scalar rangeX = worldX / 2 - (worldX % 2 ? 0 : 1) - 1;
     Coords::Scalar rangeY = worldY / 2 - (worldY % 2 ? 0 : 1) - 1;
-    auto playerCoords = m_EntityManager.CoordsOf(m_Player);
+    auto playerCoords     = m_EntityManager.CoordsOf(m_Player);
     for (int i = 1; i < worldX - 1; i++)
     {
         for (int j = 1; j < worldY - 1; j++)
@@ -643,10 +668,8 @@ void Screen::DrawWorld()
                 desiredFieldYPos = playerCoords.Y + (j - 1) - rangeY;
                 break;
             }
-            if (desiredFieldXPos < 0 ||
-                desiredFieldXPos >= m_CurrentRoom->GetWidth() ||
-                desiredFieldYPos < 0 ||
-                desiredFieldYPos >= m_CurrentRoom->GetHeight())
+            if (desiredFieldXPos < 0 || desiredFieldXPos >= m_CurrentRoom->GetWidth() || desiredFieldYPos < 0
+                || desiredFieldYPos >= m_CurrentRoom->GetHeight())
             {
                 mvwaddch(m_GameWorldWindow, j, i, DefaultFieldIcon);
             }
@@ -654,11 +677,9 @@ void Screen::DrawWorld()
             {
                 auto radius = m_CurrentRoom->GetVisionRadius();
                 Coords targetCoords(desiredFieldXPos, desiredFieldYPos);
-                if (radius > 0 &&
-                    playerCoords.Distance(targetCoords) >
-                        (playerCoords.SharesAxis(targetCoords)
-                             ? radius - 1
-                             : radius))
+                if (radius > 0
+                    && playerCoords.Distance(targetCoords)
+                           > (playerCoords.SharesAxis(targetCoords) ? radius - 1 : radius))
                 {
                     mvwaddch(m_GameWorldWindow, j, i, DefaultFieldIcon);
                 }
@@ -701,7 +722,7 @@ void Screen::DrawHUD()
     mvwprintw(m_GameHUDWindow, 12, HUDPanelWidth - 11, "Int: %3d", stats.Intelligence);
 
     std::string wealthAmountStr = std::to_string(m_Player.GetDun());
-    int xPos = (HUDPanelWidth - wealthAmountStr.size() - 12) / 2;
+    int xPos                    = (HUDPanelWidth - wealthAmountStr.size() - 12) / 2;
     xPos += xPos % 2;
     mvwaddstr(m_GameHUDWindow, 14, xPos, "Wealth: ");
     wattron(m_GameHUDWindow, COLOR_PAIR(ColorPairs::YellowOnDefault) | A_BOLD);
@@ -743,7 +764,7 @@ void Screen::DrawMessageWindow(bool shouldPostMessage)
             while (m_Message[pos] != ' ' && pos > 0)
                 pos--;
             std::string secondLine = m_Message.substr(pos > 0 ? pos + 1 : WorldPanelWidth - 4);
-            m_Message = m_Message.substr(0, pos > 0 ? pos : WorldPanelWidth - 4);
+            m_Message              = m_Message.substr(0, pos > 0 ? pos : WorldPanelWidth - 4);
             mvwaddstr(m_GameMessageWindow, 1, 2, m_Message.c_str());
             mvwaddstr(m_GameMessageWindow, 2, 2, secondLine.c_str());
         }
@@ -786,7 +807,7 @@ void Screen::DrawMap(WINDOW* mapWindow, Coords cursor)
             case WorldMapObjectType::Room:
             {
                 const auto& room = world.RoomAt(current);
-                icon = RoomMapIcon(room);
+                icon             = RoomMapIcon(room);
                 if (room.Entrance(Direction::Left) != nullptr)
                     mvwaddch(mapWindow, j + 1, i * 2, ACS_HLINE);
                 if (room.Entrance(Direction::Right) != nullptr)
@@ -802,9 +823,7 @@ void Screen::DrawMap(WINDOW* mapWindow, Coords cursor)
             bool isCurrentRoom = m_WorldManager.CurrentRoom().GetCoords() == current;
             if (m_IsWorldMapCursorEnabled && cursor == current)
             {
-                icon |= isCurrentRoom
-                            ? (COLOR_PAIR(ColorPairs::BlackOnRed))
-                            : (COLOR_PAIR(ColorPairs::BlackOnYellow));
+                icon |= isCurrentRoom ? (COLOR_PAIR(ColorPairs::BlackOnRed)) : (COLOR_PAIR(ColorPairs::BlackOnYellow));
             }
             else if (isCurrentRoom)
             {
@@ -818,7 +837,8 @@ void Screen::DrawMap(WINDOW* mapWindow, Coords cursor)
 
 void Screen::DrawMapTooltip(Coords cursor, WorldMapObjectType objectType)
 {
-    if (objectType == WorldMapObjectType::Empty) return;
+    if (objectType == WorldMapObjectType::Empty)
+        return;
 
     // Prepare window contents
     std::vector<std::string> lines;
@@ -826,8 +846,8 @@ void Screen::DrawMapTooltip(Coords cursor, WorldMapObjectType objectType)
     {
     case WorldMapObjectType::Room:
     {
-        const auto& room = m_WorldManager.CurrentWorld().RoomAt(cursor);
-        bool isCurrentRoom = m_WorldManager.IsCurrentRoom(room);
+        const auto& room       = m_WorldManager.CurrentWorld().RoomAt(cursor);
+        bool isCurrentRoom     = m_WorldManager.IsCurrentRoom(room);
         std::string locPronoun = isCurrentRoom ? "here" : "there";
         lines.push_back("Room " + std::to_string(room.GetRoomNumber()));
         if (m_WorldManager.IsCurrentRoom(room))
@@ -855,16 +875,13 @@ void Screen::DrawMapTooltip(Coords cursor, WorldMapObjectType objectType)
     // Calculate the real coord on the screen first
     int cursorActualX = cursor.X * 2 + 1 + WorldMapXPos;
     int cursorActualY = cursor.Y + 1 + WorldMapYPos;
-    WINDOW* tooltipWindow = newwin(tooltipHeight,
-                                   tooltipWidth,
-                                   // Flip the tooltip to the other side of the cursor
-                                   // if it cannot fit on either axis
-                                   cursorActualY > tooltipHeight
-                                       ? cursorActualY - tooltipHeight
-                                       : cursorActualY + 1,
-                                   cursorActualX < ScreenWidth - tooltipWidth - 1
-                                       ? cursorActualX + 1
-                                       : cursorActualX - tooltipWidth);
+    WINDOW* tooltipWindow
+        = newwin(tooltipHeight,
+                 tooltipWidth,
+                 // Flip the tooltip to the other side of the cursor
+                 // if it cannot fit on either axis
+                 cursorActualY > tooltipHeight ? cursorActualY - tooltipHeight : cursorActualY + 1,
+                 cursorActualX < ScreenWidth - tooltipWidth - 1 ? cursorActualX + 1 : cursorActualX - tooltipWidth);
     // Draw the window
     wattron(tooltipWindow, COLOR_PAIR(ColorPairs::YellowOnDefault) | A_BOLD);
     box(tooltipWindow, 0, 0);
@@ -882,7 +899,7 @@ void Screen::DrawMapTooltip(Coords cursor, WorldMapObjectType objectType)
 
 chtype Screen::FieldIcon(const Worlds::Field& field) const
 {
-    chtype icon = 0;
+    chtype icon           = 0;
     bool canHaveHighlight = true;
     if (field.ForegroundEntity() != nullptr)
     {
@@ -894,22 +911,20 @@ chtype Screen::FieldIcon(const Worlds::Field& field) const
     }
     else if (field.IsAccessible() && m_CurrentRoom->GetVisionRadius() > 0)
     {
-        icon = '.' | COLOR_PAIR(ColorPairs::WhiteOnDefault);
+        icon             = '.' | COLOR_PAIR(ColorPairs::WhiteOnDefault);
         canHaveHighlight = false;
     }
     else
     {
-        icon = DefaultFieldIcon;
+        icon             = DefaultFieldIcon;
         canHaveHighlight = false;
     }
 
     // Apply highlight if the player is touching this field
-    auto lmd = m_Player.LastMoveDirection;
+    auto lmd          = m_Player.LastMoveDirection;
     auto playerCoords = m_EntityManager.CoordsOf(m_Player);
-    if (canHaveHighlight &&
-        lmd != Direction::None &&
-        !m_CurrentRoom->IsAtRoomEdge(playerCoords, lmd) &&
-        field.GetCoords() == playerCoords.Adjacent(lmd))
+    if (canHaveHighlight && lmd != Direction::None && !m_CurrentRoom->IsAtRoomEdge(playerCoords, lmd)
+        && field.GetCoords() == playerCoords.Adjacent(lmd))
     {
         short highlightPair;
         // Highlight the background only if it was a non-default color
@@ -932,10 +947,10 @@ chtype Screen::FieldIcon(Coords coords) const
 
 chtype Screen::RoomMapIcon(const Worlds::Room& room) const
 {
-    bool up = room.Entrance(Direction::Up) != nullptr;
+    bool up    = room.Entrance(Direction::Up) != nullptr;
     bool right = room.Entrance(Direction::Right) != nullptr;
-    bool down = room.Entrance(Direction::Down) != nullptr;
-    bool left = room.Entrance(Direction::Left) != nullptr;
+    bool down  = room.Entrance(Direction::Down) != nullptr;
+    bool left  = room.Entrance(Direction::Left) != nullptr;
 
     constexpr static const chtype deadEnd = '#';
 
@@ -943,33 +958,48 @@ chtype Screen::RoomMapIcon(const Worlds::Room& room) const
     {
         if (right)
         {
-            if (down && left) return ACS_PLUS;
-            if (down && !left) return ACS_LTEE;
-            if (!down && left) return ACS_BTEE;
-            if (!down && !left) return ACS_LLCORNER;
+            if (down && left)
+                return ACS_PLUS;
+            if (down && !left)
+                return ACS_LTEE;
+            if (!down && left)
+                return ACS_BTEE;
+            if (!down && !left)
+                return ACS_LLCORNER;
         }
         else
         {
-            if (down && left) return ACS_RTEE;
-            if (down && !left) return ACS_VLINE;
-            if (!down && left) return ACS_LRCORNER;
-            if (!down && !left) return deadEnd;
+            if (down && left)
+                return ACS_RTEE;
+            if (down && !left)
+                return ACS_VLINE;
+            if (!down && left)
+                return ACS_LRCORNER;
+            if (!down && !left)
+                return deadEnd;
         }
     }
     else
     {
         if (right)
         {
-            if (down && left) return ACS_TTEE;
-            if (down && !left) return ACS_ULCORNER;
-            if (!down && left) return ACS_HLINE;
-            if (!down && !left) return deadEnd;
+            if (down && left)
+                return ACS_TTEE;
+            if (down && !left)
+                return ACS_ULCORNER;
+            if (!down && left)
+                return ACS_HLINE;
+            if (!down && !left)
+                return deadEnd;
         }
         else
         {
-            if (down && left) return ACS_URCORNER;
-            if (down && !left) return deadEnd;
-            if (!down && left) return deadEnd;
+            if (down && left)
+                return ACS_URCORNER;
+            if (down && !left)
+                return deadEnd;
+            if (!down && left)
+                return deadEnd;
         }
     }
 
@@ -979,15 +1009,15 @@ chtype Screen::RoomMapIcon(const Worlds::Room& room) const
 WorldMapObjectType Screen::MapObjectType(Coords coords) const
 {
     WorldMapObjectType type = WorldMapObjectType::Empty;
-    const auto& world = m_WorldManager.CurrentWorld();
+    const auto& world       = m_WorldManager.CurrentWorld();
     if (!world.RoomExists(coords))
     {
         // If the room is undiscovered, we cannot access it directly, but we can check
         // if its neighbors have any entrances leading here.
         for (const auto& dir : Direction::All)
         {
-            if (world.RoomExists(coords.Adjacent(dir)) &&
-                world.RoomAt(coords.Adjacent(dir)).Entrance(dir.Opposite()) != nullptr)
+            if (world.RoomExists(coords.Adjacent(dir))
+                && world.RoomAt(coords.Adjacent(dir)).Entrance(dir.Opposite()) != nullptr)
             {
                 type = WorldMapObjectType::UndiscoveredRoom;
                 break;
