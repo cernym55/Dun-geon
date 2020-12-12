@@ -105,18 +105,17 @@ public:
     /**
      * @brief Animate a player attack
      *
-     * @param damage damage number
-     * @param hit whether the attack hit or missed
+     * @param displayData result data to display
      */
-    void AnimatePlayerAttack(int damage, bool hit);
+    void AnimatePlayerAttack(const Battle::Skill::ApplySkillResult& displayData);
 
     /**
      * @brief Animate an enemy attack
      *
-     * @param damage damage number
-     * @param hit whether the attack hit or missed
+     * @param displayData result data to display
+     * @param skillName name of skill used
      */
-    void AnimateEnemyAttack(int damage, bool hit);
+    void AnimateEnemyAttack(const Battle::Skill::ApplySkillResult& displayData, const std::string& skillName);
 
     /**
      * @brief Display the message after the battle
@@ -132,12 +131,14 @@ public:
 
     /**
      * @brief Draw the skill thumbnail for the skill being hovered over
+     *
+     * @param skill skill being hovered over
      */
-    void DrawSkillHoverThumbnail();
+    void DrawSkillHoverThumbnail(const Battle::Skill& skill);
 
     /**
      * @brief Add a message to the battle log
-     * 
+     *
      * @param message message
      */
     void AppendToLog(const std::string& message);

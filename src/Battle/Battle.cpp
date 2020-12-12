@@ -1,5 +1,6 @@
 #include "Battle.h"
 #include "Misc/RNG.h"
+#include "SkillCollection.h"
 #include "UI/BattleScreen.h"
 #include <sstream>
 
@@ -11,8 +12,8 @@ Battle::Battle(Entities::Player& player, Entities::Character& enemy)
       m_Enemy(enemy),
       m_BattleScreen(nullptr),
       m_Result(Result::Ongoing),
-      m_PlayerStats(m_Player.GetStats()),
-      m_EnemyStats(m_Enemy.GetStats())
+      m_PlayerProfile(m_Player.GetStats()),
+      m_EnemyProfile(m_Enemy.GetStats())
 {
 }
 
@@ -51,14 +52,19 @@ Battle::Result Battle::DoBattle()
     return m_Result;
 }
 
-const Entities::Character::Stats& Battle::GetPlayerStats() const
+const BattleProfile& Battle::GetPlayerProfile() const
 {
-    return m_PlayerStats;
+    return m_PlayerProfile;
+}
+
+const BattleProfile& Battle::GetEnemyProfile() const
+{
+    return m_EnemyProfile;
 }
 
 void Battle::DoPlayerTurn()
 {
-    if (m_PlayerStats.Health <= 0)
+    if (m_PlayerProfile.Stats.Health <= 0)
     {
         m_Result = Result::GameOver;
         return;
@@ -80,17 +86,19 @@ ACTION_CHOICE:
     case 0:
     {
         m_BattleScreen->PostMessage("Which attack?");
-        std::map<int, std::string> options = { { 0, "Swing" }, { RethinkCode, "<rethink>" } };
-        std::map<int, std::pair<std::pair<int, int>, int>> attackStats = { { 0, { { 2, 5 }, 90 } } };
+        std::map<int, Skill&> availableSkills { { 0, SkillCollection::Swing } };
+        std::map<int, std::string> options { { RethinkCode, "<rethink>" } };
+        for (auto& entry : availableSkills)
+            options[entry.first] = entry.second.GetName();
 
         int meleeChoice = m_BattleScreen->SelectWithHoverAction(options, [&](auto it) {
             m_BattleScreen->ClearProjectionArea();
             m_BattleScreen->ClearThumbnailArea();
             if (it->first == RethinkCode)
                 return;
-            const auto& stats = attackStats.at(it->first);
-            m_BattleScreen->ProjectAttack(stats.second);
-            m_BattleScreen->DrawSkillHoverThumbnail();
+            int hitChancePercent = availableSkills.at(it->first).CalculateHitChance(m_PlayerProfile, m_EnemyProfile);
+            m_BattleScreen->ProjectAttack(hitChancePercent);
+            m_BattleScreen->DrawSkillHoverThumbnail(availableSkills.at(it->first));
         });
 
         if (meleeChoice == RethinkCode)
@@ -99,7 +107,7 @@ ACTION_CHOICE:
 
         m_BattleScreen->ClearProjectionArea();
         m_BattleScreen->ClearThumbnailArea();
-        LaunchPlayerAttack(attackStats.at(meleeChoice).first, attackStats.at(meleeChoice).second);
+        LaunchPlayerAttack(availableSkills.at(meleeChoice));
 
         break;
     }
@@ -113,39 +121,27 @@ ACTION_CHOICE:
 
 void Battle::DoEnemyTurn()
 {
-    if (m_EnemyStats.Health <= 0)
+    if (m_EnemyProfile.Stats.Health <= 0)
     {
         m_Result = Result::Victory;
         return;
     }
 
-    std::pair<std::pair<int, int>, int> attackStats = { { 2, 4 }, 70 };
-
     m_BattleScreen->PostMessage(m_Enemy.GetName() + " attacks!");
 
-    LaunchEnemyAttack(attackStats.first, attackStats.second);
+    LaunchEnemyAttack(SkillCollection::Punch);
 }
 
-void Battle::LaunchPlayerAttack(std::pair<int, int> damageRange, int hitChancePercent)
+void Battle::LaunchPlayerAttack(Skill& skill)
 {
-    int damage = RNG::RandomInt(damageRange.first, damageRange.second) + m_PlayerStats.Strength / 10;
-    bool hit = RNG::Chance(hitChancePercent / 100.);
-    m_BattleScreen->AnimatePlayerAttack(damage, hit);
-    if (hit)
-    {
-        m_EnemyStats.Health -= damage;
-    }
+    auto result = skill.ApplySkill(m_PlayerProfile, m_EnemyProfile);
+    m_BattleScreen->AnimatePlayerAttack(result);
 }
 
-void Battle::LaunchEnemyAttack(std::pair<int, int> damageRange, int hitChancePercent)
+void Battle::LaunchEnemyAttack(Skill& skill)
 {
-    int damage = RNG::RandomInt(damageRange.first, damageRange.second) + m_EnemyStats.Strength / 10;
-    bool hit = RNG::Chance(hitChancePercent / 100.);
-    m_BattleScreen->AnimateEnemyAttack(damage, hit);
-    if (hit)
-    {
-        m_PlayerStats.Health -= damage;
-    }
+    auto result = skill.ApplySkill(m_EnemyProfile, m_PlayerProfile);
+    m_BattleScreen->AnimateEnemyAttack(result, skill.GetName());
 }
 
 void Battle::FinishBattle()
@@ -153,8 +149,8 @@ void Battle::FinishBattle()
     m_BattleScreen->BattleEndMessage(m_Result);
 
     // Update remaining player HP/MP
-    m_Player.SetHealth(m_PlayerStats.Health);
-    m_Player.SetMana(m_PlayerStats.Mana);
+    m_Player.SetHealth(m_PlayerProfile.Stats.Health);
+    m_Player.SetMana(m_PlayerProfile.Stats.Mana);
 }
 
 } /* namespace Battle */

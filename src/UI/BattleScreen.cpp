@@ -127,7 +127,7 @@ void BattleScreen::ClearThumbnailArea()
     wrefresh(m_BottomPanelWindow);
 }
 
-void BattleScreen::AnimatePlayerAttack(int damage, bool hit)
+void BattleScreen::AnimatePlayerAttack(const Battle::Skill::ApplySkillResult& displayData)
 {
     // Constants
     constexpr size_t arrowXPos      = ArenaNameplateWidth / 2 + 6;
@@ -142,7 +142,7 @@ void BattleScreen::AnimatePlayerAttack(int damage, bool hit)
     wrefresh(m_ArenaPanelWindow);
     std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
 
-    if (hit)
+    if (displayData.IsHit)
     {
         // Finish drawing the arrow
         mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos, '|');
@@ -160,19 +160,25 @@ void BattleScreen::AnimatePlayerAttack(int damage, bool hit)
         // Damage number
         mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos + 2, '*');
         wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::YellowOnDefault));
-        wprintw(m_ArenaPanelWindow, " %d ", damage);
+        wprintw(m_ArenaPanelWindow, " %d ", displayData.Value);
         waddch(m_ArenaPanelWindow, '*' | COLOR_PAIR(ColorPairs::RedOnDefault));
+
+        // "Crit!"
+        if (displayData.IsCrit)
+        {
+            mvwaddstr(m_ArenaPanelWindow, Components::Nameplate::Height, arrowXPos + 2, "Critical!");
+        }
         wrefresh(m_ArenaPanelWindow);
 
         // Log
         std::ostringstream ossLog;
-        ossLog << m_Battle.GetPlayer().GetName() << " hit " << m_Battle.GetEnemy().GetName() << " for " << damage
-               << " damage!";
+        ossLog << m_Battle.GetPlayer().GetName() << (displayData.IsCrit ? " critically hit " : " hit ")
+               << m_Battle.GetEnemy().GetName() << " for " << displayData.Value << " damage!";
         AppendToLog(ossLog.str());
 
         // Nameplate animations
         m_EnemyNameplate.FlashBorder(ColorPairs::RedOnDefault, 2, animationPeriodMs);
-        m_EnemyNameplate.HealthBar.RollBy(-damage);
+        m_EnemyNameplate.HealthBar.RollBy(-displayData.Value);
     }
     else
     {
@@ -192,14 +198,14 @@ void BattleScreen::AnimatePlayerAttack(int damage, bool hit)
     }
 
     // Wait a bit, delay is shorter if hit due to animations
-    std::this_thread::sleep_for(std::chrono::milliseconds(missDelayMs / (hit ? 2 : 1)));
+    std::this_thread::sleep_for(std::chrono::milliseconds(missDelayMs / (displayData.IsHit ? 2 : 1)));
     wattroff(m_ArenaPanelWindow, A_COLOR | A_BOLD);
     wrefresh(m_ArenaPanelWindow);
 
     ClearProjectionArea();
 }
 
-void BattleScreen::AnimateEnemyAttack(int damage, bool hit)
+void BattleScreen::AnimateEnemyAttack(const Battle::Skill::ApplySkillResult& displayData, const std::string& skillName)
 {
     // Constants
     constexpr size_t arrowXPos      = ArenaNameplateWidth / 2 - 7;
@@ -208,8 +214,9 @@ void BattleScreen::AnimateEnemyAttack(int damage, bool hit)
     constexpr int preAttackDelayMs  = 800;
 
     // Skill name
+    std::string nameYell = skillName + "!";
     wattron(m_ArenaPanelWindow, A_BOLD);
-    mvwaddstr(m_ArenaPanelWindow, Components::Nameplate::Height, arrowXPos + 2, "Punch!");
+    mvwaddstr(m_ArenaPanelWindow, Components::Nameplate::Height, arrowXPos + 2, nameYell.c_str());
     wrefresh(m_ArenaPanelWindow);
     std::this_thread::sleep_for(std::chrono::milliseconds(preAttackDelayMs));
 
@@ -221,7 +228,7 @@ void BattleScreen::AnimateEnemyAttack(int damage, bool hit)
     wrefresh(m_ArenaPanelWindow);
     std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
 
-    if (hit)
+    if (displayData.IsHit)
     {
         // Finish drawing the arrow
         mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos, '|');
@@ -236,19 +243,25 @@ void BattleScreen::AnimateEnemyAttack(int damage, bool hit)
         wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::RedOnDefault));
         mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos + 2, '*');
         wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::YellowOnDefault));
-        wprintw(m_ArenaPanelWindow, " %d ", damage);
+        wprintw(m_ArenaPanelWindow, " %d ", displayData.Value);
         waddch(m_ArenaPanelWindow, '*' | COLOR_PAIR(ColorPairs::RedOnDefault));
+
+        // "Crit!"
+        if (displayData.IsCrit)
+        {
+            mvwaddstr(m_ArenaPanelWindow, Components::Nameplate::Height + 2, arrowXPos + 2, "Critical!");
+        }
         wrefresh(m_ArenaPanelWindow);
 
         // Log
         std::ostringstream ossLog;
-        ossLog << m_Battle.GetEnemy().GetName() << " hit " << m_Battle.GetPlayer().GetName() << " for " << damage
-               << " damage!";
+        ossLog << m_Battle.GetEnemy().GetName() << (displayData.IsCrit ? " critically hit " : " hit ")
+               << m_Battle.GetPlayer().GetName() << " for " << displayData.Value << " damage!";
         AppendToLog(ossLog.str());
 
         // Nameplate animations
         m_PlayerNameplate.FlashBorder(ColorPairs::RedOnDefault, 2, animationPeriodMs);
-        m_PlayerNameplate.HealthBar.RollBy(-damage);
+        m_PlayerNameplate.HealthBar.RollBy(-displayData.Value);
     }
     else
     {
@@ -268,7 +281,7 @@ void BattleScreen::AnimateEnemyAttack(int damage, bool hit)
     }
 
     // Wait a bit, delay is shorter if hit due to animations
-    std::this_thread::sleep_for(std::chrono::milliseconds(missDelayMs / (hit ? 2 : 1)));
+    std::this_thread::sleep_for(std::chrono::milliseconds(missDelayMs / (displayData.IsHit ? 2 : 1)));
     wattroff(m_ArenaPanelWindow, A_COLOR | A_BOLD);
     wrefresh(m_ArenaPanelWindow);
 
@@ -310,7 +323,7 @@ void BattleScreen::BattleEndMessage(BattleResult result)
 
 void BattleScreen::DisplayPlayerStats()
 {
-    auto& stats = m_Battle.GetPlayerStats();
+    auto& stats = m_Battle.GetPlayerProfile().Stats;
 
     for (int i = 1; i <= 6; i++)
     {
@@ -340,7 +353,7 @@ void BattleScreen::DisplayPlayerStats()
     wrefresh(m_StatPanelWindow);
 }
 
-void BattleScreen::DrawSkillHoverThumbnail()
+void BattleScreen::DrawSkillHoverThumbnail(const Battle::Skill& skill)
 {
     // TODO: rework when skills are formally implemented, this is a mockup
     constexpr int xPos = 23;
@@ -351,29 +364,28 @@ void BattleScreen::DrawSkillHoverThumbnail()
     mvwaddch(m_BottomPanelWindow, BottomPanelHeight - 1, xPos, ACS_BTEE);
 
     // Thumbnail title
-    std::string title = " Swing ";
+    std::string title = " " + skill.GetName() + " ";
     wattron(m_BottomPanelWindow, A_REVERSE);
     mvwaddstr(m_BottomPanelWindow, 0, (xPos + ArenaPanelWidth - title.size()) / 2, title.c_str());
     wattroff(m_BottomPanelWindow, A_REVERSE);
 
     // Contents
-    const auto& playerStats         = m_Battle.GetPlayerStats();
-    std::pair<int, int> damageRange = { 2, 5 };
+    auto damageRange = skill.CalculateEffectiveDamageRange(m_Battle.GetPlayerProfile(), m_Battle.GetEnemyProfile());
     // Weapon
-    std::string weaponName = "Unarmed";
+    std::string weaponName = "Unarmed"; // TODO: add once items are added
     mvwaddstr(m_BottomPanelWindow, 1, xPos + 2, weaponName.c_str());
     // Attack damage
     wattron(m_BottomPanelWindow, A_BOLD);
-    mvwprintw(m_BottomPanelWindow, 2, xPos + 2, "%d", damageRange.first + playerStats.Strength / 10);
+    mvwprintw(m_BottomPanelWindow, 2, xPos + 2, "%d", damageRange.first);
     wattroff(m_BottomPanelWindow, A_BOLD);
     waddstr(m_BottomPanelWindow, " - ");
     wattron(m_BottomPanelWindow, A_BOLD);
-    wprintw(m_BottomPanelWindow, "%d ", damageRange.second - 1 + playerStats.Strength / 10);
-    waddstr(m_BottomPanelWindow, "Physical");
+    wprintw(m_BottomPanelWindow, "%d ", damageRange.second);
+    waddstr(m_BottomPanelWindow, "Physical"); // TODO: add after damage types are added
     wattroff(m_BottomPanelWindow, A_BOLD);
     // Hit & crit
-    int hitChance  = 90;
-    int critChance = 0;
+    int hitChance  = skill.CalculateHitChance(m_Battle.GetPlayerProfile(), m_Battle.GetEnemyProfile());
+    int critChance = skill.CalculateCritChance(m_Battle.GetPlayerProfile(), m_Battle.GetEnemyProfile());
     mvwaddstr(m_BottomPanelWindow, 4, xPos + 2, "Hit:");
     mvwaddstr(m_BottomPanelWindow, 4, xPos + 16, "Crit:");
     short hitColor  = ColorPairs::GreenOnDefault;
@@ -401,7 +413,7 @@ void BattleScreen::DrawSkillHoverThumbnail()
         wattroff(m_BottomPanelWindow, A_COLOR | A_BOLD);
     }
     // Flavor text
-    mvwaddstr(m_BottomPanelWindow, 6, xPos + 2, "Take a swing at your foe");
+    mvwaddstr(m_BottomPanelWindow, 6, xPos + 2, skill.GetFlavorText().c_str());
 
     wrefresh(m_BottomPanelWindow);
 }
