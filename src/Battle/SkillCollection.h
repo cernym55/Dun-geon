@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Skill.h"
+#include "AttackSkill.h"
 
 namespace Battle::SkillCollection
 {
@@ -8,11 +8,11 @@ namespace Battle::SkillCollection
 /**
  * @brief Basic melee attack
  */
-extern Skill Swing;
+extern AttackSkill Swing;
 
 /**
  * @brief Weak melee attack
  */
-extern Skill Punch;
+extern AttackSkill Punch;
 
 } /* namespace Battle::SkillCollection */

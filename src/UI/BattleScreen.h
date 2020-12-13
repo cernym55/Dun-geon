@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Battle/AttackSkill.h"
 #include "Battle/Battle.h"
 #include "ColorPairs.h"
 #include "Components/LogWindow.h"
@@ -88,9 +89,9 @@ public:
     /**
      * @brief Project an attack against the enemy
      *
-     * @param hitChancePercent chance to hit in percent
+     * @param attackSkill attack skill to consider
      */
-    void ProjectAttack(int hitChancePercent);
+    void ProjectSkillUse(const Battle::AttackSkill& attackSkill);
 
     /**
      * @brief Clear the projection area
@@ -130,11 +131,18 @@ public:
     void DisplayPlayerStats();
 
     /**
-     * @brief Draw the skill thumbnail for the skill being hovered over
+     * @brief Draw the base of the skill thumbnail for the skill being hovered over
      *
      * @param skill skill being hovered over
      */
-    void DrawSkillHoverThumbnail(const Battle::Skill& skill);
+    void DrawSkillHoverThumbnailBase(const Battle::Skill& skill);
+
+    /**
+     * @brief Display additional thumbnail info for a given skill type
+     *
+     * @param attackSkill attack skill being hovered over
+     */
+    void PrintSkillHoverThumbnailInfo(const Battle::AttackSkill& attackSkill);
 
     /**
      * @brief Add a message to the battle log
@@ -144,6 +152,11 @@ public:
     void AppendToLog(const std::string& message);
 
 private:
+    /**
+     * @brief X position of the skill hover thumbnail
+     */
+    constexpr static const int SkillHoverThumbnailXPos = 23;
+
     Battle::Battle& m_Battle;
     WINDOW* m_ArenaPanelWindow;
     WINDOW* m_BottomPanelWindow;

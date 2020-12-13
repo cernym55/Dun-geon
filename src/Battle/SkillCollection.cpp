@@ -7,7 +7,7 @@ namespace Battle::SkillCollection
 /**
  * @brief Swing
  */
-Skill Swing(Battle::Skill::Category::Melee,
+AttackSkill Swing(Battle::Skill::Category::Melee,
             "Swing",
             "Take a swing at your foe",
             "Reliable basic melee attack.",
@@ -22,7 +22,7 @@ Skill Swing(Battle::Skill::Category::Melee,
 /**
  * @brief Punch
  */
-Skill Punch(Battle::Skill::Category::Melee,
+AttackSkill Punch(Battle::Skill::Category::Melee,
             "Punch",
             "",
             "",

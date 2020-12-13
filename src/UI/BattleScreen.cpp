@@ -93,9 +93,10 @@ void BattleScreen::PostMessage(const std::string& message)
     wrefresh(m_BottomPanelWindow);
 }
 
-void BattleScreen::ProjectAttack(int hitChancePercent)
+void BattleScreen::ProjectSkillUse(const Battle::AttackSkill& attackSkill)
 {
     constexpr size_t arrowXPos = ArenaNameplateWidth / 2 + 6;
+    int hitChancePercent = attackSkill.CalculateHitChance(m_Battle.GetPlayerProfile(), m_Battle.GetEnemyProfile());
     wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::BlackOnDefault) | A_BOLD);
     mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height, arrowXPos, ACS_UARROW);
     mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos, '|');
@@ -353,67 +354,78 @@ void BattleScreen::DisplayPlayerStats()
     wrefresh(m_StatPanelWindow);
 }
 
-void BattleScreen::DrawSkillHoverThumbnail(const Battle::Skill& skill)
+void BattleScreen::DrawSkillHoverThumbnailBase(const Battle::Skill& skill)
 {
-    // TODO: rework when skills are formally implemented, this is a mockup
-    constexpr int xPos = 23;
-
     // Borders
-    mvwvline(m_BottomPanelWindow, 1, xPos, ACS_VLINE, BottomPanelHeight - 1);
-    mvwaddch(m_BottomPanelWindow, 0, xPos, ACS_TTEE);
-    mvwaddch(m_BottomPanelWindow, BottomPanelHeight - 1, xPos, ACS_BTEE);
+    mvwvline(m_BottomPanelWindow, 1, SkillHoverThumbnailXPos, ACS_VLINE, BottomPanelHeight - 1);
+    mvwaddch(m_BottomPanelWindow, 0, SkillHoverThumbnailXPos, ACS_TTEE);
+    mvwaddch(m_BottomPanelWindow, BottomPanelHeight - 1, SkillHoverThumbnailXPos, ACS_BTEE);
 
     // Thumbnail title
     std::string title = " " + skill.GetName() + " ";
     wattron(m_BottomPanelWindow, A_REVERSE);
-    mvwaddstr(m_BottomPanelWindow, 0, (xPos + ArenaPanelWidth - title.size()) / 2, title.c_str());
+    mvwaddstr(m_BottomPanelWindow, 0, (SkillHoverThumbnailXPos + ArenaPanelWidth - title.size()) / 2, title.c_str());
     wattroff(m_BottomPanelWindow, A_REVERSE);
 
+    // Cost
+    int manaCost = 0;
+    if (manaCost > 0)
+    {
+        mvwaddstr(m_BottomPanelWindow, 5, SkillHoverThumbnailXPos + 2, "Cost: ");
+        wattron(m_BottomPanelWindow, COLOR_PAIR(ColorPairs::BlueOnDefault) | A_BOLD);
+        wprintw(m_BottomPanelWindow, "%d", manaCost);
+        wattroff(m_BottomPanelWindow, A_COLOR | A_BOLD);
+    }
+    // Flavor text
+    mvwaddstr(m_BottomPanelWindow, 6, SkillHoverThumbnailXPos + 2, skill.GetFlavorText().c_str());
+
+    wrefresh(m_BottomPanelWindow);
+}
+
+void BattleScreen::PrintSkillHoverThumbnailInfo(const Battle::AttackSkill& attackSkill)
+{
+    DrawSkillHoverThumbnailBase(attackSkill);
+
     // Contents
-    auto damageRange = skill.CalculateEffectiveDamageRange(m_Battle.GetPlayerProfile(), m_Battle.GetEnemyProfile());
+    auto damageRange
+        = attackSkill.CalculateEffectiveDamageRange(m_Battle.GetPlayerProfile(), m_Battle.GetEnemyProfile());
+
     // Weapon
     std::string weaponName = "Unarmed"; // TODO: add once items are added
-    mvwaddstr(m_BottomPanelWindow, 1, xPos + 2, weaponName.c_str());
+    mvwaddstr(m_BottomPanelWindow, 1, SkillHoverThumbnailXPos + 2, weaponName.c_str());
+
     // Attack damage
     wattron(m_BottomPanelWindow, A_BOLD);
-    mvwprintw(m_BottomPanelWindow, 2, xPos + 2, "%d", damageRange.first);
+    mvwprintw(m_BottomPanelWindow, 2, SkillHoverThumbnailXPos + 2, "%d", damageRange.first);
     wattroff(m_BottomPanelWindow, A_BOLD);
     waddstr(m_BottomPanelWindow, " - ");
     wattron(m_BottomPanelWindow, A_BOLD);
     wprintw(m_BottomPanelWindow, "%d ", damageRange.second);
     waddstr(m_BottomPanelWindow, "Physical"); // TODO: add after damage types are added
     wattroff(m_BottomPanelWindow, A_BOLD);
+
     // Hit & crit
-    int hitChance  = skill.CalculateHitChance(m_Battle.GetPlayerProfile(), m_Battle.GetEnemyProfile());
-    int critChance = skill.CalculateCritChance(m_Battle.GetPlayerProfile(), m_Battle.GetEnemyProfile());
-    mvwaddstr(m_BottomPanelWindow, 4, xPos + 2, "Hit:");
-    mvwaddstr(m_BottomPanelWindow, 4, xPos + 16, "Crit:");
+    int hitChance  = attackSkill.CalculateHitChance(m_Battle.GetPlayerProfile(), m_Battle.GetEnemyProfile());
+    int critChance = attackSkill.CalculateCritChance(m_Battle.GetPlayerProfile(), m_Battle.GetEnemyProfile());
+    mvwaddstr(m_BottomPanelWindow, 4, SkillHoverThumbnailXPos + 2, "Hit:");
+    mvwaddstr(m_BottomPanelWindow, 4, SkillHoverThumbnailXPos + 16, "Crit:");
     short hitColor  = ColorPairs::GreenOnDefault;
     short critColor = ColorPairs::GreenOnDefault;
+
     if (hitChance <= 80)
         hitColor = ColorPairs::YellowOnDefault;
     if (hitChance <= 40)
         hitColor = ColorPairs::RedOnDefault;
     wattron(m_BottomPanelWindow, COLOR_PAIR(hitColor) | A_BOLD);
-    mvwprintw(m_BottomPanelWindow, 4, xPos + 7, "%3d%%", hitChance);
+    mvwprintw(m_BottomPanelWindow, 4, SkillHoverThumbnailXPos + 7, "%3d%%", hitChance);
+
     if (critChance <= 25)
         critColor = ColorPairs::YellowOnDefault;
     if (critChance <= 10)
         critColor = ColorPairs::RedOnDefault;
     wattron(m_BottomPanelWindow, COLOR_PAIR(critColor));
-    mvwprintw(m_BottomPanelWindow, 4, xPos + 22, "%3d%%", critChance);
+    mvwprintw(m_BottomPanelWindow, 4, SkillHoverThumbnailXPos + 22, "%3d%%", critChance);
     wattroff(m_BottomPanelWindow, A_COLOR | A_BOLD);
-    // Cost
-    int manaCost = 0;
-    if (manaCost > 0)
-    {
-        mvwaddstr(m_BottomPanelWindow, 5, xPos + 2, "Cost: ");
-        wattron(m_BottomPanelWindow, COLOR_PAIR(ColorPairs::BlueOnDefault) | A_BOLD);
-        wprintw(m_BottomPanelWindow, "%d", manaCost);
-        wattroff(m_BottomPanelWindow, A_COLOR | A_BOLD);
-    }
-    // Flavor text
-    mvwaddstr(m_BottomPanelWindow, 6, xPos + 2, skill.GetFlavorText().c_str());
 
     wrefresh(m_BottomPanelWindow);
 }

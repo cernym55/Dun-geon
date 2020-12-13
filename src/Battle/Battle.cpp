@@ -96,15 +96,14 @@ ACTION_CHOICE:
             m_BattleScreen->ClearThumbnailArea();
             if (it->first == RethinkCode)
                 return;
-            int hitChancePercent = availableSkills.at(it->first).CalculateHitChance(m_PlayerProfile, m_EnemyProfile);
-            m_BattleScreen->ProjectAttack(hitChancePercent);
-            m_BattleScreen->DrawSkillHoverThumbnail(availableSkills.at(it->first));
+                
+            availableSkills.at(it->first).OnBattleMenuHover(*m_BattleScreen);
         });
 
         if (meleeChoice == RethinkCode)
             goto ACTION_CHOICE;
-        m_BattleScreen->PostMessage("");
 
+        m_BattleScreen->PostMessage("");
         m_BattleScreen->ClearProjectionArea();
         m_BattleScreen->ClearThumbnailArea();
         LaunchPlayerAttack(availableSkills.at(meleeChoice));
