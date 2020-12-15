@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Skill.h"
 #include "Entities/Character.h"
 #include "Entities/Player.h"
 
@@ -56,15 +57,27 @@ public:
      */
     Result DoBattle();
 
-    const Entities::Character::Stats& GetPlayerStats() const;
+    /**
+     * @brief Get the current state of the player profile
+     * 
+     * @return const BattleProfile& player profile
+     */
+    const BattleProfile& GetPlayerProfile() const;
+
+        /**
+     * @brief Get the current state of the enemy profile
+     * 
+     * @return const BattleProfile& enemy profile
+     */
+    const BattleProfile& GetEnemyProfile() const;
 
 private:
     Entities::Player& m_Player;
     Entities::Character& m_Enemy;
     UI::BattleScreen* m_BattleScreen;
     Result m_Result;
-    Entities::Character::Stats m_PlayerStats;
-    Entities::Character::Stats m_EnemyStats;
+    BattleProfile m_PlayerProfile;
+    BattleProfile m_EnemyProfile;
 
     /**
      * @brief Perform the player's turn
@@ -79,18 +92,16 @@ private:
     /**
      * @brief Launch a player attack against the enemy
      * 
-     * @param damage range of damage the attack can deal: [lower, upper)
-     * @param hitChancePercent hit chance in percent
+     * @param skill skill used
      */
-    void LaunchPlayerAttack(std::pair<int, int> damageRange, int hitChancePercent);
+    void LaunchPlayerAttack(Skill& skill);
 
     /**
      * @brief Launch an enemy attack against the player
      * 
-     * @param damageRange range of damage the attack can deal: [lower, upper)
-     * @param hitChancePercent hit chance in percent
+     * @param skill skill used
      */
-    void LaunchEnemyAttack(std::pair<int, int> damageRange, int hitChancePercent);
+    void LaunchEnemyAttack(Skill& skill);
 
     /**
      * @brief Wrap up

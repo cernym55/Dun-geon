@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Battle/AttackSkill.h"
 #include "Battle/Battle.h"
 #include "ColorPairs.h"
 #include "Components/LogWindow.h"
@@ -88,9 +89,9 @@ public:
     /**
      * @brief Project an attack against the enemy
      *
-     * @param hitChancePercent chance to hit in percent
+     * @param attackSkill attack skill to consider
      */
-    void ProjectAttack(int hitChancePercent);
+    void ProjectSkillUse(const Battle::AttackSkill& attackSkill);
 
     /**
      * @brief Clear the projection area
@@ -105,18 +106,17 @@ public:
     /**
      * @brief Animate a player attack
      *
-     * @param damage damage number
-     * @param hit whether the attack hit or missed
+     * @param displayData result data to display
      */
-    void AnimatePlayerAttack(int damage, bool hit);
+    void AnimatePlayerAttack(const Battle::Skill::ApplySkillResult& displayData);
 
     /**
      * @brief Animate an enemy attack
      *
-     * @param damage damage number
-     * @param hit whether the attack hit or missed
+     * @param displayData result data to display
+     * @param skillName name of skill used
      */
-    void AnimateEnemyAttack(int damage, bool hit);
+    void AnimateEnemyAttack(const Battle::Skill::ApplySkillResult& displayData, const std::string& skillName);
 
     /**
      * @brief Display the message after the battle
@@ -131,18 +131,32 @@ public:
     void DisplayPlayerStats();
 
     /**
-     * @brief Draw the skill thumbnail for the skill being hovered over
+     * @brief Draw the base of the skill thumbnail for the skill being hovered over
+     *
+     * @param skill skill being hovered over
      */
-    void DrawSkillHoverThumbnail();
+    void DrawSkillHoverThumbnailBase(const Battle::Skill& skill);
+
+    /**
+     * @brief Display additional thumbnail info for a given skill type
+     *
+     * @param attackSkill attack skill being hovered over
+     */
+    void PrintSkillHoverThumbnailInfo(const Battle::AttackSkill& attackSkill);
 
     /**
      * @brief Add a message to the battle log
-     * 
+     *
      * @param message message
      */
     void AppendToLog(const std::string& message);
 
 private:
+    /**
+     * @brief X position of the skill hover thumbnail
+     */
+    constexpr static const int SkillHoverThumbnailXPos = 23;
+
     Battle::Battle& m_Battle;
     WINDOW* m_ArenaPanelWindow;
     WINDOW* m_BottomPanelWindow;

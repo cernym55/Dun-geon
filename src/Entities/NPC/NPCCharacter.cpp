@@ -1,4 +1,5 @@
 #include "NPCCharacter.h"
+#include "Battle/SkillCollection.h"
 
 namespace Entities::NPC
 {
@@ -11,6 +12,7 @@ NPCCharacter::NPCCharacter(const CharacterGenerationParameters& parameters,
                            bool isBlocking)
     : Character(name, description, icon, initialStats, isBlocking)
 {
+    GrantSkill<Battle::SkillCollection::Punch>();
 }
 
 } /* namespace Entities::NPC */

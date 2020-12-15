@@ -30,7 +30,7 @@ bool Character::Fightable() const
     return true;
 }
 
-const Character::Stats& Character::GetStats() const
+const Stats& Character::GetStats() const
 {
     return m_Stats;
 }

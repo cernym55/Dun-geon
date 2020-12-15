@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "Battle/SkillCollection.h"
 #include "Misc/Direction.h"
 #include "Misc/Exceptions.h"
 #include <ncurses.h>
@@ -10,6 +11,7 @@ Player::Player(const std::string& name,
                chtype icon)
     : Character(name, "Dun-geoneer", icon), m_XP(0), m_XPToLevelUp(100), m_Dun(0)
 {
+    GrantSkill<Battle::SkillCollection::Swing>();
 }
 
 int Player::GetXP() const
