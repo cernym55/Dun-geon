@@ -3,7 +3,7 @@
 namespace Battle
 {
 
-BattleProfile::BattleProfile(const Entities::Character::Stats& stats) : Stats(stats)
+BattleProfile::BattleProfile(const Entities::Stats& stats) : Stats(stats)
 {
 }
 

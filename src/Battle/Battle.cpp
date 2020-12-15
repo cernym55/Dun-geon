@@ -1,5 +1,6 @@
 #include "Battle.h"
 #include "Misc/RNG.h"
+#include "Skill.h"
 #include "SkillCollection.h"
 #include "UI/BattleScreen.h"
 #include <sstream>
@@ -86,18 +87,26 @@ ACTION_CHOICE:
     case 0:
     {
         m_BattleScreen->PostMessage("Which attack?");
-        std::map<int, Skill&> availableSkills { { 0, SkillCollection::Swing } };
+        std::map<int, Skill*> availableSkills;
         std::map<int, std::string> options { { RethinkCode, "<rethink>" } };
-        for (auto& entry : availableSkills)
-            options[entry.first] = entry.second.GetName();
+        int counter = 0;
+        for (auto& skill : m_Player.GetSkills())
+        {
+            if (skill->GetCategory() == Skill::Category::Melee)
+            {
+                availableSkills[counter] = skill.get();
+                options[counter]         = skill->GetName();
+                counter++;
+            }
+        }
 
         int meleeChoice = m_BattleScreen->SelectWithHoverAction(options, [&](auto it) {
             m_BattleScreen->ClearProjectionArea();
             m_BattleScreen->ClearThumbnailArea();
             if (it->first == RethinkCode)
                 return;
-                
-            availableSkills.at(it->first).OnBattleMenuHover(*m_BattleScreen);
+
+            availableSkills.at(it->first)->OnBattleMenuHover(*m_BattleScreen);
         });
 
         if (meleeChoice == RethinkCode)
@@ -106,7 +115,7 @@ ACTION_CHOICE:
         m_BattleScreen->PostMessage("");
         m_BattleScreen->ClearProjectionArea();
         m_BattleScreen->ClearThumbnailArea();
-        LaunchPlayerAttack(availableSkills.at(meleeChoice));
+        LaunchPlayerAttack(*availableSkills.at(meleeChoice));
 
         break;
     }
@@ -127,8 +136,16 @@ void Battle::DoEnemyTurn()
     }
 
     m_BattleScreen->PostMessage(m_Enemy.GetName() + " attacks!");
+    std::map<int, Skill*> availableSkills;
+    int counter = 0;
+    for (auto& skill : m_Enemy.GetSkills())
+    {
+        availableSkills[counter] = skill.get();
+        counter++;
+    }
 
-    LaunchEnemyAttack(SkillCollection::Punch);
+    // Pick random skill
+    LaunchEnemyAttack(*availableSkills.at(RNG::RandomInt(availableSkills.size())));
 }
 
 void Battle::LaunchPlayerAttack(Skill& skill)

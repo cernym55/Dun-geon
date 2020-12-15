@@ -4,7 +4,7 @@
 namespace Battle
 {
 
-Skill::Skill(Skill::Category category,
+Skill::Skill(Category category,
              const std::string& name,
              const std::string& flavorText,
              const std::string& longDescription,

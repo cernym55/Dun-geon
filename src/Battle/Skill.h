@@ -1,7 +1,6 @@
 #pragma once
 
 #include "BattleProfile.h"
-#include <functional>
 #include <string>
 
 namespace UI
@@ -53,10 +52,10 @@ public:
     /**
      * @brief Constructor
      *
-     * @param category category
-     * @param name name
-     * @param flavorText flavor text (max 24 characters)
-     * @param longDescription longer description of what the skill does
+     * @param category skill category
+     * @param name skill name
+     * @param flavorText flavor text (up to 24 characters)
+     * @param longDescription longer description
      * @param baseManaCost base mana cost
      */
     Skill(Category category,
@@ -124,7 +123,7 @@ public:
 private:
     Category m_Category;
     std::string m_Name;
-    std::string m_FlavorText; // max 24 characters
+    std::string m_FlavorText;
     std::string m_LongDescription;
     int m_BaseManaCost;
 };

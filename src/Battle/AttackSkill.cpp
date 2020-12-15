@@ -1,6 +1,6 @@
 #include "AttackSkill.h"
-#include "UI/BattleScreen.h"
 #include "Misc/RNG.h"
+#include "UI/BattleScreen.h"
 
 namespace Battle
 {
@@ -12,13 +12,11 @@ AttackSkill::AttackSkill(Category category,
                          const std::pair<int, int>& baseDamageRange,
                          int baseHitChance,
                          int baseCritChance,
-                         int baseManaCost,
-                         std::function<int(int, const BattleProfile&, const BattleProfile&)> damageFormula)
+                         int baseManaCost)
     : Skill(category, name, flavorText, longDescription, baseManaCost),
       m_BaseDamageRange(baseDamageRange),
       m_BaseHitChance(baseHitChance),
-      m_BaseCritChance(baseCritChance),
-      m_DamageFormula(damageFormula)
+      m_BaseCritChance(baseCritChance)
 {
 }
 
@@ -62,13 +60,6 @@ int AttackSkill::CalculateHitChance(const BattleProfile& userProfile, const Batt
 int AttackSkill::CalculateCritChance(const BattleProfile& userProfile, const BattleProfile& targetProfile) const
 {
     return m_BaseCritChance;
-}
-
-int AttackSkill::CalculateEffectiveDamage(int baseDamage,
-                                          const BattleProfile& userProfile,
-                                          const BattleProfile& targetProfile) const
-{
-    return m_DamageFormula(baseDamage, userProfile, targetProfile);
 }
 
 } /* namespace Battle */

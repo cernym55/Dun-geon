@@ -11,15 +11,14 @@ public:
     /**
      * @brief Constructor
      *
-     * @param category category
-     * @param name name
-     * @param flavorText flavor text (max 24 characters)
-     * @param longDescription longer description of what the skill does
+     * @param category skill category
+     * @param name skill name
+     * @param flavorText flavor text (up to 24 characters)
+     * @param longDescription longer description
      * @param baseDamageRange base damage range
      * @param baseHitChance base hit chance
      * @param baseCritChance base crit chance
      * @param baseManaCost base mana cost
-     * @param damageFormula function to calculate damage dealt by attacker to target
      */
     AttackSkill(Category category,
                 const std::string& name,
@@ -28,8 +27,7 @@ public:
                 const std::pair<int, int>& baseDamageRange,
                 int baseHitChance,
                 int baseCritChance,
-                int baseManaCost,
-                std::function<int(int, const BattleProfile&, const BattleProfile&)> damageFormula);
+                int baseManaCost);
 
     /**
      * @brief Destructor
@@ -51,6 +49,18 @@ public:
      * @param battleScreen battle screen
      */
     virtual void OnBattleMenuHover(UI::BattleScreen& battleScreen) override;
+
+    /**
+     * @brief Calculate the effective damage dealt for a particular instance
+     *
+     * @param baseDamage base damage figure
+     * @param userProfile attack user profile
+     * @param targetProfile attack target profile
+     * @return int effective damage
+     */
+    virtual int CalculateEffectiveDamage(int baseDamage,
+                                         const BattleProfile& userProfile,
+                                         const BattleProfile& targetProfile) const = 0;
 
     /**
      * @brief Get the effective damage range
@@ -80,23 +90,10 @@ public:
      */
     int CalculateCritChance(const BattleProfile& userProfile, const BattleProfile& targetProfile) const;
 
-    /**
-     * @brief Calculate the effective damage dealt for a particular instance
-     *
-     * @param baseDamage base damage figure
-     * @param userProfile attack user profile
-     * @param targetProfile attack target profile
-     * @return int effective damage
-     */
-    int CalculateEffectiveDamage(int baseDamage,
-                                 const BattleProfile& userProfile,
-                                 const BattleProfile& targetProfile) const;
-
 private:
     std::pair<int, int> m_BaseDamageRange;
     int m_BaseHitChance;
     int m_BaseCritChance;
-    std::function<int(int, const BattleProfile&, const BattleProfile&)> m_DamageFormula;
 };
 
 } /* namespace Battle */

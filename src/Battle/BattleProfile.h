@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Entities/Character.h"
+#include "Entities/Stats.h"
 
 namespace Battle
 {
@@ -11,14 +11,14 @@ namespace Battle
 class BattleProfile
 {
 public:
-    Entities::Character::Stats Stats;
+    Entities::Stats Stats;
 
     /**
      * @brief Constructor
      * 
      * @param stats character stats
      */
-    BattleProfile(const Entities::Character::Stats& stats);
+    BattleProfile(const Entities::Stats& stats);
 
 private:
 };
