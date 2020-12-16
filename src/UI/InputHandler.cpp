@@ -46,6 +46,9 @@ InputHandler::InputHandler(Screen& screen, Player::Controller& playerController)
     m_CmdDict["trade"]        = CommandType::Trade;
     m_CmdDict["buy"]          = CommandType::Trade;
     m_CmdDict["sell"]         = CommandType::Trade;
+    m_CmdDict["turn"]         = CommandType::Turn;
+    m_CmdDict["t"]            = CommandType::Turn;
+    m_CmdDict["face"]         = CommandType::Turn;
     m_UICmdDict["i"]          = UICommandType::Inventory;
     m_UICmdDict["inv"]        = UICommandType::Inventory;
     m_UICmdDict["inventory"]  = UICommandType::Inventory;
@@ -172,6 +175,8 @@ void InputHandler::makeKeyConf() const
              << "TALK speak talk hail\n"
              << "# Trade with a merchant character next to the player. Requires a direction argument.\n"
              << "TRADE trade buy sell\n"
+             << "# Turn your character around in place. Requires a direction argument.\n"
+             << "TURN turn t face"
              << "# Open the player's inventory.\n"
              << "OPEN_INV i inv inventory items bag backpack\n"
              << "# Open the player's skill menu.\n"
@@ -293,6 +298,13 @@ void InputHandler::loadKeyConf()
                     for (size_t i = 1; i < wordVec.size(); i++)
                     {
                         m_CmdDict[wordVec[i]] = CommandType::Trade;
+                    }
+                }
+                else if (wordVec[0] == "TURN")
+                {
+                    for (size_t i = 1; i < wordVec.size(); i++)
+                    {
+                        m_CmdDict[wordVec[i]] = CommandType::Turn;
                     }
                 }
                 else if (wordVec[0] == "OPEN_INV")
@@ -529,6 +541,9 @@ bool InputHandler::ExecCommand(Command& command)
         break;
     case CommandType::Trade:
         // TODO: add
+        break;
+    case CommandType::Turn:
+        m_PlayerController.TurnPlayer(command.Dir);
         break;
     default:
         break;
