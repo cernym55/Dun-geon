@@ -51,9 +51,22 @@ bool Controller::TryMovePlayerDiagonally(Direction first, Direction second)
 
 bool Controller::TryFight(Direction dir)
 {
+    // If no direction specified, use the player facing direction and ask for confirmation after
+    bool deduced = false;
+    if (dir == Direction::None)
+    {
+        deduced = true;
+        dir     = m_PlayerEntity.FacingDirection;
+    }
+
     auto approaching = m_EntityManager.Approaching(m_PlayerEntity, dir);
     if (approaching == nullptr || !approaching->Fightable())
         return false;
+
+    if (deduced && !m_Screen.YesNoMessageBox("Are you sure you want to pick a fight with " + approaching->GetName() + "?"))
+    {
+        return true;
+    }
 
     // TODO: try to remove the cast
     Entities::Character& targetedCharacter = dynamic_cast<Entities::Character&>(*approaching);
