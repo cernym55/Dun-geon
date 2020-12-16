@@ -194,6 +194,16 @@ private:
      * @brief Clear the bottom panel contents
      */
     void ClearBottomPanel();
+
+    /**
+     * @brief Battle start animation
+     */
+    void AnimateBattleStart();
+
+    /**
+     * @brief Battle end animation
+     */
+    void AnimateBattleEnd();
 };
 
 } /* namespace UI */

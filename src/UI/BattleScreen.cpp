@@ -35,8 +35,6 @@ BattleScreen::~BattleScreen()
 
 void BattleScreen::Init()
 {
-    m_Screen.Clear();
-
     if (m_ArenaPanelWindow == nullptr)
         m_ArenaPanelWindow = newwin(
             Components::Nameplate::Height * 2 + 3, ArenaNameplateWidth, 2, (ArenaPanelWidth - ArenaNameplateWidth) / 2);
@@ -61,6 +59,8 @@ void BattleScreen::Terminate()
     werase(m_StatPanelWindow);
     wrefresh(m_StatPanelWindow);
     delwin(m_StatPanelWindow);
+
+    AnimateBattleEnd();
 }
 
 int BattleScreen::SelectPlayerAction(const std::map<int, std::string>& actions)
@@ -438,6 +438,10 @@ void BattleScreen::AppendToLog(const std::string& message)
 
 void BattleScreen::DrawScreenLayout()
 {
+    m_Screen.Clear();
+
+    AnimateBattleStart();
+
     DrawArenaPanel();
     DrawLogPanel();
     DrawBottomPanel();
@@ -487,6 +491,69 @@ void BattleScreen::ClearBottomPanel()
         mvwhline(m_BottomPanelWindow, i, 1, ' ', ArenaPanelWidth - 2);
     }
     wrefresh(m_BottomPanelWindow);
+}
+
+void BattleScreen::AnimateBattleStart()
+{
+    constexpr int animationPeriodMs = 150;
+
+    WINDOW* tempSideWindow = newwin(Screen::ScreenHeight, LogPanelWidth, 0, ArenaPanelWidth);
+    box(tempSideWindow, 0, 0);
+    wrefresh(tempSideWindow);
+    delwin(tempSideWindow);
+
+    WINDOW* tempBottomWindow = newwin(BottomPanelHeight - 3, Screen::ScreenWidth, TopPanelHeight + 3, 0);
+
+    for (int i = 3; i >= 0; i--)
+    {
+        werase(tempBottomWindow);
+        mvwin(tempBottomWindow, TopPanelHeight + i, 0);
+        wresize(tempBottomWindow, BottomPanelHeight - i, Screen::ScreenWidth);
+        box(tempBottomWindow, 0, 0);
+        mvwaddch(tempBottomWindow, 0, ArenaPanelWidth, ACS_PLUS);
+        mvwaddch(tempBottomWindow, 0, Screen::ScreenWidth - 1, ACS_RTEE);
+        mvwvline(tempBottomWindow, 1, ArenaPanelWidth, ACS_VLINE, BottomPanelHeight - i - 2);
+        mvwaddch(tempBottomWindow, BottomPanelHeight - i - 1, ArenaPanelWidth, ACS_BTEE);
+
+        wrefresh(tempBottomWindow);
+        if (i > 0)
+            std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
+    }
+    delwin(tempBottomWindow);
+}
+
+void BattleScreen::AnimateBattleEnd()
+{
+    constexpr int animationPeriodMs = 150;
+
+    WINDOW* tempSideWindow = newwin(Screen::ScreenHeight, LogPanelWidth, 0, ArenaPanelWidth);
+    box(tempSideWindow, 0, 0);
+    wrefresh(tempSideWindow);
+
+    WINDOW* tempBottomWindow = newwin(BottomPanelHeight - 3, Screen::ScreenWidth, TopPanelHeight + 3, 0);
+
+    for (int i = 0; i < 4; i++)
+    {
+        werase(tempBottomWindow);
+        wrefresh(tempBottomWindow);
+        wresize(tempBottomWindow, BottomPanelHeight - i, Screen::ScreenWidth);
+        mvwin(tempBottomWindow, TopPanelHeight + i, 0);
+        box(tempSideWindow, 0, 0);
+        wrefresh(tempSideWindow);
+        box(tempBottomWindow, 0, 0);
+        mvwaddch(tempBottomWindow, 0, ArenaPanelWidth, ACS_PLUS);
+        mvwaddch(tempBottomWindow, 0, Screen::ScreenWidth - 1, ACS_RTEE);
+        mvwvline(tempBottomWindow, 1, ArenaPanelWidth, ACS_VLINE, BottomPanelHeight - i - 2);
+        mvwaddch(tempBottomWindow, BottomPanelHeight - i - 1, ArenaPanelWidth, ACS_BTEE);
+
+        wrefresh(tempBottomWindow);
+        if (i < 3)
+            std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
+    }
+    werase(tempBottomWindow);
+    wrefresh(tempBottomWindow);
+    delwin(tempSideWindow);
+    delwin(tempBottomWindow);
 }
 
 } /* namespace UI */
