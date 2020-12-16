@@ -43,6 +43,9 @@ void BattleScreen::Init()
     if (m_StatPanelWindow == nullptr)
         m_StatPanelWindow = newwin(BottomPanelHeight, LogPanelWidth, TopPanelHeight, ArenaPanelWidth);
 
+    m_Screen.Clear();
+
+    AnimateBattleStart();
     DrawScreenLayout();
 }
 
@@ -438,10 +441,6 @@ void BattleScreen::AppendToLog(const std::string& message)
 
 void BattleScreen::DrawScreenLayout()
 {
-    m_Screen.Clear();
-
-    AnimateBattleStart();
-
     DrawArenaPanel();
     DrawLogPanel();
     DrawBottomPanel();
@@ -495,7 +494,7 @@ void BattleScreen::ClearBottomPanel()
 
 void BattleScreen::AnimateBattleStart()
 {
-    constexpr int animationPeriodMs = 150;
+    constexpr int animationPeriodMs = 120;
 
     WINDOW* tempSideWindow = newwin(Screen::ScreenHeight, LogPanelWidth, 0, ArenaPanelWidth);
     box(tempSideWindow, 0, 0);
@@ -524,7 +523,7 @@ void BattleScreen::AnimateBattleStart()
 
 void BattleScreen::AnimateBattleEnd()
 {
-    constexpr int animationPeriodMs = 150;
+    constexpr int animationPeriodMs = 120;
 
     WINDOW* tempSideWindow = newwin(Screen::ScreenHeight, LogPanelWidth, 0, ArenaPanelWidth);
     box(tempSideWindow, 0, 0);
