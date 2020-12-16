@@ -87,4 +87,12 @@ bool Controller::TryFight(Direction dir)
     return true;
 }
 
+void Controller::TurnPlayer(Direction dir)
+{
+    if (m_PlayerEntity.FacingDirection != dir)
+    {
+        m_PlayerEntity.FacingDirection = dir;
+    }
+}
+
 } /* namespace Player */

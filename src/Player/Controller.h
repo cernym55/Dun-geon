@@ -54,6 +54,13 @@ public:
      */
     bool TryFight(Direction dir);
 
+    /**
+     * @brief Turn the player in the given direction
+     * 
+     * @param dir direction
+     */
+    void TurnPlayer(Direction dir);
+
 private:
     Entities::EntityManager& m_EntityManager;
     Worlds::WorldManager& m_WorldManager;

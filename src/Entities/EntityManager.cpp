@@ -64,7 +64,7 @@ bool EntityManager::TryMovePlayer(Direction dir)
     {
         Pluck(m_Player, m_WorldManager.CurrentRoom());
         m_EntityCoords[&m_Player].Move(dir);
-        m_Player.LastMoveDirection = dir;
+        m_Player.FacingDirection = dir;
         Place(m_Player, m_WorldManager.CurrentRoom());
         CycleCurrentRoom();
         return true;
@@ -80,7 +80,7 @@ bool EntityManager::TryMovePlayer(Direction dir)
                                ->GetCoords() +
                            offset;
         m_EntityCoords[&m_Player] = newCoords;
-        m_Player.LastMoveDirection = dir;
+        m_Player.FacingDirection = dir;
         Place(m_Player, nextRoom);
 
         // Randomly spawn NPCs in an accessible location just for fun
@@ -99,7 +99,7 @@ bool EntityManager::TryMovePlayer(Direction dir)
         return true;
     }
 
-    m_Player.LastMoveDirection = dir;
+    m_Player.FacingDirection = dir;
     return false;
 }
 
