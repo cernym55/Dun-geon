@@ -29,7 +29,8 @@ public:
         Break,
         Battle,
         Talk,
-        Trade
+        Trade,
+        Turn
     };
 
     /**

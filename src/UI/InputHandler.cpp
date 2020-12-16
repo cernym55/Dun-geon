@@ -17,61 +17,66 @@ namespace UI
 {
 
 InputHandler::InputHandler(Screen& screen, Player::Controller& playerController)
-    : m_Screen(screen), m_PlayerController(playerController), m_ShouldQuit(false)
+    : m_Screen(screen),
+      m_PlayerController(playerController),
+      m_ShouldQuit(false)
 {
-    m_ShouldQuit = false;
-    m_CmdDict["wait"] = CommandType::None;
-    m_CmdDict["nil"] = CommandType::None;
-    m_CmdDict["go"] = CommandType::Move;
-    m_CmdDict["move"] = CommandType::Move;
-    m_CmdDict["walk"] = CommandType::Move;
-    m_CmdDict["g"] = CommandType::Move;
-    m_CmdDict["get"] = CommandType::Get;
-    m_CmdDict["grab"] = CommandType::Get;
-    m_CmdDict["take"] = CommandType::Get;
-    m_CmdDict["loot"] = CommandType::Get;
-    m_CmdDict["acquire"] = CommandType::Get;
-    m_CmdDict["break"] = CommandType::Break;
-    m_CmdDict["smash"] = CommandType::Break;
-    m_CmdDict["destroy"] = CommandType::Break;
-    m_CmdDict["battle"] = CommandType::Battle;
-    m_CmdDict["fight"] = CommandType::Battle;
-    m_CmdDict["duel"] = CommandType::Battle;
-    m_CmdDict["challenge"] = CommandType::Battle;
-    m_CmdDict["speak"] = CommandType::Talk;
-    m_CmdDict["talk"] = CommandType::Talk;
-    m_CmdDict["hail"] = CommandType::Talk;
-    m_CmdDict["trade"] = CommandType::Trade;
-    m_CmdDict["buy"] = CommandType::Trade;
-    m_CmdDict["sell"] = CommandType::Trade;
-    m_UICmdDict["i"] = UICommandType::Inventory;
-    m_UICmdDict["inv"] = UICommandType::Inventory;
-    m_UICmdDict["inventory"] = UICommandType::Inventory;
-    m_UICmdDict["items"] = UICommandType::Inventory;
-    m_UICmdDict["bag"] = UICommandType::Inventory;
-    m_UICmdDict["backpack"] = UICommandType::Inventory;
-    m_UICmdDict["s"] = UICommandType::Skills;
-    m_UICmdDict["skills"] = UICommandType::Skills;
-    m_UICmdDict["abilities"] = UICommandType::Skills;
-    m_UICmdDict["m"] = UICommandType::Map;
-    m_UICmdDict["map"] = UICommandType::Map;
-    m_UICmdDict["h"] = UICommandType::Help;
-    m_UICmdDict["help"] = UICommandType::Help;
+    m_ShouldQuit              = false;
+    m_CmdDict["wait"]         = CommandType::None;
+    m_CmdDict["nil"]          = CommandType::None;
+    m_CmdDict["go"]           = CommandType::Move;
+    m_CmdDict["move"]         = CommandType::Move;
+    m_CmdDict["walk"]         = CommandType::Move;
+    m_CmdDict["g"]            = CommandType::Move;
+    m_CmdDict["get"]          = CommandType::Get;
+    m_CmdDict["grab"]         = CommandType::Get;
+    m_CmdDict["take"]         = CommandType::Get;
+    m_CmdDict["loot"]         = CommandType::Get;
+    m_CmdDict["acquire"]      = CommandType::Get;
+    m_CmdDict["break"]        = CommandType::Break;
+    m_CmdDict["smash"]        = CommandType::Break;
+    m_CmdDict["destroy"]      = CommandType::Break;
+    m_CmdDict["battle"]       = CommandType::Battle;
+    m_CmdDict["fight"]        = CommandType::Battle;
+    m_CmdDict["duel"]         = CommandType::Battle;
+    m_CmdDict["challenge"]    = CommandType::Battle;
+    m_CmdDict["speak"]        = CommandType::Talk;
+    m_CmdDict["talk"]         = CommandType::Talk;
+    m_CmdDict["hail"]         = CommandType::Talk;
+    m_CmdDict["trade"]        = CommandType::Trade;
+    m_CmdDict["buy"]          = CommandType::Trade;
+    m_CmdDict["sell"]         = CommandType::Trade;
+    m_CmdDict["turn"]         = CommandType::Turn;
+    m_CmdDict["t"]            = CommandType::Turn;
+    m_CmdDict["face"]         = CommandType::Turn;
+    m_UICmdDict["i"]          = UICommandType::Inventory;
+    m_UICmdDict["inv"]        = UICommandType::Inventory;
+    m_UICmdDict["inventory"]  = UICommandType::Inventory;
+    m_UICmdDict["items"]      = UICommandType::Inventory;
+    m_UICmdDict["bag"]        = UICommandType::Inventory;
+    m_UICmdDict["backpack"]   = UICommandType::Inventory;
+    m_UICmdDict["s"]          = UICommandType::Skills;
+    m_UICmdDict["skills"]     = UICommandType::Skills;
+    m_UICmdDict["abilities"]  = UICommandType::Skills;
+    m_UICmdDict["m"]          = UICommandType::Map;
+    m_UICmdDict["map"]        = UICommandType::Map;
+    m_UICmdDict["h"]          = UICommandType::Help;
+    m_UICmdDict["help"]       = UICommandType::Help;
     m_UICmdDict["helpscreen"] = UICommandType::Help;
-    m_UICmdDict["f1"] = UICommandType::Help;
-    m_UICmdDict["q"] = UICommandType::Quit;
-    m_UICmdDict["quit"] = UICommandType::Quit;
-    m_UICmdDict["exit"] = UICommandType::Quit;
-    m_DirDict["u"] = Direction::Up;
-    m_DirDict["up"] = Direction::Up;
-    m_DirDict["r"] = Direction::Right;
-    m_DirDict["right"] = Direction::Right;
-    m_DirDict["d"] = Direction::Down;
-    m_DirDict["down"] = Direction::Down;
-    m_DirDict["l"] = Direction::Left;
-    m_DirDict["left"] = Direction::Left;
-    m_AndKeywords = {"and", "&", "then"};
-    m_LastKeywords = {"a", "last", "repeat", "again"};
+    m_UICmdDict["f1"]         = UICommandType::Help;
+    m_UICmdDict["q"]          = UICommandType::Quit;
+    m_UICmdDict["quit"]       = UICommandType::Quit;
+    m_UICmdDict["exit"]       = UICommandType::Quit;
+    m_DirDict["u"]            = Direction::Up;
+    m_DirDict["up"]           = Direction::Up;
+    m_DirDict["r"]            = Direction::Right;
+    m_DirDict["right"]        = Direction::Right;
+    m_DirDict["d"]            = Direction::Down;
+    m_DirDict["down"]         = Direction::Down;
+    m_DirDict["l"]            = Direction::Left;
+    m_DirDict["left"]         = Direction::Left;
+    m_AndKeywords             = { "and", "&", "then" };
+    m_LastKeywords            = { "a", "last", "repeat", "again" };
     makeKeyConf();
     loadKeyConf();
 }
@@ -151,7 +156,8 @@ void InputHandler::makeKeyConf() const
         file.open("data/controls.conf");
         file << "# Dun-geon command keyword configuration file\n\n"
              << "# This file is auto-generated if missing. To reset your controls to default, simply delete it.\n"
-             << "# A line consists of a \"KEYWORD_CODE\" followed by space-separated keywords (aliases) for that command.\n"
+             << "# A line consists of a \"KEYWORD_CODE\" followed by space-separated keywords (aliases) for that "
+                "command.\n"
              << "# Numbers, uppercase letters and special characters other than '&' are not allowed.\n"
              << "# Lines starting with '#' are ignored.\n\n"
              << "# --- WORLD MOVEMENT AND ACTIONS ---\n"
@@ -169,6 +175,8 @@ void InputHandler::makeKeyConf() const
              << "TALK speak talk hail\n"
              << "# Trade with a merchant character next to the player. Requires a direction argument.\n"
              << "TRADE trade buy sell\n"
+             << "# Turn your character around in place. Requires a direction argument.\n"
+             << "TURN turn t face"
              << "# Open the player's inventory.\n"
              << "OPEN_INV i inv inventory items bag backpack\n"
              << "# Open the player's skill menu.\n"
@@ -292,6 +300,13 @@ void InputHandler::loadKeyConf()
                         m_CmdDict[wordVec[i]] = CommandType::Trade;
                     }
                 }
+                else if (wordVec[0] == "TURN")
+                {
+                    for (size_t i = 1; i < wordVec.size(); i++)
+                    {
+                        m_CmdDict[wordVec[i]] = CommandType::Turn;
+                    }
+                }
                 else if (wordVec[0] == "OPEN_INV")
                 {
                     for (size_t i = 1; i < wordVec.size(); i++)
@@ -380,7 +395,25 @@ void InputHandler::ProcessKeypress()
     std::optional<chtype> key;
     while (!key)
     {
-        key = ReadKeypress({'w', 'd', 's', 'a', KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT, 'q', 'e', 'c', 'z', ' ', 'm', 27});
+        key = ReadKeypress({ 'w',
+                             'd',
+                             's',
+                             'a',
+                             'W',
+                             'D',
+                             'S',
+                             'A',
+                             KEY_UP,
+                             KEY_RIGHT,
+                             KEY_DOWN,
+                             KEY_LEFT,
+                             'q',
+                             'e',
+                             'c',
+                             'z',
+                             ' ',
+                             'm',
+                             27 });
     }
 
     switch (key.value())
@@ -400,6 +433,18 @@ void InputHandler::ProcessKeypress()
     case 'a':
     case KEY_LEFT:
         m_CommandQueue.emplace(CommandType::Move, Direction::Left, 1);
+        break;
+    case 'W':
+        m_CommandQueue.emplace(CommandType::Turn, Direction::Up, 1);
+        break;
+    case 'D':
+        m_CommandQueue.emplace(CommandType::Turn, Direction::Right, 1);
+        break;
+    case 'S':
+        m_CommandQueue.emplace(CommandType::Turn, Direction::Down, 1);
+        break;
+    case 'A':
+        m_CommandQueue.emplace(CommandType::Turn, Direction::Left, 1);
         break;
     case 'q':
         if (!m_PlayerController.TryMovePlayerDiagonally(Direction::Up, Direction::Left))
@@ -443,23 +488,25 @@ void InputHandler::ProcessKeypress()
         break;
     }
 
-    if (!m_ShouldQuit) ExecCommandQueue();
+    if (!m_ShouldQuit)
+        ExecCommandQueue();
 }
 
 std::optional<chtype> InputHandler::ReadKeypress(const std::vector<chtype>& validInput, WINDOW* window)
 {
     chtype ch = wgetch(window);
-    auto it = std::find(validInput.begin(), validInput.end(), ch);
+    auto it   = std::find(validInput.begin(), validInput.end(), ch);
     return it != validInput.end() ? *it : std::optional<chtype>();
 }
 
-InputHandler::Command::Command()
-    : Type(CommandType::None), Dir(Direction::None), Repeats(1)
+InputHandler::Command::Command() : Type(CommandType::None), Dir(Direction::None), Repeats(1)
 {
 }
 
 InputHandler::Command::Command(InputHandler::CommandType type, Direction dir, int repeats)
-    : Type(type), Dir(dir), Repeats(repeats)
+    : Type(type),
+      Dir(dir),
+      Repeats(repeats)
 {
 }
 
@@ -506,6 +553,9 @@ bool InputHandler::ExecCommand(Command& command)
         break;
     case CommandType::Trade:
         // TODO: add
+        break;
+    case CommandType::Turn:
+        m_PlayerController.TurnPlayer(command.Dir);
         break;
     default:
         break;
@@ -554,25 +604,23 @@ void InputHandler::EvalWorld(std::vector<std::string>& words)
     {
         Command cmd;
         bool lastCalled = false;
-        nextAndKeyword = std::find_if(words.begin(),
-                                      words.end(),
-                                      [&, words, this](const std::string& candidate) {
-                                          return std::find(m_AndKeywords.begin(), m_AndKeywords.end(), candidate) != m_AndKeywords.end();
-                                      });
+        nextAndKeyword  = std::find_if(words.begin(), words.end(), [&, words, this](const std::string& candidate) {
+            return std::find(m_AndKeywords.begin(), m_AndKeywords.end(), candidate) != m_AndKeywords.end();
+        });
         bool understood = false;
         // Look for command keywords
         for (auto it = words.begin(); it != nextAndKeyword; it++)
         {
             if (m_CmdDict.count(*it) > 0)
             {
-                cmd.Type = m_CmdDict[*it];
+                cmd.Type   = m_CmdDict[*it];
                 understood = true;
                 break;
             }
             else if (std::find(m_LastKeywords.begin(), m_LastKeywords.end(), *it) != m_LastKeywords.end())
             {
                 // look for LAST
-                cmd = m_LastCommand;
+                cmd        = m_LastCommand;
                 lastCalled = true;
                 understood = true;
                 break;
@@ -594,7 +642,8 @@ void InputHandler::EvalWorld(std::vector<std::string>& words)
                 {
                     cmd.Repeats *= m_LastCommand.Repeats;
                 }
-                if (cmd.Repeats > 500) cmd.Repeats = 500;
+                if (cmd.Repeats > 500)
+                    cmd.Repeats = 500;
             }
 
             // look for direction keywords
@@ -618,10 +667,7 @@ void InputHandler::EvalWorld(std::vector<std::string>& words)
 
 std::string InputHandler::CommandInput()
 {
-    WINDOW* inputWindow = newwin(3,
-                                 Screen::ScreenWidth - 20,
-                                 Screen::ScreenHeight - 3,
-                                 10);
+    WINDOW* inputWindow = newwin(3, Screen::ScreenWidth - 20, Screen::ScreenHeight - 3, 10);
     // Draw borders and prompt
     wborder(inputWindow, 0, 0, 0, 0, 0, 0, ACS_BTEE, ACS_BTEE);
     mvwaddch(inputWindow, 0, Screen::WorldPanelWidth - 10, ACS_BTEE);

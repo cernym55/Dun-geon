@@ -738,7 +738,7 @@ void Screen::DrawHUD()
 
     PrintCenter(m_GameHUDWindow, "[q]uit", 18);
 
-    auto approachedEntity = m_EntityManager.Approaching(m_Player, m_Player.LastMoveDirection);
+    auto approachedEntity = m_EntityManager.Approaching(m_Player, m_Player.FacingDirection);
 
     if (approachedEntity != nullptr)
     {
@@ -921,7 +921,7 @@ chtype Screen::FieldIcon(const Worlds::Field& field) const
     }
 
     // Apply highlight if the player is touching this field
-    auto lmd          = m_Player.LastMoveDirection;
+    auto lmd          = m_Player.FacingDirection;
     auto playerCoords = m_EntityManager.CoordsOf(m_Player);
     if (canHaveHighlight && lmd != Direction::None && !m_CurrentRoom->IsAtRoomEdge(playerCoords, lmd)
         && field.GetCoords() == playerCoords.Adjacent(lmd))

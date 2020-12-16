@@ -14,7 +14,7 @@ namespace Entities
 class Player : public Character
 {
 public:
-    Direction LastMoveDirection;
+    Direction FacingDirection;
 
     /**
      * @brief Constructor
