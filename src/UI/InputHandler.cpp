@@ -395,25 +395,8 @@ void InputHandler::ProcessKeypress()
     std::optional<chtype> key;
     while (!key)
     {
-        key = ReadKeypress({ 'w',
-                             'd',
-                             's',
-                             'a',
-                             'W',
-                             'D',
-                             'S',
-                             'A',
-                             KEY_UP,
-                             KEY_RIGHT,
-                             KEY_DOWN,
-                             KEY_LEFT,
-                             'q',
-                             'e',
-                             'c',
-                             'z',
-                             ' ',
-                             'm',
-                             27 });
+        key = ReadKeypress({ 'w',      'd',      's', 'a', 'W', 'D', 'S', 'A', KEY_UP, KEY_RIGHT,
+                             KEY_DOWN, KEY_LEFT, 'q', 'e', 'c', 'z', 'f', ' ', 'm',    27 });
     }
 
     switch (key.value())
@@ -469,6 +452,9 @@ void InputHandler::ProcessKeypress()
         {
             m_Screen.PostMessage(CannotMoveMessage);
         }
+        break;
+    case 'f':
+        m_CommandQueue.emplace(CommandType::Battle, Direction::None, 1);
         break;
     case ' ':
     {
@@ -537,17 +523,14 @@ bool InputHandler::ExecCommand(Command& command)
         // TODO: add
         break;
     case CommandType::Battle:
-        if (command.Dir == Direction::None)
-        {
-            messageStream << "No direction given.";
-            result = false;
-        }
-        else if (!m_PlayerController.TryFight(command.Dir))
+    {
+        if (!m_PlayerController.TryFight(command.Dir))
         {
             messageStream << "Nothing to fight there.";
             result = false;
         }
         break;
+    }
     case CommandType::Talk:
         // TODO: add
         break;
