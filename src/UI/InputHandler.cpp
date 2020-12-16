@@ -395,9 +395,25 @@ void InputHandler::ProcessKeypress()
     std::optional<chtype> key;
     while (!key)
     {
-        key = ReadKeypress({ 'w',    'd',       's',      'a',      'W',           'D',        'S',       'A',
-                             KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT, KEY_SPREVIOUS, KEY_SRIGHT, KEY_SNEXT, KEY_SLEFT,
-                             'q',    'e',       'c',      'z',      ' ',           'm',        27 });
+        key = ReadKeypress({ 'w',
+                             'd',
+                             's',
+                             'a',
+                             'W',
+                             'D',
+                             'S',
+                             'A',
+                             KEY_UP,
+                             KEY_RIGHT,
+                             KEY_DOWN,
+                             KEY_LEFT,
+                             'q',
+                             'e',
+                             'c',
+                             'z',
+                             ' ',
+                             'm',
+                             27 });
     }
 
     switch (key.value())
@@ -419,20 +435,16 @@ void InputHandler::ProcessKeypress()
         m_CommandQueue.emplace(CommandType::Move, Direction::Left, 1);
         break;
     case 'W':
-    case KEY_SPREVIOUS:
-        m_PlayerController.TurnPlayer(Direction::Up);
+        m_CommandQueue.emplace(CommandType::Turn, Direction::Up, 1);
         break;
     case 'D':
-    case KEY_SRIGHT:
-        m_PlayerController.TurnPlayer(Direction::Right);
+        m_CommandQueue.emplace(CommandType::Turn, Direction::Right, 1);
         break;
     case 'S':
-    case KEY_SNEXT:
-        m_PlayerController.TurnPlayer(Direction::Down);
+        m_CommandQueue.emplace(CommandType::Turn, Direction::Down, 1);
         break;
     case 'A':
-    case KEY_SLEFT:
-        m_PlayerController.TurnPlayer(Direction::Left);
+        m_CommandQueue.emplace(CommandType::Turn, Direction::Left, 1);
         break;
     case 'q':
         if (!m_PlayerController.TryMovePlayerDiagonally(Direction::Up, Direction::Left))
