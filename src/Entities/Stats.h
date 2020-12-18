@@ -8,7 +8,7 @@ namespace Entities
  */
 struct Stats
 {
-    int Level, Health, MaxHealth, Mana, MaxMana, Strength, Toughness, Dexterity, Intelligence, Wisdom;
+    int Level, Health, MaxHealth, Mana, MaxMana, Strength, Dexterity, Sorcery, Wisdom;
 };
 
 } /* namespace Entities */

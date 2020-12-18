@@ -3,7 +3,6 @@
 #include "Entity.h"
 #include "Misc/Direction.h"
 #include "Misc/RNG.h"
-#include "NPC/Human.h"
 #include "Player.h"
 #include "Worlds/Field.h"
 #include "Worlds/Room.h"
@@ -16,9 +15,10 @@ namespace Entities
 
 EntityManager::EntityManager(Worlds::WorldManager& worldManager, Player& player)
     : m_WorldManager(worldManager),
-      m_Player(player)
+      m_Player(player),
+      m_NPCGenerator(*this, player, worldManager)
 {
-    const auto& world = const_cast<const Worlds::WorldManager&>(m_WorldManager).CurrentWorld();
+    const auto& world = m_WorldManager.CurrentWorld();
     m_EntityCoords[&m_Player] = { static_cast<Coords::Scalar>(world.StartingRoom().GetWidth() / 2),
                              static_cast<Coords::Scalar>(world.StartingRoom().GetHeight() / 2) };
     Place(m_Player, m_WorldManager.CurrentRoom());
@@ -26,10 +26,14 @@ EntityManager::EntityManager(Worlds::WorldManager& worldManager, Player& player)
 
 void EntityManager::SpawnEntity(Worlds::Room& room, Coords spawnPosition)
 {
-    auto& newEntity = m_EntityStorage[&room].emplace_back(new NPC::Human("Jackson"));
-    m_EntityCoords[newEntity.get()] = spawnPosition;
-    m_RoomsByEntity[newEntity.get()] = &room;
-    Place(*newEntity, room);
+    // TODO: replace this function
+    auto newEntity = m_NPCGenerator.GenerateRandomEnemy();
+    m_EntityStorage[&room].push_back(std::move(newEntity));
+
+    auto& entity = m_EntityStorage[&room].back();
+    m_EntityCoords[entity.get()] = spawnPosition;
+    m_RoomsByEntity[entity.get()] = &room;
+    Place(*entity, room);
 }
 
 void EntityManager::KillEntity(Entity& entity)

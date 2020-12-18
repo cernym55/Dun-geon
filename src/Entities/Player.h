@@ -22,8 +22,7 @@ public:
      * @param name name
      * @param icon icon (default: set to first character of name)
      */
-    Player(const std::string& name,
-           chtype icon = 0);
+    Player(const std::string& name, chtype icon = 0);
 
     /**
      * @brief Get XP
@@ -49,14 +48,14 @@ public:
 
     /**
      * @brief Set player health
-     * 
+     *
      * @param value value
      */
     void SetHealth(int value);
 
     /**
      * @brief Set player mana
-     * 
+     *
      * @param value value
      */
     void SetMana(int value);
@@ -65,6 +64,14 @@ private:
     int m_XP;
     int m_XPToLevelUp;
     int m_Dun;
+
+    /**
+     * @brief Calculate the base stats at given level
+     *
+     * @param level player level
+     * @return Stats base stats
+     */
+    Stats CalculateBaseStatsForLevel(int level) const;
 };
 
 } /* namespace Entities */

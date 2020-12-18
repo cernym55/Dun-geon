@@ -3,6 +3,7 @@
 #include "Character.h"
 #include "Entity.h"
 #include "Misc/Direction.h"
+#include "NPC/NPCGenerator.h"
 #include "Player.h"
 #include "Worlds/Room.h"
 #include "Worlds/WorldManager.h"
@@ -113,6 +114,7 @@ public:
 private:
     Worlds::WorldManager& m_WorldManager;
     Player& m_Player;
+    NPC::NPCGenerator m_NPCGenerator;
     std::unordered_map<const Worlds::Room*, std::vector<std::unique_ptr<Entity>>> m_EntityStorage;
     std::unordered_map<const Entity*, Worlds::Room*> m_RoomsByEntity;
     std::unordered_map<const Entity*, Coords> m_EntityCoords;
