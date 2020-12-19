@@ -1,6 +1,8 @@
 #include "AttackSkill.h"
 #include "Misc/RNG.h"
 #include "UI/BattleScreen.h"
+#include <algorithm>
+#include <cmath>
 
 namespace Battle
 {
@@ -31,7 +33,7 @@ Skill::ApplySkillResult AttackSkill::ApplySkill(const BattleProfile& userProfile
 
     bool crit = RNG::Chance(CalculateCritChance(userProfile, targetProfile) / 100.);
     if (crit)
-        damage *= 2;
+        damage *= 1.4;
 
     targetProfile.Stats.Health -= damage;
 
@@ -53,13 +55,22 @@ std::pair<int, int> AttackSkill::CalculateEffectiveDamageRange(const BattleProfi
 
 int AttackSkill::CalculateHitChance(const BattleProfile& userProfile, const BattleProfile& targetProfile) const
 {
-    auto levelDifference = targetProfile.Stats.Level - userProfile.Stats.Level;
-    return m_BaseHitChance - levelDifference * 2 + userProfile.Stats.Dexterity / 4.0;
+    int levelDifference      = targetProfile.Stats.Level - userProfile.Stats.Level;
+    double targetDodgeChance = (levelDifference > 0 ? levelDifference * 2.5 : 0) + targetProfile.Stats.Dexterity / 7.0;
+    return lround(std::clamp(
+        (m_BaseHitChance + userProfile.Stats.Dexterity / 4.0) * (100 - targetDodgeChance) / 100.0, 0.0, 100.0));
 }
 
 int AttackSkill::CalculateCritChance(const BattleProfile& userProfile, const BattleProfile& targetProfile) const
 {
-    return m_BaseCritChance;
+    int levelDifferenceFactor = (targetProfile.Stats.Level - userProfile.Stats.Level) * 0.5;
+    if (m_Category == Category::Spell)
+    {
+        return lround(
+            std::clamp(m_BaseCritChance + 0.1 * userProfile.Stats.Sorcery + levelDifferenceFactor, 0.0, 100.0));
+    }
+    return lround(
+        std::clamp(m_BaseCritChance + 0.05 * userProfile.Stats.Dexterity + levelDifferenceFactor, 0.0, 100.0));
 }
 
 } /* namespace Battle */
