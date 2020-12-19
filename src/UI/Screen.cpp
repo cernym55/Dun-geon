@@ -715,11 +715,16 @@ void Screen::DrawHUD()
     mvwprintw(m_GameHUDWindow, 9, 4, "MP:  %d/%d", stats.Mana, stats.MaxMana);
     mvwprintw(m_GameHUDWindow, 9, HUDPanelWidth - 11, "(%3d%%)", PLAYER_MANA_PC);
 
+    wattron(m_GameHUDWindow, A_BOLD | COLOR_PAIR(ColorPairs::RedOnDefault));
     mvwprintw(m_GameHUDWindow, 11, 4, "Str: %3d", stats.Strength);
-    mvwprintw(m_GameHUDWindow, 11, HUDPanelWidth - 11, "Def: %3d", stats.Toughness);
+    wattron(m_GameHUDWindow, A_BOLD | COLOR_PAIR(ColorPairs::MagentaOnDefault));
+    mvwprintw(m_GameHUDWindow, 11, HUDPanelWidth - 11, "Sor: %3d", stats.Sorcery);
 
-    mvwprintw(m_GameHUDWindow, 12, 4, "Agi: %3d", stats.Dexterity);
-    mvwprintw(m_GameHUDWindow, 12, HUDPanelWidth - 11, "Int: %3d", stats.Intelligence);
+    wattron(m_GameHUDWindow, A_BOLD | COLOR_PAIR(ColorPairs::GreenOnDefault));
+    mvwprintw(m_GameHUDWindow, 12, 4, "Dex: %3d", stats.Dexterity);
+    wattron(m_GameHUDWindow, A_BOLD | COLOR_PAIR(ColorPairs::BlueOnDefault));
+    mvwprintw(m_GameHUDWindow, 12, HUDPanelWidth - 11, "Wis: %3d", stats.Wisdom);
+    wattroff(m_GameHUDWindow, A_COLOR | A_BOLD);
 
     std::string wealthAmountStr = std::to_string(m_Player.GetDun());
     int xPos                    = (HUDPanelWidth - wealthAmountStr.size() - 12) / 2;

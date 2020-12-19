@@ -120,7 +120,7 @@ public:
      */
     int GetManaCost() const;
 
-private:
+protected:
     Category m_Category;
     std::string m_Name;
     std::string m_FlavorText;

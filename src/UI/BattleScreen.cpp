@@ -339,19 +339,19 @@ void BattleScreen::DisplayPlayerStats()
     wprintw(m_StatPanelWindow, "%9d", stats.Strength);
     wattroff(m_StatPanelWindow, A_BOLD | A_COLOR);
 
-    mvwaddstr(m_StatPanelWindow, 3, 5, "Toughness: ");
-    wattron(m_StatPanelWindow, A_BOLD | COLOR_PAIR(ColorPairs::YellowOnDefault));
-    wprintw(m_StatPanelWindow, "%8d", stats.Toughness);
-    wattroff(m_StatPanelWindow, A_BOLD | A_COLOR);
-
-    mvwaddstr(m_StatPanelWindow, 4, 5, "Dexterity: ");
+    mvwaddstr(m_StatPanelWindow, 3, 5, "Dexterity: ");
     wattron(m_StatPanelWindow, A_BOLD | COLOR_PAIR(ColorPairs::GreenOnDefault));
     wprintw(m_StatPanelWindow, "%8d", stats.Dexterity);
     wattroff(m_StatPanelWindow, A_BOLD | A_COLOR);
 
-    mvwaddstr(m_StatPanelWindow, 5, 5, "Intelligence: ");
+    mvwaddstr(m_StatPanelWindow, 4, 5, "Sorcery: ");
+    wattron(m_StatPanelWindow, A_BOLD | COLOR_PAIR(ColorPairs::MagentaOnDefault));
+    wprintw(m_StatPanelWindow, "%10d", stats.Sorcery);
+    wattroff(m_StatPanelWindow, A_BOLD | A_COLOR);
+
+    mvwaddstr(m_StatPanelWindow, 5, 5, "Wisdom: ");
     wattron(m_StatPanelWindow, A_BOLD | COLOR_PAIR(ColorPairs::BlueOnDefault));
-    wprintw(m_StatPanelWindow, "%5d", stats.Intelligence);
+    wprintw(m_StatPanelWindow, "%11d", stats.Wisdom);
     wattroff(m_StatPanelWindow, A_BOLD | A_COLOR);
 
     wrefresh(m_StatPanelWindow);
@@ -533,7 +533,7 @@ void BattleScreen::AnimateBattleEnd()
 
     for (int i = 0; i < 4; i++)
     {
-        werase(tempBottomWindow);
+        mvwhline(tempBottomWindow, 0, 0, ' ', Screen::ScreenWidth);
         wrefresh(tempBottomWindow);
         wresize(tempBottomWindow, BottomPanelHeight - i, Screen::ScreenWidth);
         mvwin(tempBottomWindow, TopPanelHeight + i, 0);
@@ -546,8 +546,7 @@ void BattleScreen::AnimateBattleEnd()
         mvwaddch(tempBottomWindow, BottomPanelHeight - i - 1, ArenaPanelWidth, ACS_BTEE);
 
         wrefresh(tempBottomWindow);
-        if (i < 3)
-            std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
+        std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
     }
     werase(tempBottomWindow);
     wrefresh(tempBottomWindow);

@@ -1,7 +1,7 @@
-#include "NPC/Behavior/WanderingMovement.h"
-#include "EntityManager.h"
 #include "Character.h"
+#include "EntityManager.h"
 #include "Misc/Direction.h"
+#include "NPC/Behavior/WanderingMovement.h"
 #include "Worlds/Room.h"
 #include <ncurses.h>
 #include <string>
@@ -15,8 +15,8 @@ Character::Character(const std::string& name,
                      Stats initialStats,
                      bool isBlocking)
     : Entity(name, description, icon, isBlocking),
-    m_Stats(initialStats),
-    m_MovementBehavior(std::make_unique<NPC::Behavior::WanderingMovement>(*this))
+      m_Stats(initialStats),
+      m_MovementBehavior(std::make_unique<NPC::Behavior::WanderingMovement>(*this))
 {
 }
 

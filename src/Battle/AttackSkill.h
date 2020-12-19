@@ -90,7 +90,7 @@ public:
      */
     int CalculateCritChance(const BattleProfile& userProfile, const BattleProfile& targetProfile) const;
 
-private:
+protected:
     std::pair<int, int> m_BaseDamageRange;
     int m_BaseHitChance;
     int m_BaseCritChance;
