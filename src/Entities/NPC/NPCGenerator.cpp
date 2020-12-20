@@ -1,6 +1,8 @@
 #include "NPCGenerator.h"
 #include "EntityManager.h"
+#include "Misc/RNG.h"
 #include "NPCCollection.h"
+#include <algorithm>
 
 namespace Entities::NPC
 {
@@ -14,7 +16,8 @@ NPCGenerator::NPCGenerator(EntityManager& entityManager, const Player& player, c
 
 std::unique_ptr<Character> NPCGenerator::CreateRandomEnemy()
 {
-    return CreateRandomEnemyAtLevel(m_Player.GetStats().Level);
+    int enemyLevel = std::clamp(m_Player.GetStats().Level + RNG::RandomInt(-2, 3), 1, 100);
+    return CreateRandomEnemyAtLevel(enemyLevel);
 }
 
 std::unique_ptr<Character> NPCGenerator::CreateRandomEnemyAtLevel(int level)
