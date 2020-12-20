@@ -27,7 +27,7 @@ EntityManager::EntityManager(Worlds::WorldManager& worldManager, Player& player)
 void EntityManager::SpawnEntity(Worlds::Room& room, Coords spawnPosition)
 {
     // TODO: replace this function
-    auto newEntity = m_NPCGenerator.GenerateRandomEnemy();
+    auto newEntity = m_NPCGenerator.CreateRandomEnemy();
     m_EntityStorage[&room].push_back(std::move(newEntity));
 
     auto& entity = m_EntityStorage[&room].back();

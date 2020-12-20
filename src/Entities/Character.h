@@ -42,6 +42,14 @@ public:
     virtual ~Character() = default;
 
     /**
+     * @brief Calculate the base stats at given level
+     *
+     * @param level player level
+     * @return Stats base stats
+     */
+    virtual Stats CalculateBaseStatsForLevel(int level) const = 0;
+
+    /**
      * @brief Get the direction of the next move
      *
      * @param entityManager entity manager

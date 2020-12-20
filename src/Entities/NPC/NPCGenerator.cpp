@@ -1,5 +1,6 @@
 #include "NPCGenerator.h"
 #include "EntityManager.h"
+#include "NPCCollection.h"
 
 namespace Entities::NPC
 {
@@ -11,10 +12,15 @@ NPCGenerator::NPCGenerator(EntityManager& entityManager, const Player& player, c
 {
 }
 
-std::unique_ptr<NPCCharacter> NPCGenerator::GenerateRandomEnemy()
+std::unique_ptr<Character> NPCGenerator::CreateRandomEnemy()
 {
-    // TODO: Make this really random
-    return std::unique_ptr<NPCCharacter>(new NPCCharacter({}, "Jackson", "Human"));
+    return CreateRandomEnemyAtLevel(m_Player.GetStats().Level);
+}
+
+std::unique_ptr<Character> NPCGenerator::CreateRandomEnemyAtLevel(int level)
+{
+    // Decide what it will be
+    return std::unique_ptr<Character>(new FadingSpirit(level));
 }
 
 } /* namespace Entities::NPC */

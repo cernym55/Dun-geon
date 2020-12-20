@@ -25,6 +25,14 @@ public:
     Player(const std::string& name, chtype icon = 0);
 
     /**
+     * @brief Calculate the base stats at given level
+     *
+     * @param level player level
+     * @return Stats base stats
+     */
+    Stats CalculateBaseStatsForLevel(int level) const override;
+
+    /**
      * @brief Get XP
      */
     int GetXP() const;
@@ -64,14 +72,6 @@ private:
     int m_XP;
     int m_XPToLevelUp;
     int m_Dun;
-
-    /**
-     * @brief Calculate the base stats at given level
-     *
-     * @param level player level
-     * @return Stats base stats
-     */
-    Stats CalculateBaseStatsForLevel(int level) const;
 };
 
 } /* namespace Entities */
