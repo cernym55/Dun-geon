@@ -1,8 +1,8 @@
 #include "NPCCollection.h"
 
-namespace Entities::NPC
+namespace Entities::NPCCollection
 {
 
 
 
-} /* namespace Entities::NPC */
+} /* namespace Entities::NPCCollection */

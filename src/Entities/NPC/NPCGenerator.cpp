@@ -7,6 +7,9 @@
 namespace Entities::NPC
 {
 
+static const std::vector<NPCCollection::Type> World1EnemyTypes { NPCCollection::Type::FadingSpirit,
+                                                                 NPCCollection::Type::Rat };
+
 NPCGenerator::NPCGenerator(EntityManager& entityManager, const Player& player, const Worlds::WorldManager& worldManager)
     : m_EntityManager(entityManager),
       m_Player(player),
@@ -22,8 +25,17 @@ std::unique_ptr<Character> NPCGenerator::CreateRandomEnemy()
 
 std::unique_ptr<Character> NPCGenerator::CreateRandomEnemyAtLevel(int level)
 {
-    // Decide what it will be
-    return std::unique_ptr<Character>(new FadingSpirit(level));
+    NPCCollection::Type selectedType = World1EnemyTypes[RNG::RandomInt(World1EnemyTypes.size())];
+
+    switch (selectedType)
+    {
+    case NPCCollection::Type::FadingSpirit:
+        return std::unique_ptr<Character>(new NPCCollection::FadingSpirit(level));
+    case NPCCollection::Type::Rat:
+        return std::unique_ptr<Character>(new NPCCollection::Rat(level));
+    default:
+        return nullptr;
+    }
 }
 
 } /* namespace Entities::NPC */

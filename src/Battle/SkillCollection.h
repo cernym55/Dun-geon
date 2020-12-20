@@ -6,7 +6,23 @@ namespace Battle::SkillCollection
 {
 
 /**
- * @brief Swing
+ * @brief Weak melee attack with high Crit chance and no damage scaling (NPC only)
+ */
+class Nibble : public AttackSkill
+{
+public:
+    Nibble() : AttackSkill(Category::Melee, "Nibble", "", "", { 1, 3 }, 90, 15, 0) {}
+
+    inline int CalculateEffectiveDamage(int baseDamage,
+                                        const BattleProfile& userProfile,
+                                        const BattleProfile& targetProfile) const override
+    {
+        return baseDamage;
+    }
+};
+
+/**
+ * @brief Basic melee attack
  */
 class Swing : public AttackSkill
 {
@@ -32,7 +48,7 @@ public:
 };
 
 /**
- * @brief Weak magic attack
+ * @brief Basic magic attack (NPC only)
  */
 class Wail : public AttackSkill
 {
