@@ -11,7 +11,7 @@ namespace Entities
 Player::Player(const std::string& name, chtype icon)
     : Character(name, "Duelist", icon, CalculateBaseStatsForLevel(1)),
       m_XP(0),
-      m_XPToLevelUp(100),
+      m_XPToLevelUp(20),
       m_Dun(0)
 {
     GrantSkill<Battle::SkillCollection::Swing>();
@@ -47,6 +47,18 @@ void Player::SetMana(int value)
     m_Stats.Mana = value;
 }
 
+void Player::GrantXP(int howMuch)
+{
+    if (m_Stats.Level == 100)
+        return;
+
+    m_XP += howMuch;
+    if (m_XP >= m_XPToLevelUp)
+    {
+        LevelUp();
+    }
+}
+
 Stats Player::CalculateBaseStatsForLevel(int level) const
 {
     // For Duelist class
@@ -70,6 +82,20 @@ Stats Player::CalculateBaseStatsForLevel(int level) const
     newStats.Mana    = newStats.MaxMana;
 
     return newStats;
+}
+
+void Player::LevelUp()
+{
+    const int newLevel = m_Stats.Level + 1;
+    m_XP %= m_XPToLevelUp; // Transfer any extra gain
+    m_XPToLevelUp += 5;    // Increase requirement
+    m_Stats = CalculateBaseStatsForLevel(newLevel);
+
+    if (m_Stats.Level == 100)
+    {
+        m_XP          = 0;
+        m_XPToLevelUp = 0;
+    }
 }
 
 } /* namespace Entities */

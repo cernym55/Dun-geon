@@ -60,6 +60,13 @@ public:
      */
     void SetMana(int value);
 
+    /**
+     * @brief Grant the player a set amount of XP
+     * 
+     * @param howMuch how much
+     */
+    void GrantXP(int howMuch);
+
 private:
     int m_XP;
     int m_XPToLevelUp;
@@ -72,6 +79,11 @@ private:
      * @return Stats base stats
      */
     Stats CalculateBaseStatsForLevel(int level) const;
+
+    /**
+     * @brief Grants the player a level
+     */
+    void LevelUp();
 };
 
 } /* namespace Entities */

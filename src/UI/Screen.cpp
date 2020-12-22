@@ -707,7 +707,7 @@ void Screen::DrawHUD()
     PrintCenter(m_GameHUDWindow, m_Player.GetName(), 4);
 
     mvwprintw(m_GameHUDWindow, 6, 4, "Level %d", stats.Level);
-    mvwprintw(m_GameHUDWindow, 6, HUDPanelWidth - 11, "XP: %3d%%", m_Player.GetXP() / m_Player.GetXPToLevelUp() * 100);
+    mvwprintw(m_GameHUDWindow, 6, HUDPanelWidth - 14, "XP: %3d/%3d", m_Player.GetXP(), m_Player.GetXPToLevelUp());
 
     mvwprintw(m_GameHUDWindow, 8, 4, "HP:  %d/%d", stats.Health, stats.MaxHealth);
     mvwprintw(m_GameHUDWindow, 8, HUDPanelWidth - 11, "(%3d%%)", PLAYER_HEALTH_PC);
