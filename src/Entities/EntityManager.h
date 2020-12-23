@@ -29,14 +29,6 @@ public:
     EntityManager(Worlds::WorldManager& worldManager, Player& player);
 
     /**
-     * @brief Spawns a random entity
-     *
-     * @param room room
-     * @param spawnPosition spawn position
-     */
-    void SpawnEntity(Worlds::Room& room, Coords spawnPosition);
-
-    /**
      * @brief Kill the given (managed) entity, removing it from the world
      * 
      * @param entity entity to kill
@@ -166,6 +158,13 @@ private:
      * @param room room
      */
     void Pluck(Entity& entity, Worlds::Room& room);
+
+    /**
+     * @brief Generate NPCs in a given room (assumed empty)
+     * 
+     * @param room room to populate
+     */
+    void PopulateRoom(Worlds::Room& room);
 };
 
 } /* namespace Entities */

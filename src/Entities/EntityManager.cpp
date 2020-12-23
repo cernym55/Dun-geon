@@ -24,18 +24,6 @@ EntityManager::EntityManager(Worlds::WorldManager& worldManager, Player& player)
     Place(m_Player, m_WorldManager.CurrentRoom());
 }
 
-void EntityManager::SpawnEntity(Worlds::Room& room, Coords spawnPosition)
-{
-    // TODO: replace this function
-    auto newEntity = m_NPCGenerator.CreateRandomEnemy();
-    m_EntityStorage[&room].push_back(std::move(newEntity));
-
-    auto& entity = m_EntityStorage[&room].back();
-    m_EntityCoords[entity.get()] = spawnPosition;
-    m_RoomsByEntity[entity.get()] = &room;
-    Place(*entity, room);
-}
-
 void EntityManager::KillEntity(Entity& entity)
 {
     auto room = m_RoomsByEntity.at(&entity);
@@ -87,16 +75,10 @@ bool EntityManager::TryMovePlayer(Direction dir)
         m_Player.FacingDirection = dir;
         Place(m_Player, nextRoom);
 
-        // Randomly spawn NPCs in an accessible location just for fun
-        // TODO: remove
-        if (RNG::Chance(0.1) && m_EntityStorage[&nextRoom].size() < 5)
+        // Populate the room if it's new
+        if (m_EntityStorage.count(&nextRoom) == 0)
         {
-            Coords spawnPosition;
-            while (!nextRoom.FieldAt(spawnPosition).IsAccessible() || nextRoom.FieldAt(spawnPosition).ForegroundEntity() != nullptr)
-            {
-                spawnPosition = Coords(RNG::RandomInt(nextRoom.GetWidth() - 2) + 1, RNG::RandomInt(nextRoom.GetHeight() - 2) + 1);
-            }
-            SpawnEntity(nextRoom, spawnPosition);
+            PopulateRoom(nextRoom);
         }
 
         CycleCurrentRoom();
@@ -200,6 +182,41 @@ void EntityManager::Pluck(Entity& entity, Worlds::Room& room)
 {
     auto& field = room.FieldAt(m_EntityCoords[&entity]);
     entity.IsBlocking() ? field.VacateForeground() : field.VacateBackground();
+}
+
+void EntityManager::PopulateRoom(Worlds::Room& room)
+{
+    int entityCount = 0;
+    double rng      = RNG::RandomDouble();
+
+    if (rng > 0.75)
+        entityCount = 0;
+    else if (rng > 0.35)
+        entityCount = 1;
+    else if (rng > 0.075)
+        entityCount = 2;
+    else
+        entityCount = 3;
+
+    for (int i = 0; i < entityCount; i++)
+    {
+        Coords spawnPosition;
+        while (!room.FieldAt(spawnPosition).IsAccessible() || room.FieldAt(spawnPosition).ForegroundEntity() != nullptr)
+        {
+            spawnPosition = Coords(RNG::RandomInt(room.GetWidth() - 2) + 1, RNG::RandomInt(room.GetHeight() - 2) + 1);
+        }
+
+        auto newEntity = m_NPCGenerator.CreateRandomEnemy();
+        m_EntityStorage[&room].push_back(std::move(newEntity));
+
+        auto& entity                  = m_EntityStorage[&room].back();
+        m_EntityCoords[entity.get()]  = spawnPosition;
+        m_RoomsByEntity[entity.get()] = &room;
+        Place(*entity, room);
+    }
+
+    // Insert an empty list to mark this room as "populated" even if it remains empty
+    m_EntityStorage[&room];
 }
 
 } /* namespace Entities */
