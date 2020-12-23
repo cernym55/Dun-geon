@@ -27,7 +27,7 @@ Room::Room(WorldManager& worldManager,
       m_CameraStyle(layout.GetCameraStyle()),
       m_VisionRadius(layout.GetVisionRadius())
 {
-    layout.WriteToFields(m_Fields);
+    m_AccessibleFieldCount = layout.WriteToFields(m_Fields);
     m_Width = m_Fields.size();
     m_Height = m_Fields[0].size();
     const auto& entrances = layout.GetEntrances();
@@ -70,6 +70,11 @@ int Room::GetVisionRadius() const
 int Room::GetRoomNumber() const
 {
     return m_RoomNumber;
+}
+
+int Room::AccessibleFieldCount() const
+{
+    return m_AccessibleFieldCount;
 }
 
 const Field* Room::Entrance(Direction dir) const

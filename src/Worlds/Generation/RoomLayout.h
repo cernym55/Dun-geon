@@ -53,8 +53,9 @@ public:
      * @brief Write the layout to a 2D vector of fields
      * 
      * @param fields fields
+     * @return int number of accessible fields in the room
      */
-    void WriteToFields(std::vector<std::vector<Field>>& fields) const;
+    int WriteToFields(std::vector<std::vector<Field>>& fields) const;
 
     /**
      * @brief Get a map of entrance coords per direction

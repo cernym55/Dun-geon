@@ -190,13 +190,25 @@ void EntityManager::PopulateRoom(Worlds::Room& room)
     double rng      = RNG::RandomDouble();
 
     if (rng > 0.75)
+    {
         entityCount = 0;
+    }
     else if (rng > 0.35)
+    {
         entityCount = 1;
+    }
     else if (rng > 0.075)
+    {
         entityCount = 2;
-    else
-        entityCount = 3;
+    }
+    else if (rng > 0.03)
+    {
+        if (room.AccessibleFieldCount() > 90) entityCount = 3; // limit higher spawn counts by room size
+    }
+    else if (room.AccessibleFieldCount() > 120)
+    {
+        entityCount = 4;
+    }
 
     for (int i = 0; i < entityCount; i++)
     {

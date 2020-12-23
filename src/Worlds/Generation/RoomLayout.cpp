@@ -22,8 +22,9 @@ RoomLayout::RoomLayout(const RoomGenerationParameters& parameters)
 {
 }
 
-void RoomLayout::WriteToFields(std::vector<std::vector<Field>>& fields) const
+int RoomLayout::WriteToFields(std::vector<std::vector<Field>>& fields) const
 {
+    int accessibleFieldCount = 0;
     fields.clear();
     fields.resize(m_Width);
     for (Coords::Scalar i = 0; i < m_Width; i++)
@@ -35,6 +36,7 @@ void RoomLayout::WriteToFields(std::vector<std::vector<Field>>& fields) const
             {
             case FieldType::Accessible:
                 fields[i][j].MakeAccessible();
+                accessibleFieldCount++;
                 break;
             case FieldType::Wall:
                 fields[i][j].PlaceEntity(Entities::Wall);
@@ -47,6 +49,8 @@ void RoomLayout::WriteToFields(std::vector<std::vector<Field>>& fields) const
             }
         }
     }
+
+    return accessibleFieldCount;
 }
 
 const std::map<Direction, Coords>& RoomLayout::GetEntrances() const

@@ -86,6 +86,14 @@ public:
     int GetRoomNumber() const;
 
     /**
+     * @brief Return the number of accessible fields in this room
+     * This can be used as an indicator of the room's area.
+     * 
+     * @return int count of accessible fields
+     */
+    int AccessibleFieldCount() const;
+
+    /**
      * @brief Get the entrance field in the given direction
      * 
      * @param dir direction
@@ -145,6 +153,7 @@ protected:
     std::vector<std::vector<Field>> m_Fields;
     UI::CameraStyle m_CameraStyle;
     int m_VisionRadius;
+    int m_AccessibleFieldCount;
 };
 
 } /* namespace Worlds */
