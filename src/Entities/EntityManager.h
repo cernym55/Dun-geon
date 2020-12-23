@@ -39,9 +39,10 @@ public:
      * @brief Take ownership of an entity and assign it to this room's storage
      *
      * @param room room
-     * @param entity entity
+     * @param entity entity owning pointer
+     * @param coords entity position
      */
-    void Store(Worlds::Room& room, Entity& entity);
+    void Store(Worlds::Room& room, std::unique_ptr<Entity>&& entity, Coords coords);
 
     /**
      * @brief Perform behavior for all entities in the current room
@@ -163,8 +164,9 @@ private:
      * @brief Generate NPCs in a given room (assumed empty)
      * 
      * @param room room to populate
+     * @param firstEntry whether this is the first time the player has entered the room
      */
-    void PopulateRoom(Worlds::Room& room);
+    void PopulateRoom(Worlds::Room& room, bool firstEntry);
 };
 
 } /* namespace Entities */
