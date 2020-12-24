@@ -103,6 +103,8 @@ void BoxRoomLayout::GenerateAttributes()
     {
         m_Subtype = Subtype::ColumnsOnly;
     }
+
+    m_NPCSpawnChance = 0.55;
 }
 
 void BoxRoomLayout::GenerateColumns()

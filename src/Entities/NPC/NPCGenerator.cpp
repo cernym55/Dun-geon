@@ -1,8 +1,14 @@
 #include "NPCGenerator.h"
 #include "EntityManager.h"
+#include "Misc/RNG.h"
+#include "NPCCollection.h"
+#include <algorithm>
 
 namespace Entities::NPC
 {
+
+static const std::vector<NPCCollection::Type> World1EnemyTypes { NPCCollection::Type::FadingSpirit,
+                                                                 NPCCollection::Type::Rat };
 
 NPCGenerator::NPCGenerator(EntityManager& entityManager, const Player& player, const Worlds::WorldManager& worldManager)
     : m_EntityManager(entityManager),
@@ -11,10 +17,25 @@ NPCGenerator::NPCGenerator(EntityManager& entityManager, const Player& player, c
 {
 }
 
-std::unique_ptr<NPCCharacter> NPCGenerator::GenerateRandomEnemy()
+std::unique_ptr<Character> NPCGenerator::CreateRandomEnemy()
 {
-    // TODO: Make this really random
-    return std::unique_ptr<NPCCharacter>(new NPCCharacter({}, "Jackson", "Human"));
+    int enemyLevel = std::clamp(m_Player.GetStats().Level + RNG::RandomInt(-2, 3), 1, 100);
+    return CreateRandomEnemyAtLevel(enemyLevel);
+}
+
+std::unique_ptr<Character> NPCGenerator::CreateRandomEnemyAtLevel(int level)
+{
+    NPCCollection::Type selectedType = World1EnemyTypes[RNG::RandomInt(World1EnemyTypes.size())];
+
+    switch (selectedType)
+    {
+    case NPCCollection::Type::FadingSpirit:
+        return std::unique_ptr<Character>(new NPCCollection::FadingSpirit(level));
+    case NPCCollection::Type::Rat:
+        return std::unique_ptr<Character>(new NPCCollection::Rat(level));
+    default:
+        return nullptr;
+    }
 }
 
 } /* namespace Entities::NPC */

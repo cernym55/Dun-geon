@@ -29,14 +29,6 @@ public:
     EntityManager(Worlds::WorldManager& worldManager, Player& player);
 
     /**
-     * @brief Spawns a random entity
-     *
-     * @param room room
-     * @param spawnPosition spawn position
-     */
-    void SpawnEntity(Worlds::Room& room, Coords spawnPosition);
-
-    /**
      * @brief Kill the given (managed) entity, removing it from the world
      * 
      * @param entity entity to kill
@@ -47,9 +39,10 @@ public:
      * @brief Take ownership of an entity and assign it to this room's storage
      *
      * @param room room
-     * @param entity entity
+     * @param entity entity owning pointer
+     * @param coords entity position
      */
-    void Store(Worlds::Room& room, Entity& entity);
+    void Store(Worlds::Room& room, std::unique_ptr<Entity>&& entity, Coords coords);
 
     /**
      * @brief Perform behavior for all entities in the current room
@@ -166,6 +159,14 @@ private:
      * @param room room
      */
     void Pluck(Entity& entity, Worlds::Room& room);
+
+    /**
+     * @brief Generate NPCs in a given room (assumed empty)
+     * 
+     * @param room room to populate
+     * @param firstEntry whether this is the first time the player has entered the room
+     */
+    void PopulateRoom(Worlds::Room& room, bool firstEntry);
 };
 
 } /* namespace Entities */

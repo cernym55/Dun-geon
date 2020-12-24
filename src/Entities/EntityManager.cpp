@@ -24,18 +24,6 @@ EntityManager::EntityManager(Worlds::WorldManager& worldManager, Player& player)
     Place(m_Player, m_WorldManager.CurrentRoom());
 }
 
-void EntityManager::SpawnEntity(Worlds::Room& room, Coords spawnPosition)
-{
-    // TODO: replace this function
-    auto newEntity = m_NPCGenerator.GenerateRandomEnemy();
-    m_EntityStorage[&room].push_back(std::move(newEntity));
-
-    auto& entity = m_EntityStorage[&room].back();
-    m_EntityCoords[entity.get()] = spawnPosition;
-    m_RoomsByEntity[entity.get()] = &room;
-    Place(*entity, room);
-}
-
 void EntityManager::KillEntity(Entity& entity)
 {
     auto room = m_RoomsByEntity.at(&entity);
@@ -55,11 +43,13 @@ void EntityManager::KillEntity(Entity& entity)
     }
 }
 
-void EntityManager::Store(Worlds::Room& room, Entity& entity)
+void EntityManager::Store(Worlds::Room& room, std::unique_ptr<Entity>&& entity, Coords coords)
 {
-    // Storing pointers is safe because both rooms and entities are tied to the world's lifespan
-    // TODO: Fix lack of coords
-    m_EntityStorage[&room].emplace_back(&entity);
+    m_EntityStorage[&room].push_back(std::move(entity));
+    auto& movedEntity                  = m_EntityStorage[&room].back();
+    m_EntityCoords[movedEntity.get()]  = coords;
+    m_RoomsByEntity[movedEntity.get()] = &room;
+    Place(*movedEntity, room);
 }
 
 bool EntityManager::TryMovePlayer(Direction dir)
@@ -76,6 +66,7 @@ bool EntityManager::TryMovePlayer(Direction dir)
     else if (m_WorldManager.CurrentRoom().IsAtRoomEdge(m_EntityCoords[&m_Player], dir))
     {
         Direction nextRoomEntranceDir = dir.Opposite();
+        bool nextRoomExists           = m_WorldManager.CurrentRoom().HasNeighbor(dir);
         Pluck(m_Player, m_WorldManager.CurrentRoom());
         Coords offset = m_EntityCoords[&m_Player] - m_WorldManager.CurrentRoom().Entrance(dir)->GetCoords();
         Worlds::Room& nextRoom = m_WorldManager.SwitchRoom(dir);
@@ -87,17 +78,9 @@ bool EntityManager::TryMovePlayer(Direction dir)
         m_Player.FacingDirection = dir;
         Place(m_Player, nextRoom);
 
-        // Randomly spawn NPCs in an accessible location just for fun
-        // TODO: remove
-        if (RNG::Chance(0.1) && m_EntityStorage[&nextRoom].size() < 5)
-        {
-            Coords spawnPosition;
-            while (!nextRoom.FieldAt(spawnPosition).IsAccessible() || nextRoom.FieldAt(spawnPosition).ForegroundEntity() != nullptr)
-            {
-                spawnPosition = Coords(RNG::RandomInt(nextRoom.GetWidth() - 2) + 1, RNG::RandomInt(nextRoom.GetHeight() - 2) + 1);
-            }
-            SpawnEntity(nextRoom, spawnPosition);
-        }
+        // (Re)populate the room with NPCs
+        bool firstEntry = !nextRoomExists;
+        PopulateRoom(nextRoom, firstEntry);
 
         CycleCurrentRoom();
         return true;
@@ -109,6 +92,11 @@ bool EntityManager::TryMovePlayer(Direction dir)
 
 Entity* EntityManager::Approaching(const Entity& entity, Direction dir)
 {
+    if (m_EntityStorage.count(&m_WorldManager.CurrentRoom()) == 0)
+    {
+        return nullptr;
+    }
+
     Coords targetCoords = CoordsOf(entity).Adjacent(dir);
     for (auto& entity : m_EntityStorage.at(&m_WorldManager.CurrentRoom()))
     {
@@ -183,7 +171,12 @@ const Worlds::Field* EntityManager::AdjacentField(
 
 void EntityManager::Cycle(Worlds::Room& room)
 {
-    for (auto& entity : m_EntityStorage[&room])
+    if (m_EntityStorage.count(&room) == 0)
+    {
+        return;
+    }
+
+    for (auto& entity : m_EntityStorage.at(&room))
     {
         MoveEntity(*entity, entity->GetNextMove(*this));
         // TODO: Add additional behaviors
@@ -200,6 +193,83 @@ void EntityManager::Pluck(Entity& entity, Worlds::Room& room)
 {
     auto& field = room.FieldAt(m_EntityCoords[&entity]);
     entity.IsBlocking() ? field.VacateForeground() : field.VacateBackground();
+}
+
+void EntityManager::PopulateRoom(Worlds::Room& room, bool firstEntry)
+{
+    int entityCount = 0;
+    double rng      = RNG::RandomDouble();
+    double postRng  = RNG::RandomDouble();
+
+    if (firstEntry)
+    {
+        // First time population
+        if (m_EntityStorage.count(&room) != 0)
+        {
+            return;
+        }
+
+        if (rng < room.GetNPCSpawnChance())
+        {
+            // Spawn nothing now, but make it possible to repopulate the room
+            m_EntityStorage[&room];
+            return;
+        }
+
+        if (postRng > 0.45)
+        {
+            entityCount = 1;
+        }
+        // Limit higher spawn counts by room size
+        else if (postRng > 0.15 || room.AccessibleFieldCount() <= 90)
+        {
+            entityCount = 2;
+        }
+        else if (postRng > 0.05 || room.AccessibleFieldCount() <= 120)
+        {
+            entityCount = 3;
+        }
+        else
+        {
+            entityCount = 4;
+        }
+    }
+    else
+    {
+        // Repopulation
+        if (m_EntityStorage.count(&room) == 0 || !m_EntityStorage[&room].empty())
+        {
+            return;
+        }
+
+        if (rng < room.GetNPCSpawnChance() * 0.75)
+        {
+            // We tried to repopulate and got 0, delete the container so we don't try again
+            m_EntityStorage.erase(&room);
+            return;
+        }
+
+        if (postRng > 0.25)
+        {
+            entityCount = 1;
+        }
+        else
+        {
+            entityCount = 2;
+        }
+    }
+
+    for (int i = 0; i < entityCount; i++)
+    {
+        Coords spawnPosition;
+        while (!room.FieldAt(spawnPosition).IsAccessible() || room.FieldAt(spawnPosition).ForegroundEntity() != nullptr)
+        {
+            spawnPosition = Coords(RNG::RandomInt(room.GetWidth() - 2) + 1, RNG::RandomInt(room.GetHeight() - 2) + 1);
+        }
+
+        auto newEntity = m_NPCGenerator.CreateRandomEnemy();
+        Store(room, std::move(newEntity), spawnPosition);
+    }
 }
 
 } /* namespace Entities */

@@ -53,8 +53,9 @@ public:
      * @brief Write the layout to a 2D vector of fields
      * 
      * @param fields fields
+     * @return int number of accessible fields in the room
      */
-    void WriteToFields(std::vector<std::vector<Field>>& fields) const;
+    int WriteToFields(std::vector<std::vector<Field>>& fields) const;
 
     /**
      * @brief Get a map of entrance coords per direction
@@ -76,6 +77,13 @@ public:
      * @return int vision radius
      */
     int GetVisionRadius() const;
+
+    /**
+     * @brief Get the base chance for NPCs to spawn in this room
+     * 
+     * @return double base NPC spawn chance 
+     */
+    double GetNPCSpawnChance() const;
 
 protected:
     /**
@@ -111,6 +119,7 @@ protected:
     std::map<Direction, Coords> m_Entrances;
     UI::CameraStyle m_CameraStyle;
     int m_VisionRadius;
+    double m_NPCSpawnChance;
 
     /**
      * @brief Constructor
