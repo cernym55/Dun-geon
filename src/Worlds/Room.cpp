@@ -25,7 +25,8 @@ Room::Room(WorldManager& worldManager,
       m_RoomNumber(roomNumber),
       m_Coords(coords),
       m_CameraStyle(layout.GetCameraStyle()),
-      m_VisionRadius(layout.GetVisionRadius())
+      m_VisionRadius(layout.GetVisionRadius()),
+      m_NPCSpawnChance(layout.GetNPCSpawnChance())
 {
     m_AccessibleFieldCount = layout.WriteToFields(m_Fields);
     m_Width = m_Fields.size();
@@ -149,6 +150,11 @@ bool Room::IsAtRoomEdge(Coords coords, Direction dir) const
     default:
         return false;
     }
+}
+
+double Room::GetNPCSpawnChance() const
+{
+    return m_NPCSpawnChance;
 }
 
 } /* namespace Worlds */

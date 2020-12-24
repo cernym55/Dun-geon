@@ -142,6 +142,13 @@ public:
      */
     bool IsAtRoomEdge(Coords coords, Direction dir) const;
 
+    /**
+     * @brief Get the base NPC spawn chance in this room
+     * 
+     * @return double NPC spawn chance
+     */
+    double GetNPCSpawnChance() const;
+
 protected:
     WorldManager& m_WorldManager;
     World& m_World;
@@ -154,6 +161,7 @@ protected:
     UI::CameraStyle m_CameraStyle;
     int m_VisionRadius;
     int m_AccessibleFieldCount;
+    double m_NPCSpawnChance;
 };
 
 } /* namespace Worlds */

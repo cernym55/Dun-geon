@@ -199,6 +199,7 @@ void EntityManager::PopulateRoom(Worlds::Room& room, bool firstEntry)
 {
     int entityCount = 0;
     double rng      = RNG::RandomDouble();
+    double postRng  = RNG::RandomDouble();
 
     if (firstEntry)
     {
@@ -208,22 +209,23 @@ void EntityManager::PopulateRoom(Worlds::Room& room, bool firstEntry)
             return;
         }
 
-        if (rng > 0.55)
+        if (rng < room.GetNPCSpawnChance())
         {
             // Spawn nothing now, but make it possible to repopulate the room
             m_EntityStorage[&room];
             return;
         }
-        else if (rng > 0.25)
+
+        if (postRng > 0.45)
         {
             entityCount = 1;
         }
         // Limit higher spawn counts by room size
-        else if (rng > 0.075 || room.AccessibleFieldCount() <= 90)
+        else if (postRng > 0.15 || room.AccessibleFieldCount() <= 90)
         {
             entityCount = 2;
         }
-        else if (rng > 0.03 || room.AccessibleFieldCount() <= 120)
+        else if (postRng > 0.05 || room.AccessibleFieldCount() <= 120)
         {
             entityCount = 3;
         }
@@ -240,13 +242,14 @@ void EntityManager::PopulateRoom(Worlds::Room& room, bool firstEntry)
             return;
         }
 
-        if (rng > 0.4)
+        if (rng < room.GetNPCSpawnChance() * 0.75)
         {
             // We tried to repopulate and got 0, delete the container so we don't try again
             m_EntityStorage.erase(&room);
             return;
         }
-        else if (rng > 0.1)
+
+        if (postRng > 0.25)
         {
             entityCount = 1;
         }

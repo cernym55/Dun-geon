@@ -78,6 +78,13 @@ public:
      */
     int GetVisionRadius() const;
 
+    /**
+     * @brief Get the base chance for NPCs to spawn in this room
+     * 
+     * @return double base NPC spawn chance 
+     */
+    double GetNPCSpawnChance() const;
+
 protected:
     /**
      * @brief Type of field for generation
@@ -112,6 +119,7 @@ protected:
     std::map<Direction, Coords> m_Entrances;
     UI::CameraStyle m_CameraStyle;
     int m_VisionRadius;
+    double m_NPCSpawnChance;
 
     /**
      * @brief Constructor

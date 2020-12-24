@@ -18,7 +18,8 @@ RoomLayout::RoomLayout(const RoomGenerationParameters& parameters)
       m_Height(0),
       m_Parameters(parameters),
       m_CameraStyle(UI::CameraStyle::Fixed),
-      m_VisionRadius(0)
+      m_VisionRadius(0),
+      m_NPCSpawnChance(0)
 {
 }
 
@@ -66,6 +67,11 @@ UI::CameraStyle RoomLayout::GetCameraStyle() const
 int RoomLayout::GetVisionRadius() const
 {
     return m_VisionRadius;
+}
+
+double RoomLayout::GetNPCSpawnChance() const
+{
+    return m_NPCSpawnChance;
 }
 
 void RoomLayout::GenerateAttributes()
