@@ -58,13 +58,13 @@ void LogWindow::RefreshContent()
 
 std::vector<std::string> LogWindow::Split(std::string message)
 {
-    const int maxLength = m_Width - 2 - SidePadding * 2;
+    const int maxLength = m_Width - 4 - SidePadding * 2;
     std::vector<std::string> output;
 
     bool first = true;
     while (static_cast<int>(message.size()) > maxLength)
     {
-        int pos = maxLength - 3;
+        int pos = maxLength - 1;
         while (!isspace(message.at(pos)))
         {
             // This will blow up if the message contains a single word longer than the maximum length
