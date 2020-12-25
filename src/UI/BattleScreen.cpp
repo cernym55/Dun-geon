@@ -550,6 +550,8 @@ void BattleScreen::AnimateBattleEnd()
     }
     werase(tempBottomWindow);
     wrefresh(tempBottomWindow);
+    werase(tempSideWindow);
+    wrefresh(tempSideWindow);
     delwin(tempSideWindow);
     delwin(tempBottomWindow);
 }
