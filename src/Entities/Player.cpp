@@ -72,16 +72,18 @@ void Player::SetMana(int value)
     m_Stats.Mana = value;
 }
 
-void Player::GrantXP(int howMuch)
+bool Player::GrantXP(int howMuch)
 {
-    if (m_Stats.Level == 100)
-        return;
+    if (m_Stats.Level == Entities::LevelCap)
+        return false;
 
     m_XP += howMuch;
     if (m_XP >= m_XPToLevelUp)
     {
         LevelUp();
+        return true;
     }
+    return false;
 }
 
 void Player::LevelUp()
@@ -91,7 +93,7 @@ void Player::LevelUp()
     m_XPToLevelUp += 5;    // Increase requirement
     m_Stats = CalculateBaseStatsForLevel(newLevel);
 
-    if (m_Stats.Level == 100)
+    if (m_Stats.Level == Entities::LevelCap)
     {
         m_XP          = 0;
         m_XPToLevelUp = 0;

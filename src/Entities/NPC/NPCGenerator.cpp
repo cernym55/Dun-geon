@@ -19,7 +19,7 @@ NPCGenerator::NPCGenerator(EntityManager& entityManager, const Player& player, c
 
 std::unique_ptr<Character> NPCGenerator::CreateRandomEnemy()
 {
-    int enemyLevel = std::clamp(m_Player.GetStats().Level + RNG::RandomInt(-2, 3), 1, 100);
+    int enemyLevel = std::clamp(m_Player.GetStats().Level + RNG::RandomInt(-2, 3), 1, Entities::LevelCap);
     return CreateRandomEnemyAtLevel(enemyLevel);
 }
 

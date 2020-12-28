@@ -72,8 +72,9 @@ public:
      * @brief Grant the player a set amount of XP
      * 
      * @param howMuch how much
+     * @return bool true if this causes the player to level up
      */
-    void GrantXP(int howMuch);
+    bool GrantXP(int howMuch);
 
 private:
     int m_XP;

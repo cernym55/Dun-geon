@@ -2,6 +2,7 @@
 #include "BattleScreen.h"
 #include "CameraStyle.h"
 #include "ColorPairs.h"
+#include "Components/FillBar.h"
 #include "Entities/EntityManager.h"
 #include "Entities/Player.h"
 #include "InputHandler.h"
@@ -405,6 +406,82 @@ void Screen::GameOver(const std::string& epitaph)
     m_InputHandler.SetQuit();
 }
 
+void Screen::DisplayLevelUp(const Entities::Stats& prev, const Entities::Stats& next)
+{
+    // Assemble diff
+    struct DiffEntry
+    {
+        std::string statName;
+        int prev;
+        int next;
+        short color;
+    };
+    std::vector<DiffEntry> diff;
+
+    if (next.MaxHealth > prev.MaxHealth)
+    {
+        diff.push_back({"Max Health", prev.MaxHealth, next.MaxHealth, ColorPairs::YellowOnDefault});
+    }
+    if (next.Strength > prev.Strength)
+    {
+        diff.push_back({"Strength", prev.Strength, next.Strength, ColorPairs::RedOnDefault});
+    }
+    if (next.Dexterity > prev.Dexterity)
+    {
+        diff.push_back({"Dexterity", prev.Dexterity, next.Dexterity, ColorPairs::GreenOnDefault});
+    }
+    if (next.Sorcery > prev.Sorcery)
+    {
+        diff.push_back({"Sorcery", prev.Sorcery, next.Sorcery, ColorPairs::MagentaOnDefault});
+    }
+    if (next.Wisdom > prev.Wisdom)
+    {
+        diff.push_back({"Wisdom", prev.Wisdom, next.Wisdom, ColorPairs::BlueOnDefault});
+    }
+
+    // Display window
+    Draw();
+    constexpr int width = 44;
+    const int height    = 7 + diff.size();
+
+    WINDOW* window = newwin(height, width, (ScreenHeight - height) / 2, (ScreenWidth - width) / 2);
+    box(window, 0, 0);
+    wattron(window, A_REVERSE);
+    PrintCenter(window, " Level Up ", 0);
+    PrintCenter(window, "  Close  ", height - 2);
+    wattroff(window, A_REVERSE);
+
+    PrintCenter(window, m_Player.GetName() + " has advanced to level " + std::to_string(next.Level) + "!", 2);
+
+    int diffLine = 0;
+    for (const auto& diffEntry : diff)
+    {
+        wattron(window, A_BOLD | COLOR_PAIR(diffEntry.color));
+        mvwprintw(window, 4 + diffLine, 9, "%s:", diffEntry.statName.c_str());
+        mvwprintw(window, 4 + diffLine, 23, "%3d", diffEntry.prev);
+        wattroff(window, A_BOLD | A_COLOR);
+        waddstr(window, " -> ");
+        wattron(window, A_BOLD | COLOR_PAIR(diffEntry.color));
+        wprintw(window, "%d", diffEntry.next);
+        wattroff(window, A_BOLD | A_COLOR);
+        diffLine++;
+    }
+
+    wrefresh(window);
+
+    keypad(window, 1);
+
+    std::optional<chtype> key;
+    while (!key.has_value() || !(key.value() == KEY_ENTER || key.value() == 10 || key.value() == 27))
+    {
+        key = InputHandler::ReadKeypress({ KEY_ENTER, 10, 27 }, window);
+    }
+
+    werase(window);
+    wrefresh(window);
+    delwin(window);
+}
+
 void Screen::Init()
 {
     initscr();
@@ -707,7 +784,13 @@ void Screen::DrawHUD()
     PrintCenter(m_GameHUDWindow, m_Player.GetName(), 4);
 
     mvwprintw(m_GameHUDWindow, 6, 4, "Level %d", stats.Level);
-    mvwprintw(m_GameHUDWindow, 6, HUDPanelWidth - 14, "XP: %3d/%3d", m_Player.GetXP(), m_Player.GetXPToLevelUp());
+    Components::FillBar xpBar {
+        m_GameHUDWindow, 14, 13, 6, m_Player.GetXP(), m_Player.GetXPToLevelUp(), ColorPairs::WhiteOnYellow
+    };
+    if (stats.Level != Entities::LevelCap)
+    {
+        xpBar.Draw();
+    }
 
     mvwprintw(m_GameHUDWindow, 8, 4, "HP:  %d/%d", stats.Health, stats.MaxHealth);
     mvwprintw(m_GameHUDWindow, 8, HUDPanelWidth - 11, "(%3d%%)", PLAYER_HEALTH_PC);

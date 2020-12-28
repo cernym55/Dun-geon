@@ -84,13 +84,17 @@ bool Controller::TryFight(Direction dir)
         m_EntityManager.KillEntity(targetedCharacter);
 
         // TODO: Different XP rewards
-        // TODO: Display a levelup window
-        int xpGain = 5;
-        m_PlayerEntity.GrantXP(xpGain);
+        int xpGain = 12;
+        const auto oldPlayerStats = m_PlayerEntity.GetStats();
+        bool leveledUp = m_PlayerEntity.GrantXP(xpGain);
 
         std::ostringstream message;
         message << m_PlayerEntity.GetName() << " has gained " << xpGain << " XP.";
         m_Screen.PostMessage(message.str());
+        if (leveledUp)
+        {
+            m_Screen.DisplayLevelUp(oldPlayerStats, m_PlayerEntity.GetStats());
+        }
 
         break;
     }

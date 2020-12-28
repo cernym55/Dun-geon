@@ -61,6 +61,20 @@ public:
      */
     void RollBy(int value);
 
+    /**
+     * @brief Set the value
+     * 
+     * @param value value
+     */
+    inline void SetValue(int value) { m_Value = value; }
+
+    /**
+     * @brief Set the max value
+     * 
+     * @param value value
+     */
+    inline void SetMaxValue(int value) { m_MaxValue = value; }
+
 protected:
     WINDOW* m_Window;
     int m_Size, m_Value, m_MaxValue;
