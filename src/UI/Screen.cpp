@@ -483,8 +483,7 @@ void Screen::DisplayLevelUp(const Entities::Stats& prev, const Entities::Stats& 
     PrintCenter(window, "            ", height - 2);
 
     // Animation
-    int offset = 0;
-    for (; offset < 6; offset++)
+    for (int offset = 0; offset < 6; offset++)
     {
         diffLine = 0;
         for (const auto& diffEntry : diff)
