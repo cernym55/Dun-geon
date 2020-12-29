@@ -489,10 +489,17 @@ void Screen::DisplayLevelUp(const Entities::Stats& prev, const Entities::Stats& 
         diffLine = 0;
         for (const auto& diffEntry : diff)
         {
-            mvwhline(window, 4 + diffLine, 23 + offset, ' ', 3);
+            mvwhline(window, 4 + diffLine, 23 + offset, ' ', 4);
             wattron(window, A_BOLD | COLOR_PAIR(diffEntry.color));
             
-            mvwprintw(window, 4 + diffLine, 23 + offset + 1, "%3d", offset < 5 ? diffEntry.prev : diffEntry.next);
+            if (offset < 5)
+            {
+                mvwprintw(window, 4 + diffLine, 23 + offset, "%4d", diffEntry.prev);
+            }
+            else
+            {
+                mvwprintw(window, 4 + diffLine, 23 + offset + 2, "%d", diffEntry.next);
+            }
 
             wrefresh(window);
             
