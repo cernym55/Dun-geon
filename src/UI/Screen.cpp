@@ -16,6 +16,7 @@
 #include "Worlds/Room.h"
 #include "Worlds/World.h"
 #include "Worlds/WorldManager.h"
+#include <chrono>
 #include <cmath>
 #include <iostream>
 #include <map>
@@ -23,6 +24,7 @@
 #include <ncurses.h>
 #include <sstream>
 #include <string>
+#include <thread>
 
 #define PLAYER_HEALTH_PC std::lround(m_Player.GetStats().Health / 1.0 / m_Player.GetStats().MaxHealth * 100)
 #define PLAYER_MANA_PC   std::lround(m_Player.GetStats().Mana / 1.0 / m_Player.GetStats().MaxMana * 100)
@@ -448,11 +450,12 @@ void Screen::DisplayLevelUp(const Entities::Stats& prev, const Entities::Stats& 
     box(window, 0, 0);
     wattron(window, A_REVERSE);
     PrintCenter(window, " Level Up ", 0);
-    PrintCenter(window, "  Close  ", height - 2);
+    PrintCenter(window, "  Continue  ", height - 2);
     wattroff(window, A_REVERSE);
 
     PrintCenter(window, m_Player.GetName() + " has advanced to level " + std::to_string(next.Level) + "!", 2);
 
+    // First screen
     int diffLine = 0;
     for (const auto& diffEntry : diff)
     {
@@ -461,7 +464,7 @@ void Screen::DisplayLevelUp(const Entities::Stats& prev, const Entities::Stats& 
         mvwprintw(window, 4 + diffLine, 23, "%3d", diffEntry.prev);
         wattroff(window, A_BOLD | A_COLOR);
         waddstr(window, " -> ");
-        wattron(window, A_BOLD | COLOR_PAIR(diffEntry.color));
+        wattron(window, COLOR_PAIR(diffEntry.color));
         wprintw(window, "%d", diffEntry.next);
         wattroff(window, A_BOLD | A_COLOR);
         diffLine++;
@@ -472,6 +475,52 @@ void Screen::DisplayLevelUp(const Entities::Stats& prev, const Entities::Stats& 
     keypad(window, 1);
 
     std::optional<chtype> key;
+    while (!key.has_value() || !(key.value() == KEY_ENTER || key.value() == 10 || key.value() == 27))
+    {
+        key = InputHandler::ReadKeypress({ KEY_ENTER, 10, 27 }, window);
+    }
+
+    PrintCenter(window, "            ", height - 2);
+
+    // Animation
+    int offset = 0;
+    for (; offset < 6; offset++)
+    {
+        diffLine = 0;
+        for (const auto& diffEntry : diff)
+        {
+            mvwhline(window, 4 + diffLine, 23 + offset, ' ', 3);
+            wattron(window, A_BOLD | COLOR_PAIR(diffEntry.color));
+            
+            mvwprintw(window, 4 + diffLine, 23 + offset + 1, "%3d", offset < 5 ? diffEntry.prev : diffEntry.next);
+
+            wrefresh(window);
+            
+            wattroff(window, A_BOLD | A_COLOR);
+            diffLine++;
+        }
+        if (offset < 5)
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+
+    // Second screen
+    diffLine = 0;
+    for (const auto& diffEntry : diff)
+    {
+        wattron(window, COLOR_PAIR(diffEntry.color));
+        mvwprintw(window, 4 + diffLine, 24, "+%d", diffEntry.next - diffEntry.prev);
+        wattroff(window, A_COLOR);
+        wattroff(window, A_BOLD | A_COLOR);
+        diffLine++;
+    }
+
+    wrefresh(window);
+
+    wattron(window, A_REVERSE);
+    PrintCenter(window, "  Close  ", height - 2);
+    wattroff(window, A_REVERSE);
+
+    key.reset();
     while (!key.has_value() || !(key.value() == KEY_ENTER || key.value() == 10 || key.value() == 27))
     {
         key = InputHandler::ReadKeypress({ KEY_ENTER, 10, 27 }, window);
