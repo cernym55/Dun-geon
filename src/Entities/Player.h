@@ -70,7 +70,7 @@ public:
 
     /**
      * @brief Grant the player a set amount of XP
-     * 
+     *
      * @param howMuch how much
      * @return bool true if this causes the player to level up
      */
@@ -85,6 +85,14 @@ private:
      * @brief Grants the player a level
      */
     void LevelUp();
+
+    /**
+     * @brief Calculate the amount of XP needed to advance to the next level
+     *
+     * @param currentLevel current level
+     * @return int XP required
+     */
+    int CalculateXPToNextLevel(int currentLevel) const;
 };
 
 } /* namespace Entities */
