@@ -480,6 +480,7 @@ void InputHandler::ProcessKeypress()
 
 std::optional<chtype> InputHandler::ReadKeypress(const std::vector<chtype>& validInput, WINDOW* window)
 {
+    flushinp();
     chtype ch = wgetch(window);
     auto it   = std::find(validInput.begin(), validInput.end(), ch);
     return it != validInput.end() ? *it : std::optional<chtype>();
