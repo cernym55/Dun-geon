@@ -9,7 +9,7 @@ namespace Entities
 {
 
 Player::Player(const std::string& name, chtype icon)
-    : Character(name, "Duelist", icon, CalculateBaseStatsForLevel(1)),
+    : Character(name, "Duelist", icon, 0, CalculateBaseStatsForLevel(1)),
       m_XP(0),
       m_XPToLevelUp(20),
       m_Dun(0)

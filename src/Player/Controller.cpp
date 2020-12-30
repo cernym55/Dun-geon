@@ -81,10 +81,9 @@ bool Controller::TryFight(Direction dir)
     {
     case Battle::Battle::Result::Victory:
     {
+        int xpGain = targetedCharacter.CalculateXPReward();
         m_EntityManager.KillEntity(targetedCharacter);
 
-        // TODO: Different XP rewards
-        int xpGain = 12;
         const auto oldPlayerStats = m_PlayerEntity.GetStats();
         bool leveledUp = m_PlayerEntity.GrantXP(xpGain);
 

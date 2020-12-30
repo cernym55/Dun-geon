@@ -20,7 +20,8 @@ enum class Type
 class FadingSpirit : public Character
 {
 public:
-    FadingSpirit(int level) : Character("Fading Spirit", "Apparition", 'y' | COLOR_PAIR(UI::ColorPairs::BlackOnDefault) | A_BOLD)
+    FadingSpirit(int level)
+        : Character("Fading Spirit", "Apparition", 's' | COLOR_PAIR(UI::ColorPairs::BlackOnDefault) | A_BOLD, 4)
     {
         m_Stats = CalculateBaseStatsForLevel(level);
         GrantSkill<Battle::SkillCollection::Wail>();
@@ -48,7 +49,7 @@ public:
 class Rat : public Character
 {
 public:
-    Rat(int level) : Character("Rat", "Animal", 'r')
+    Rat(int level) : Character("Rat", "Animal", 'r', 3)
     {
         m_Stats = CalculateBaseStatsForLevel(level);
         GrantSkill<Battle::SkillCollection::Nibble>();
