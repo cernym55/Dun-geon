@@ -33,7 +33,10 @@ Skill::ApplySkillResult AttackSkill::ApplySkill(const BattleProfile& userProfile
 
     bool crit = RNG::Chance(CalculateCritChance(userProfile, targetProfile) / 100.);
     if (crit)
-        damage *= 1.4;
+    {
+        // Guarantee damage will be at least the top end of the damage range, or add 40 %
+        damage = std::max(static_cast<int>(damage * 1.4), damageRange.second);
+    }
 
     targetProfile.Stats.Health -= damage;
 
@@ -63,7 +66,7 @@ int AttackSkill::CalculateHitChance(const BattleProfile& userProfile, const Batt
 
 int AttackSkill::CalculateCritChance(const BattleProfile& userProfile, const BattleProfile& targetProfile) const
 {
-    int levelDifferenceFactor = (targetProfile.Stats.Level - userProfile.Stats.Level) * 0.5;
+    double levelDifferenceFactor = (userProfile.Stats.Level - targetProfile.Stats.Level) * 0.5;
     if (m_Category == Category::Spell)
     {
         return lround(
