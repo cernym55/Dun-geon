@@ -461,7 +461,7 @@ void Screen::DisplayLevelUp(const Entities::Stats& prev, const Entities::Stats& 
     {
         wattron(window, A_BOLD | COLOR_PAIR(diffEntry.color));
         mvwprintw(window, 4 + diffLine, 9, "%s:", diffEntry.statName.c_str());
-        mvwprintw(window, 4 + diffLine, 23, "%3d", diffEntry.prev);
+        mvwprintw(window, 4 + diffLine, 22, "%4d", diffEntry.prev);
         wattroff(window, A_BOLD | A_COLOR);
         waddstr(window, " -> ");
         wattron(window, COLOR_PAIR(diffEntry.color));
@@ -488,7 +488,7 @@ void Screen::DisplayLevelUp(const Entities::Stats& prev, const Entities::Stats& 
         diffLine = 0;
         for (const auto& diffEntry : diff)
         {
-            mvwhline(window, 4 + diffLine, 23 + offset, ' ', 4);
+            mvwhline(window, 4 + diffLine, 22 + offset, ' ', 4);
             wattron(window, A_BOLD | COLOR_PAIR(diffEntry.color));
             
             if (offset < 5)
