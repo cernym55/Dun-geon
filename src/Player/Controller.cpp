@@ -63,7 +63,8 @@ bool Controller::TryFight(Direction dir)
     if (approaching == nullptr || !approaching->Fightable())
         return false;
 
-    if (deduced && !m_Screen.YesNoMessageBox("Are you sure you want to pick a fight with " + approaching->GetName() + "?"))
+    if (deduced
+        && !m_Screen.YesNoMessageBox("Are you sure you want to pick a fight with " + approaching->GetName() + "?"))
     {
         return true;
     }
@@ -76,13 +77,26 @@ bool Controller::TryFight(Direction dir)
     Battle::Battle::Result result = battle.DoBattle();
     m_Screen.CloseSubscreen();
 
-    // TODO: Give the player some rewards
-
     switch (result)
     {
     case Battle::Battle::Result::Victory:
+    {
+        int xpGain = targetedCharacter.CalculateXPReward();
         m_EntityManager.KillEntity(targetedCharacter);
+
+        const auto oldPlayerStats = m_PlayerEntity.GetStats();
+        bool leveledUp = m_PlayerEntity.GrantXP(xpGain);
+
+        std::ostringstream message;
+        message << m_PlayerEntity.GetName() << " has gained " << xpGain << " XP.";
+        m_Screen.PostMessage(message.str());
+        if (leveledUp)
+        {
+            m_Screen.DisplayLevelUp(oldPlayerStats, m_PlayerEntity.GetStats());
+        }
+
         break;
+    }
     case Battle::Battle::Result::GameOver:
     {
         // TODO: Parameterize class name
@@ -92,6 +106,7 @@ bool Controller::TryFight(Direction dir)
                 << "The duelist was defeated\n"
                 << "in battle by " << targetedCharacter.GetName() << ".";
         m_Screen.GameOver(epitaph.str());
+        break;
     }
     default:
         break;

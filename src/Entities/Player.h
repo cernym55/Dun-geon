@@ -68,10 +68,31 @@ public:
      */
     void SetMana(int value);
 
+    /**
+     * @brief Grant the player a set amount of XP
+     *
+     * @param howMuch how much
+     * @return bool true if this causes the player to level up
+     */
+    bool GrantXP(int howMuch);
+
 private:
     int m_XP;
     int m_XPToLevelUp;
     int m_Dun;
+
+    /**
+     * @brief Grants the player a level
+     */
+    void LevelUp();
+
+    /**
+     * @brief Calculate the amount of XP needed to advance to the next level
+     *
+     * @param currentLevel current level
+     * @return int XP required
+     */
+    int CalculateXPToNextLevel(int currentLevel) const;
 };
 
 } /* namespace Entities */

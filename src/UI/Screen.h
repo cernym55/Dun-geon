@@ -170,6 +170,14 @@ public:
     void GameOver(const std::string& epitaph);
 
     /**
+     * @brief Display a window with information about the player leveling up
+     * 
+     * @param prev previous level stats
+     * @param next next level stats
+     */
+    void DisplayLevelUp(const Entities::Stats& prev, const Entities::Stats& next);
+
+    /**
      * @brief Print the string centered on line yPos
      * 
      * @param str string

@@ -9,9 +9,9 @@ namespace Entities
 {
 
 Player::Player(const std::string& name, chtype icon)
-    : Character(name, "Duelist", icon, CalculateBaseStatsForLevel(1)),
+    : Character(name, "Duelist", icon, 0, CalculateBaseStatsForLevel(1)),
       m_XP(0),
-      m_XPToLevelUp(100),
+      m_XPToLevelUp(CalculateXPToNextLevel(1)),
       m_Dun(0)
 {
     GrantSkill<Battle::SkillCollection::Swing>();
@@ -70,6 +70,47 @@ void Player::SetHealth(int value)
 void Player::SetMana(int value)
 {
     m_Stats.Mana = value;
+}
+
+bool Player::GrantXP(int howMuch)
+{
+    if (m_Stats.Level == Entities::LevelCap)
+        return false;
+
+    m_XP += howMuch;
+    if (m_XP >= m_XPToLevelUp)
+    {
+        LevelUp();
+        return true;
+    }
+    return false;
+}
+
+void Player::LevelUp()
+{
+    // Subtract XP points and calculate level gain
+    int newLevel = m_Stats.Level;
+    while (m_XP >= m_XPToLevelUp)
+    {
+        newLevel++;
+        if (newLevel == Entities::LevelCap)
+        {
+            m_XP          = 0;
+            m_XPToLevelUp = 0;
+            break;
+        }
+        m_XP -= m_XPToLevelUp;
+        m_XPToLevelUp = CalculateXPToNextLevel(newLevel);
+    }
+
+    // Change level
+    m_Stats = CalculateBaseStatsForLevel(newLevel);
+}
+
+int Player::CalculateXPToNextLevel(int currentLevel) const
+{
+    static const int BaseRequirement = 15;
+    return lround(BaseRequirement * sqrt(currentLevel) * pow(5.0 / 4.0, (currentLevel - 1) / 4.0));
 }
 
 } /* namespace Entities */

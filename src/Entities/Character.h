@@ -27,12 +27,14 @@ public:
      * @param name name
      * @param description description (default: empty)
      * @param icon icon (default: set to first character of name)
+     * @param baseXPReward base XP reward for killing this (default: 0)
      * @param initialStats initial stats (default: arbitrary values)
      * @param isBlocking blocking attribute (default: true)
      */
     Character(const std::string& name,
               const std::string& description = "",
               chtype icon                    = 0,
+              int baseXPReward               = 0,
               Stats initialStats             = { 1, 1, 1, 1, 1, 1, 1, 1, 1 },
               bool isBlocking                = true);
 
@@ -68,7 +70,7 @@ public:
      *
      * @return Stats stats
      */
-    const Stats& GetStats() const;
+    inline const Stats& GetStats() const { return m_Stats; }
 
     /**
      * @brief Get the skillset
@@ -76,6 +78,13 @@ public:
      * @return auto& skillset
      */
     inline auto& GetSkills() { return m_Skillset; }
+
+    /**
+     * @brief Get the XP reward for killing this
+     *
+     * @return int XP reward
+     */
+    int CalculateXPReward() const;
 
     /**
      * @brief Add a skill to the character's skillset
@@ -86,6 +95,7 @@ public:
     template<typename SkillClass> void GrantSkill(int level = 1) { m_Skillset.emplace_back(new SkillClass()); }
 
 protected:
+    const int m_BaseXPReward;
     Stats m_Stats;
     std::unique_ptr<NPC::Behavior::IMovement> m_MovementBehavior;
     std::vector<std::unique_ptr<Battle::Skill>> m_Skillset;

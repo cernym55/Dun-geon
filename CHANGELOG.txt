@@ -4,7 +4,23 @@
 
 
 
---- v0.3.4 | 11/19/2020 (Latest)
+--- v0.4.0 | 12/16/2020 (Latest)
+ - Added NPCs.
+ - Added battles.
+     The F key can start a battle with a fightable NPC whom the player is facing
+     on the world map. The Fight text command can also be used with an optional
+     direction parameter.
+ - Players can turn around in place on the world map.
+     Either by holding Shift while pressing the WASD keys or by using the Turn
+     text command.
+ - Reworked the base stat system.
+     Strength: Increases melee attack damage
+     Dexterity: Increases chance to hit, melee crit, and chance to dodge
+     Sorcery: Increases spell attack damage and spell crit
+     Wisdom: Increases mana pool
+
+
+--- v0.3.4 | 11/19/2020
  - Command Input window now correctly disappears when triggering an UI action.
  - Entering a new room preserves the player's position in the entrance.
  - Fixed a random crash on game startup.
