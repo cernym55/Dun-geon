@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Entities/Stats.h"
+#include <vector>
 
 namespace Battle
 {
@@ -13,9 +14,17 @@ class BattleProfile
 public:
     Entities::Stats Stats;
 
+    struct
+    {
+        int Physical;
+        // TODO: Add more
+    } Resistances;
+
+    std::vector<Effect> ActiveEffects;
+
     /**
      * @brief Constructor
-     * 
+     *
      * @param stats character stats
      */
     BattleProfile(const Entities::Stats& stats);
