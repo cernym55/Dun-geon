@@ -67,6 +67,7 @@ void Battle::DoPlayerTurn()
 {
     UpdateActiveEffects(m_PlayerProfile);
     m_BattleScreen->DisplayPlayerActiveEffects();
+    m_BattleScreen->DisplayEnemyActiveEffects();
 
     if (m_PlayerProfile.Stats.Health <= 0)
     {
@@ -174,6 +175,7 @@ void Battle::DoEnemyTurn()
 {
     UpdateActiveEffects(m_EnemyProfile);
     m_BattleScreen->DisplayPlayerActiveEffects();
+    m_BattleScreen->DisplayEnemyActiveEffects();
 
     if (m_EnemyProfile.Stats.Health <= 0)
     {

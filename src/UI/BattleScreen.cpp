@@ -452,8 +452,26 @@ void BattleScreen::DisplayPlayerActiveEffects()
         else
             mvwaddstr(window, 0, 1, "Effects: ");
         first = false;
-        std::string effectName = effect->GetName();
-        wprintw(window, "%s(%d)", effectName.c_str(), effect->GetRemainingDuration());
+        wprintw(window, "%s(%d)", effect->GetName().c_str(), effect->GetRemainingDuration());
+    }
+    wrefresh(window);
+    delwin(window);
+}
+
+void BattleScreen::DisplayEnemyActiveEffects()
+{
+    WINDOW* window = newwin(1, ArenaPanelWidth, 0, 0);
+    mvwhline(window, 0, 0, ' ', ArenaPanelWidth);
+    bool first = true;
+    const auto& effects = m_Battle.GetEnemyProfile().ActiveEffects;
+    for (const auto& effect : effects)
+    {
+        if (!first)
+            waddstr(window, ", ");
+        else
+            mvwaddstr(window, 0, 1, "Effects: ");
+        first = false;
+        wprintw(window, "%s(%d)", effect->GetName().c_str(), effect->GetRemainingDuration());
     }
     wrefresh(window);
     delwin(window);

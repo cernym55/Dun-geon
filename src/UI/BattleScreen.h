@@ -156,6 +156,11 @@ public:
      */
     void DisplayPlayerActiveEffects();
 
+    /**
+     * @brief Display effects active on the enemy
+     */
+    void DisplayEnemyActiveEffects();
+
 private:
     /**
      * @brief X position of the skill hover thumbnail
