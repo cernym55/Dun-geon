@@ -439,6 +439,26 @@ void BattleScreen::AppendToLog(const std::string& message)
     m_LogWindow.RefreshContent();
 }
 
+void BattleScreen::DisplayPlayerActiveEffects()
+{
+    WINDOW* window = newwin(1, ArenaPanelWidth, TopPanelHeight - 1, 0);
+    mvwhline(window, 0, 0, ' ', ArenaPanelWidth);
+    bool first = true;
+    const auto& effects = m_Battle.GetPlayerProfile().ActiveEffects;
+    for (const auto& effect : effects)
+    {
+        if (!first)
+            waddstr(window, ", ");
+        else
+            mvwaddstr(window, 0, 1, "Effects: ");
+        first = false;
+        std::string effectName = effect->GetName();
+        wprintw(window, "%s(%d)", effectName.c_str(), effect->GetRemainingDuration());
+    }
+    wrefresh(window);
+    delwin(window);
+}
+
 void BattleScreen::DrawScreenLayout()
 {
     DrawArenaPanel();

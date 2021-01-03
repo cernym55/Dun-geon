@@ -151,6 +151,11 @@ public:
      */
     void AppendToLog(const std::string& message);
 
+    /**
+     * @brief Display effects active on the player
+     */
+    void DisplayPlayerActiveEffects();
+
 private:
     /**
      * @brief X position of the skill hover thumbnail

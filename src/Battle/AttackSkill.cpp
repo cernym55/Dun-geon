@@ -15,7 +15,7 @@ AttackSkill::AttackSkill(Category category,
                          int baseHitChance,
                          int baseCritChance,
                          int baseManaCost)
-    : Skill(category, name, flavorText, longDescription, baseManaCost),
+    : Skill(category, Target::Opponent, name, flavorText, longDescription, baseManaCost),
       m_BaseDamageRange(baseDamageRange),
       m_BaseHitChance(baseHitChance),
       m_BaseCritChance(baseCritChance)
@@ -36,6 +36,12 @@ Skill::ApplySkillResult AttackSkill::ApplySkill(const BattleProfile& userProfile
     {
         // Guarantee damage will be at least the top end of the damage range, or add 40 %
         damage = std::max(static_cast<int>(damage * 1.4), damageRange.second);
+    }
+
+    // Damage modifiers
+    if (m_Category == Category::Melee) // TODO: Rework to check for physical damage type instead of category
+    {
+        damage *= (100 - targetProfile.Resistances.Physical) / 100.0;
     }
 
     targetProfile.Stats.Health -= damage;

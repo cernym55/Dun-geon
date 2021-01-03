@@ -11,7 +11,8 @@ namespace Battle::EffectCollection
  */
 class Brace : public Effect
 {
-    Brace(BattleProfile& user, BattleProfile& target, int duration) : Effect(user, target, duration) {}
+public:
+    Brace(const BattleProfile& user, BattleProfile& target, int duration) : Effect("Brace", user, target, duration) {}
 
     void Apply() override { m_Target.Resistances.Physical += 50; }
 

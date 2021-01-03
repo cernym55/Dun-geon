@@ -4,8 +4,9 @@
 namespace Battle
 {
 
-Effect::Effect(BattleProfile& user, BattleProfile& target, int duration)
+Effect::Effect(const std::string& name, const BattleProfile& user, BattleProfile& target, int duration)
     : OriginalDuration(duration),
+      m_Name(name),
       m_User(user),
       m_Target(target),
       m_RemainingDuration(duration)

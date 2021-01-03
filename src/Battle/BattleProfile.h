@@ -2,6 +2,7 @@
 
 #include "Entities/Stats.h"
 #include "Effect.h"
+#include <memory>
 #include <vector>
 
 namespace Battle
@@ -21,7 +22,7 @@ public:
         // TODO: Add more
     } Resistances;
 
-    std::vector<Effect> ActiveEffects;
+    std::vector<std::unique_ptr<Effect>> ActiveEffects;
 
     /**
      * @brief Constructor
