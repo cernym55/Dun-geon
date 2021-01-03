@@ -204,6 +204,11 @@ private:
      * @brief Battle end animation
      */
     void AnimateBattleEnd();
+
+    /**
+     * @brief Log damage done in a battle.
+     */
+    void LogDamage(const Battle::Skill::ApplySkillResult& result, const std::string& attacker, const std::string& target);
 };
 
 } /* namespace UI */

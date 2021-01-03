@@ -175,11 +175,8 @@ void BattleScreen::AnimatePlayerAttack(const Battle::Skill::ApplySkillResult& di
         wrefresh(m_ArenaPanelWindow);
 
         // Log
-        std::ostringstream ossLog;
-        ossLog << m_Battle.GetPlayer().GetName() << (displayData.IsCrit ? " critically hit " : " hit ")
-               << m_Battle.GetEnemy().GetName() << " for " << displayData.Value << " damage!";
-        AppendToLog(ossLog.str());
-
+        LogDamage(displayData, m_Battle.GetPlayer().GetName(), m_Battle.GetEnemy().GetName());
+        
         // Nameplate animations
         m_EnemyNameplate.FlashBorder(ColorPairs::RedOnDefault, 2, animationPeriodMs);
         m_EnemyNameplate.HealthBar.RollBy(-displayData.Value);
@@ -195,10 +192,7 @@ void BattleScreen::AnimatePlayerAttack(const Battle::Skill::ApplySkillResult& di
         wrefresh(m_ArenaPanelWindow);
 
         // Log
-        std::ostringstream ossLog;
-        ossLog << m_Battle.GetPlayer().GetName() << " missed " << m_Battle.GetEnemy().GetName()
-               << " with their attack!";
-        AppendToLog(ossLog.str());
+        LogDamage(displayData, m_Battle.GetPlayer().GetName(), m_Battle.GetEnemy().GetName());
     }
 
     // Wait a bit, delay is shorter if hit due to animations
@@ -258,10 +252,7 @@ void BattleScreen::AnimateEnemyAttack(const Battle::Skill::ApplySkillResult& dis
         wrefresh(m_ArenaPanelWindow);
 
         // Log
-        std::ostringstream ossLog;
-        ossLog << m_Battle.GetEnemy().GetName() << (displayData.IsCrit ? " critically hit " : " hit ")
-               << m_Battle.GetPlayer().GetName() << " for " << displayData.Value << " damage!";
-        AppendToLog(ossLog.str());
+        LogDamage(displayData, m_Battle.GetEnemy().GetName(), m_Battle.GetPlayer().GetName());
 
         // Nameplate animations
         m_PlayerNameplate.FlashBorder(ColorPairs::RedOnDefault, 2, animationPeriodMs);
@@ -278,10 +269,7 @@ void BattleScreen::AnimateEnemyAttack(const Battle::Skill::ApplySkillResult& dis
         wrefresh(m_ArenaPanelWindow);
 
         // Log
-        std::ostringstream ossLog;
-        ossLog << m_Battle.GetEnemy().GetName() << " missed " << m_Battle.GetPlayer().GetName()
-               << " with their attack!";
-        AppendToLog(ossLog.str());
+        LogDamage(displayData, m_Battle.GetEnemy().GetName(), m_Battle.GetPlayer().GetName());
     }
 
     // Wait a bit, delay is shorter if hit due to animations
@@ -554,6 +542,25 @@ void BattleScreen::AnimateBattleEnd()
     wrefresh(tempSideWindow);
     delwin(tempSideWindow);
     delwin(tempBottomWindow);
+}
+
+void BattleScreen::LogDamage(const Battle::Skill::ApplySkillResult& result,
+                             const std::string& attacker,
+                             const std::string& target)
+{
+    if (result.IsHit)
+    {
+        std::ostringstream ossLog;
+        ossLog << attacker << (result.IsCrit ? " critically hit " : " hit ") << target << " for " << result.Value
+               << " damage!";
+        AppendToLog(ossLog.str());
+    }
+    else
+    {
+        std::ostringstream ossLog;
+        ossLog << attacker << " missed " << target << " with their attack!";
+        AppendToLog(ossLog.str());
+    }
 }
 
 } /* namespace UI */
