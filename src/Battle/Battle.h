@@ -107,6 +107,11 @@ private:
      * @brief Wrap up
      */
     void FinishBattle();
+
+    /**
+     * @brief Perform effect ticks and remove expired effects
+     */
+    void UpdateActiveEffects(BattleProfile& profile);
 };
 
 } /* namespace Battle */

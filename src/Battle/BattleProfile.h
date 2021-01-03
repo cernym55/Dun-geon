@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Entities/Stats.h"
+#include "Effect.h"
 #include <vector>
 
 namespace Battle

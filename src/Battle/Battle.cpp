@@ -65,6 +65,8 @@ const BattleProfile& Battle::GetEnemyProfile() const
 
 void Battle::DoPlayerTurn()
 {
+    UpdateActiveEffects(m_PlayerProfile);
+    
     if (m_PlayerProfile.Stats.Health <= 0)
     {
         m_Result = Result::GameOver;
@@ -129,6 +131,8 @@ ACTION_CHOICE:
 
 void Battle::DoEnemyTurn()
 {
+    UpdateActiveEffects(m_EnemyProfile);
+
     if (m_EnemyProfile.Stats.Health <= 0)
     {
         m_Result = Result::Victory;
@@ -167,6 +171,17 @@ void Battle::FinishBattle()
     // Update remaining player HP/MP
     m_Player.SetHealth(m_PlayerProfile.Stats.Health);
     m_Player.SetMana(m_PlayerProfile.Stats.Mana);
+}
+
+void Battle::UpdateActiveEffects(BattleProfile& profile)
+{
+    for (auto& effect : profile.ActiveEffects)
+    {
+        effect.Tick();
+    }
+    std::remove_if(profile.ActiveEffects.begin(), profile.ActiveEffects.end(), [](Effect& effect) {
+        return effect.GetRemainingDuration() == 0;
+    });
 }
 
 } /* namespace Battle */

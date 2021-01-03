@@ -14,8 +14,8 @@ Effect::Effect(BattleProfile& user, BattleProfile& target, int duration)
 
 void Effect::Tick()
 {
-    m_RemainingDuration--;
     TickAction();
+    m_RemainingDuration--;
 }
 
 void Effect::Refresh()
