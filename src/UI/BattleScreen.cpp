@@ -176,10 +176,13 @@ void BattleScreen::AnimatePlayerAttack(const Battle::Skill::ApplySkillResult& di
 
         // Log
         LogDamage(displayData, m_Battle.GetPlayer().GetName(), m_Battle.GetEnemy().GetName());
-        
+
         // Nameplate animations
-        m_EnemyNameplate.FlashBorder(ColorPairs::RedOnDefault, 2, animationPeriodMs);
-        m_EnemyNameplate.HealthBar.RollBy(-displayData.Value);
+        if (displayData.Value > 0)
+        {
+            m_EnemyNameplate.FlashBorder(ColorPairs::RedOnDefault, 2, animationPeriodMs);
+            m_EnemyNameplate.HealthBar.RollBy(-displayData.Value);
+        }
     }
     else
     {
@@ -255,8 +258,11 @@ void BattleScreen::AnimateEnemyAttack(const Battle::Skill::ApplySkillResult& dis
         LogDamage(displayData, m_Battle.GetEnemy().GetName(), m_Battle.GetPlayer().GetName());
 
         // Nameplate animations
-        m_PlayerNameplate.FlashBorder(ColorPairs::RedOnDefault, 2, animationPeriodMs);
-        m_PlayerNameplate.HealthBar.RollBy(-displayData.Value);
+        if (displayData.Value > 0)
+        {
+            m_PlayerNameplate.FlashBorder(ColorPairs::RedOnDefault, 2, animationPeriodMs);
+            m_PlayerNameplate.HealthBar.RollBy(-displayData.Value);
+        }
     }
     else
     {
@@ -548,19 +554,26 @@ void BattleScreen::LogDamage(const Battle::Skill::ApplySkillResult& result,
                              const std::string& attacker,
                              const std::string& target)
 {
+    std::ostringstream ossLog;
+
     if (result.IsHit)
     {
-        std::ostringstream ossLog;
-        ossLog << attacker << (result.IsCrit ? " critically hit " : " hit ") << target << " for " << result.Value
-               << " damage!";
-        AppendToLog(ossLog.str());
+        if (result.Value == 0)
+        {
+            ossLog << attacker << "'s attack did no damage to " << target << "!";
+        }
+        else
+        {
+            ossLog << attacker << (result.IsCrit ? " critically hit " : " hit ") << target << " for " << result.Value
+                   << " damage!";
+        }
     }
     else
     {
-        std::ostringstream ossLog;
         ossLog << attacker << " missed " << target << " with their attack!";
-        AppendToLog(ossLog.str());
     }
+
+    AppendToLog(ossLog.str());
 }
 
 } /* namespace UI */
