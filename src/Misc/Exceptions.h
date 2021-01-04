@@ -30,3 +30,17 @@ public:
 private:
     std::string m_Message;
 };
+
+/**
+ * @brief Thrown when an unsupported operation is performed
+ */
+class NotSupportedException : public std::exception
+{
+public:
+    NotSupportedException(const std::string& message);
+
+    const char* what() const noexcept override;
+
+private:
+    std::string m_Message;
+};

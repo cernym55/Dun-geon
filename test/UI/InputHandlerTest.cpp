@@ -2,26 +2,14 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
+#include "Helpers.h"
 #include "UI/InputHandler.h"
 #include <vector>
-
-struct NcursesFixture
-{
-    NcursesFixture()
-    {
-        initscr();
-    }
-
-    ~NcursesFixture()
-    {
-        endwin();
-    }
-};
 
 BOOST_FIXTURE_TEST_CASE(ReadKeypressSuccessCase, NcursesFixture)
 {
     static const chtype Input = 'a';
-    const std::vector<chtype> AllowedCharacters{Input, 'b'};
+    const std::vector<chtype> AllowedCharacters { Input, 'b' };
 
     std::optional<chtype> result;
 
@@ -41,7 +29,7 @@ BOOST_FIXTURE_TEST_CASE(ReadKeypressSuccessCase, NcursesFixture)
 BOOST_FIXTURE_TEST_CASE(ReadKeypressInvalidInputCase, NcursesFixture)
 {
     static const chtype Input = 'a';
-    const std::vector<chtype> AllowedCharacters{Input + 1};
+    const std::vector<chtype> AllowedCharacters { Input + 1 };
 
     std::optional<chtype> result;
 

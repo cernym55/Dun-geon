@@ -207,6 +207,8 @@ void HallwayRoomLayout::GenerateAttributes()
     {
         m_VisionRadius = DarknessVisionRadius;
     }
+
+    m_NPCSpawnChance = 0.35;
 }
 
 } /* namespace Worlds::Generation */

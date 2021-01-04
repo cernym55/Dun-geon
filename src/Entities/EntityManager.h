@@ -3,6 +3,7 @@
 #include "Character.h"
 #include "Entity.h"
 #include "Misc/Direction.h"
+#include "NPC/NPCGenerator.h"
 #include "Player.h"
 #include "Worlds/Room.h"
 #include "Worlds/WorldManager.h"
@@ -28,12 +29,20 @@ public:
     EntityManager(Worlds::WorldManager& worldManager, Player& player);
 
     /**
+     * @brief Kill the given (managed) entity, removing it from the world
+     * 
+     * @param entity entity to kill
+     */
+    void KillEntity(Entity& entity);
+
+    /**
      * @brief Take ownership of an entity and assign it to this room's storage
      *
      * @param room room
-     * @param entity entity
+     * @param entity entity owning pointer
+     * @param coords entity position
      */
-    void Store(Worlds::Room& room, Entity& entity);
+    void Store(Worlds::Room& room, std::unique_ptr<Entity>&& entity, Coords coords);
 
     /**
      * @brief Perform behavior for all entities in the current room
@@ -52,28 +61,64 @@ public:
      */
     bool TryMovePlayer(Direction dir);
 
-    /**
-     * @brief Get the entity the character is touching
-     * This is any entity next to the character in the direction of its last move.
+     /**
+     * @brief Get any entity the given entity is touching in the given direction
      *
-     * @param character character
-     * @return const Entity* entity being approached
+     * @param entity entity
+     * @param dir direction
+     * @return Entity* entity being approached in direction
      */
-    const Entity* Approaching(const Character& character) const;
+    Entity* Approaching(const Entity& entity, Direction dir);
+
+    /**
+     * @brief Get any entity the given entity is touching in the given direction
+     *
+     * @param entity entity
+     * @param dir direction
+     * @return const Entity* entity being approached in direction
+     */
+    const Entity* Approaching(const Entity& entity, Direction dir) const;
+
+    /**
+     * @brief Check if the entity can move in the given direction
+     *
+     * @param entity entity
+     * @param dir direction
+     * @return true if can move
+     */
+    bool CanEntityMove(const Entity& entity, Direction dir) const;
+
+    /**
+     * @brief Get the entity's coords
+     *
+     * @param entity entity
+     * @return Coords entity coords
+     */
+    Coords CoordsOf(const Entity& entity) const;
+
+    /**
+     * @brief Get the room the given entity is in
+     * 
+     * @param entity entity
+     * @return const Worlds::Room& entity's room
+     */
+    const Worlds::Room& RoomOf(const Entity& entity) const;
 
 private:
     Worlds::WorldManager& m_WorldManager;
     Player& m_Player;
-    std::unordered_map<Worlds::Room*, std::vector<std::unique_ptr<Entities::Entity>>> m_EntityStorage;
+    NPC::NPCGenerator m_NPCGenerator;
+    std::unordered_map<const Worlds::Room*, std::vector<std::unique_ptr<Entity>>> m_EntityStorage;
+    std::unordered_map<const Entity*, Worlds::Room*> m_RoomsByEntity;
+    std::unordered_map<const Entity*, Coords> m_EntityCoords;
 
     /**
-     * @brief Check if the character can move in the given direction
+     * @brief Move the entity in the given direction
      *
-     * @param character character
+     * @param entity entity
      * @param dir direction
-     * @return true if can move
      */
-    bool CanCharacterMove(const Character& character, Direction dir) const;
+    void MoveEntity(Entity& entity, Direction dir);
 
     /**
      * @brief Get an array of fields surrounding the entity
@@ -114,6 +159,14 @@ private:
      * @param room room
      */
     void Pluck(Entity& entity, Worlds::Room& room);
+
+    /**
+     * @brief Generate NPCs in a given room (assumed empty)
+     * 
+     * @param room room to populate
+     * @param firstEntry whether this is the first time the player has entered the room
+     */
+    void PopulateRoom(Worlds::Room& room, bool firstEntry);
 };
 
 } /* namespace Entities */

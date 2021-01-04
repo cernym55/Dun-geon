@@ -12,7 +12,7 @@ namespace Worlds::Generation
 {
 
 BoxRoomLayout::BoxRoomLayout(const RoomGenerationParameters& parameters)
-    : RoomLayout(parameters)
+    : RoomLayout(parameters), m_Subtype(Subtype::Default)
 {
     BoxRoomLayout::Generate();
 }
@@ -68,6 +68,16 @@ void BoxRoomLayout::Generate()
             m_Map[col][row] = FieldType::Wall;
         }
     }
+
+    // Generate subtype contents
+    switch (m_Subtype)
+    {
+    case Subtype::ColumnsOnly:
+        GenerateColumns();
+        break;
+    default:
+        break;
+    }
 }
 
 void BoxRoomLayout::GenerateAttributes()
@@ -85,6 +95,46 @@ void BoxRoomLayout::GenerateAttributes()
     if (RNG::Chance(m_Parameters.DarknessChance))
     {
         m_VisionRadius = DarknessVisionRadius;
+    }
+
+    // Randomize room subtype
+    double subtypeRoll = RNG::RandomDouble();
+    if (subtypeRoll > 0.75)
+    {
+        m_Subtype = Subtype::ColumnsOnly;
+    }
+
+    m_NPCSpawnChance = 0.55;
+}
+
+void BoxRoomLayout::GenerateColumns()
+{
+    double pattern = RNG::RandomDouble();
+
+    Coords::Scalar hOffset = RNG::RandomInt(2, 5);
+    Coords::Scalar vOffset = 2;
+
+    // Corner columns
+    if (pattern > 0.4)
+    {
+        m_Map[hOffset][vOffset]                              = FieldType::Column;
+        m_Map[m_Width - hOffset - 1][vOffset]                = FieldType::Column;
+        m_Map[hOffset][m_Height - vOffset - 1]               = FieldType::Column;
+        m_Map[m_Width - hOffset - 1][m_Height - vOffset - 1] = FieldType::Column;
+    }
+
+    // Center columns
+    if (pattern < 0.6)
+    {
+        Coords::Scalar hCenter = m_Width / 2;
+        Coords::Scalar vCenter = m_Height / 2;
+
+        if (RNG::Chance(0.5)) vOffset--;
+
+        m_Map[hCenter - hOffset - 1][vCenter - vOffset - 1] = FieldType::Column;
+        m_Map[hCenter + hOffset][vCenter - vOffset - 1]     = FieldType::Column;
+        m_Map[hCenter - hOffset - 1][vCenter + vOffset]     = FieldType::Column;
+        m_Map[hCenter + hOffset][vCenter + vOffset]         = FieldType::Column;
     }
 }
 

@@ -1,4 +1,5 @@
 #include "Entity.h"
+#include "EntityManager.h"
 #include "Misc/Coords.h"
 #include <ncurses.h>
 
@@ -16,9 +17,14 @@ Entity::Entity(const std::string& name,
 {
 }
 
-Coords Entity::GetCoords() const
+Direction Entity::GetNextMove(const EntityManager& entityManager)
 {
-    return m_Coords;
+    return Direction::None;
+}
+
+bool Entity::Fightable() const
+{
+    return false;
 }
 
 bool Entity::IsBlocking() const

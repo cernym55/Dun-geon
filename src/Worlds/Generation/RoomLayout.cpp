@@ -18,12 +18,14 @@ RoomLayout::RoomLayout(const RoomGenerationParameters& parameters)
       m_Height(0),
       m_Parameters(parameters),
       m_CameraStyle(UI::CameraStyle::Fixed),
-      m_VisionRadius(0)
+      m_VisionRadius(0),
+      m_NPCSpawnChance(0)
 {
 }
 
-void RoomLayout::WriteToFields(std::vector<std::vector<Field>>& fields) const
+int RoomLayout::WriteToFields(std::vector<std::vector<Field>>& fields) const
 {
+    int accessibleFieldCount = 0;
     fields.clear();
     fields.resize(m_Width);
     for (Coords::Scalar i = 0; i < m_Width; i++)
@@ -35,15 +37,21 @@ void RoomLayout::WriteToFields(std::vector<std::vector<Field>>& fields) const
             {
             case FieldType::Accessible:
                 fields[i][j].MakeAccessible();
+                accessibleFieldCount++;
                 break;
             case FieldType::Wall:
                 fields[i][j].PlaceEntity(Entities::Wall);
+                break;
+            case FieldType::Column:
+                fields[i][j].PlaceEntity(Entities::Column);
                 break;
             default:
                 break;
             }
         }
     }
+
+    return accessibleFieldCount;
 }
 
 const std::map<Direction, Coords>& RoomLayout::GetEntrances() const
@@ -59,6 +67,11 @@ UI::CameraStyle RoomLayout::GetCameraStyle() const
 int RoomLayout::GetVisionRadius() const
 {
     return m_VisionRadius;
+}
+
+double RoomLayout::GetNPCSpawnChance() const
+{
+    return m_NPCSpawnChance;
 }
 
 void RoomLayout::GenerateAttributes()

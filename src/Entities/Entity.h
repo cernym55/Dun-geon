@@ -8,6 +8,8 @@
 namespace Entities
 {
 
+class EntityManager;
+
 /**
  * @brief An object or character occupying fields on the game map
  */
@@ -26,13 +28,25 @@ public:
            const std::string& description = "",
            chtype icon = 0,
            bool isBlocking = true);
+    
+    /**
+     * @brief Destructor
+     */
+    virtual ~Entity() = default;
 
     /**
-     * @brief Get the coordinates
-     *
-     * @return coordinates
+     * @brief Get the direction of the next move
+     * 
+     * @param entityManager entity manager
      */
-    Coords GetCoords() const;
+    virtual Direction GetNextMove(const EntityManager& entityManager);
+
+    /**
+     * @brief Is this fightable?
+     * 
+     * @return true if fightable
+     */
+    virtual bool Fightable() const;
 
     /**
      * @brief Check if this entity is blocking (can't overlap with other entities)
@@ -67,7 +81,6 @@ protected:
     std::string m_Description;
     chtype m_Icon;
     bool m_Blocking;
-    Coords m_Coords;
 };
 
 } /* namespace Entities */

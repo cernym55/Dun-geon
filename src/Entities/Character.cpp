@@ -1,6 +1,9 @@
 #include "Character.h"
+#include "EntityManager.h"
 #include "Misc/Direction.h"
+#include "NPC/Behavior/WanderingMovement.h"
 #include "Worlds/Room.h"
+#include <cmath>
 #include <ncurses.h>
 #include <string>
 
@@ -10,31 +13,29 @@ namespace Entities
 Character::Character(const std::string& name,
                      const std::string& description,
                      chtype icon,
+                     int baseXPReward,
+                     Stats initialStats,
                      bool isBlocking)
     : Entity(name, description, icon, isBlocking),
-      m_LastMoveDirection(Direction::None)
+      m_BaseXPReward(baseXPReward),
+      m_Stats(initialStats),
+      m_MovementBehavior(std::make_unique<NPC::Behavior::WanderingMovement>(*this))
 {
 }
 
-void Character::Move(Direction dir)
+Direction Character::GetNextMove(const EntityManager& entityManager)
 {
-    m_Coords.Move(dir);
-    m_LastMoveDirection = dir;
+    return m_MovementBehavior->GetNextStep(entityManager);
 }
 
-Direction Character::GetLastMoveDirection() const
+bool Character::Fightable() const
 {
-    return m_LastMoveDirection;
+    return true;
 }
 
-Stats& Character::GetStats()
+int Character::CalculateXPReward() const
 {
-    return m_Stats;
-}
-
-const Stats& Character::GetStats() const
-{
-    return m_Stats;
+    return lround(m_BaseXPReward * sqrt(m_Stats.Level));
 }
 
 } /* namespace Entities */
