@@ -1,7 +1,6 @@
 #include "FillBar.h"
-#include <chrono>
+#include "Misc/Utils.h"
 #include <cmath>
-#include <thread>
 
 namespace UI::Components
 {
@@ -114,7 +113,7 @@ void FillBar::RollBy(int value)
         if (sgn > 0 && m_Value > targetValue)
             m_Value = targetValue;
         Draw(targetValue);
-        std::this_thread::sleep_for(std::chrono::milliseconds(delayMs));
+        Sleep(delayMs);
     }
 }
 

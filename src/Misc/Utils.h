@@ -54,3 +54,10 @@ int Abs(int x);
  * @return std::string shortened string
  */
 std::string ShortenString(const std::string& str, size_t maxLength);
+
+/**
+ * @brief Delay the current thread for the given number of milliseconds
+ * 
+ * @param ms delay in ms
+ */
+void Sleep(int ms);

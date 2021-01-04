@@ -16,7 +16,6 @@
 #include "Worlds/Room.h"
 #include "Worlds/World.h"
 #include "Worlds/WorldManager.h"
-#include <chrono>
 #include <cmath>
 #include <iostream>
 #include <map>
@@ -24,7 +23,6 @@
 #include <ncurses.h>
 #include <sstream>
 #include <string>
-#include <thread>
 
 #define PLAYER_HEALTH_PC std::lround(m_Player.GetStats().Health / 1.0 / m_Player.GetStats().MaxHealth * 100)
 #define PLAYER_MANA_PC   std::lround(m_Player.GetStats().Mana / 1.0 / m_Player.GetStats().MaxMana * 100)
@@ -506,7 +504,7 @@ void Screen::DisplayLevelUp(const Entities::Stats& prev, const Entities::Stats& 
             diffLine++;
         }
         if (offset < 5)
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            Sleep(100);
     }
 
     // Second screen
