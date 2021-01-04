@@ -4,12 +4,20 @@
 
 
 
---- v0.4.0 | 12/16/2020 (Latest)
+--- v0.4.0 | 01/04/2021 (Latest)
  - Added NPCs.
+     As of now there are two kinds of enemies that can be found in the Dun-geon:
+     Fading Spirits and Rats.
+     These creatures can appear in any room. More may come if you defeat them all, but
+     repeatedly clearing a room will eventually leave it abandoned.
  - Added battles.
      The F key can start a battle with a fightable NPC whom the player is facing
      on the world map. The Fight text command can also be used with an optional
      direction parameter.
+     Battles feature an entirely new UI with lots of eyecandy.
+     The player has two skills: Swing, a melee attack, and Brace, a defense mechanism
+     that reduces physical damage taken on the next turn.
+     More to come!
  - Players can turn around in place on the world map.
      Either by holding Shift while pressing the WASD keys or by using the Turn
      text command.
@@ -18,6 +26,10 @@
      Dexterity: Increases chance to hit, melee crit, and chance to dodge
      Sorcery: Increases spell attack damage and spell crit
      Wisdom: Increases mana pool
+ - Added leveling.
+     Defeating enemies grants XP points. Upon gaining enough, the player levels up,
+     increasing stats.
+ - Box layout rooms sometimes have columns in them.
 
 
 --- v0.3.4 | 11/19/2020
