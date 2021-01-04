@@ -15,6 +15,7 @@ Player::Player(const std::string& name, chtype icon)
       m_Dun(0)
 {
     GrantSkill<Battle::SkillCollection::Swing>();
+    GrantSkill<Battle::SkillCollection::Brace>();
 }
 
 Stats Player::CalculateBaseStatsForLevel(int level) const

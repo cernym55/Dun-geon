@@ -151,6 +151,16 @@ public:
      */
     void AppendToLog(const std::string& message);
 
+    /**
+     * @brief Display effects active on the player
+     */
+    void DisplayPlayerActiveEffects();
+
+    /**
+     * @brief Display effects active on the enemy
+     */
+    void DisplayEnemyActiveEffects();
+
 private:
     /**
      * @brief X position of the skill hover thumbnail
@@ -161,6 +171,8 @@ private:
     WINDOW* m_ArenaPanelWindow;
     WINDOW* m_BottomPanelWindow;
     WINDOW* m_StatPanelWindow;
+    WINDOW* m_PlayerActiveEffectsWindow;
+    WINDOW* m_EnemyActiveEffectsWindow;
     Components::Nameplate m_PlayerNameplate;
     Components::Nameplate m_EnemyNameplate;
     Components::LogWindow m_LogWindow;

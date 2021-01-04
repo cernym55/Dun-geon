@@ -30,6 +30,17 @@ public:
     };
 
     /**
+     * @brief Possible targets for the skill
+     */
+    enum class Target
+    {
+        Opponent,
+        Self,
+        Choice,
+        Both
+    };
+
+    /**
      * @brief Result data for ApplySkill
      */
     struct ApplySkillResult
@@ -53,12 +64,14 @@ public:
      * @brief Constructor
      *
      * @param category skill category
+     * @param targetType skill target type
      * @param name skill name
      * @param flavorText flavor text (up to 24 characters)
      * @param longDescription longer description
      * @param baseManaCost base mana cost
      */
     Skill(Category category,
+          Target targetType,
           const std::string& name,
           const std::string& flavorText,
           const std::string& longDescription,
@@ -93,6 +106,13 @@ public:
     inline Category GetCategory() const { return m_Category; }
 
     /**
+     * @brief Get the Target Type
+     * 
+     * @return Target target type
+     */
+    inline Target GetTargetType() const { return m_TargetType; }
+
+    /**
      * @brief Get the Name
      *
      * @return const std::string& name
@@ -122,6 +142,7 @@ public:
 
 protected:
     Category m_Category;
+    Target m_TargetType;
     std::string m_Name;
     std::string m_FlavorText;
     std::string m_LongDescription;

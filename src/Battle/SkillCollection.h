@@ -1,9 +1,27 @@
 #pragma once
 
+#include "ApplyEffectOnlySkill.h"
 #include "AttackSkill.h"
+#include "EffectCollection.h"
 
 namespace Battle::SkillCollection
 {
+
+class Brace : public ApplyEffectOnlySkill<EffectCollection::Brace>
+{
+public:
+    Brace()
+        : ApplyEffectOnlySkill(Category::Special,
+                               Target::Self,
+                               "Brace",
+                               "Brace for the next blow",
+                               "Increases physical resistance by 50 % for the next turn.",
+                               100,
+                               1,
+                               0)
+    {
+    }
+};
 
 /**
  * @brief Weak melee attack with high Crit chance and no damage scaling (NPC only)
