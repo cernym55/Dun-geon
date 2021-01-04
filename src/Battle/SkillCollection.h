@@ -17,6 +17,7 @@ public:
                                "Brace for the next blow",
                                "Increases physical resistance by 50 % for the next turn.",
                                100,
+                               1,
                                0)
     {
     }

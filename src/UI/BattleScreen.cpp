@@ -17,6 +17,8 @@ BattleScreen::BattleScreen(Battle::Battle& battle, Screen& screen, InputHandler&
       m_ArenaPanelWindow(nullptr),
       m_BottomPanelWindow(nullptr),
       m_StatPanelWindow(nullptr),
+      m_PlayerActiveEffectsWindow(nullptr),
+      m_EnemyActiveEffectsWindow(nullptr),
       m_PlayerNameplate(m_Battle.GetPlayer(),
                         (ArenaPanelWidth - ArenaNameplateWidth) / 2,
                         2 + Components::Nameplate::Height + 3,
@@ -43,6 +45,11 @@ void BattleScreen::Init()
     if (m_StatPanelWindow == nullptr)
         m_StatPanelWindow = newwin(BottomPanelHeight, LogPanelWidth, TopPanelHeight, ArenaPanelWidth);
 
+    if (m_PlayerActiveEffectsWindow == nullptr)
+        m_PlayerActiveEffectsWindow = newwin(1, ArenaPanelWidth, TopPanelHeight - 1, 0);
+    if (m_EnemyActiveEffectsWindow == nullptr)
+        m_EnemyActiveEffectsWindow = newwin(1, ArenaPanelWidth, 0, 0);
+
     m_Screen.Clear();
 
     AnimateBattleStart();
@@ -62,6 +69,14 @@ void BattleScreen::Terminate()
     werase(m_StatPanelWindow);
     wrefresh(m_StatPanelWindow);
     delwin(m_StatPanelWindow);
+
+    werase(m_PlayerActiveEffectsWindow);
+    wrefresh(m_PlayerActiveEffectsWindow);
+    delwin(m_PlayerActiveEffectsWindow);
+
+    werase(m_EnemyActiveEffectsWindow);
+    wrefresh(m_EnemyActiveEffectsWindow);
+    delwin(m_EnemyActiveEffectsWindow);
 
     AnimateBattleEnd();
 }
@@ -441,40 +456,36 @@ void BattleScreen::AppendToLog(const std::string& message)
 
 void BattleScreen::DisplayPlayerActiveEffects()
 {
-    WINDOW* window = newwin(1, ArenaPanelWidth, TopPanelHeight - 1, 0);
-    mvwhline(window, 0, 0, ' ', ArenaPanelWidth);
-    bool first = true;
+    werase(m_PlayerActiveEffectsWindow);
+    bool first          = true;
     const auto& effects = m_Battle.GetPlayerProfile().ActiveEffects;
     for (const auto& effect : effects)
     {
         if (!first)
-            waddstr(window, ", ");
+            waddstr(m_PlayerActiveEffectsWindow, ", ");
         else
-            mvwaddstr(window, 0, 1, "Effects: ");
+            mvwaddstr(m_PlayerActiveEffectsWindow, 0, 1, "Effects: ");
         first = false;
-        wprintw(window, "%s(%d)", effect->GetName().c_str(), effect->GetRemainingDuration());
+        wprintw(m_PlayerActiveEffectsWindow, "%s(%d)", effect->GetName().c_str(), effect->GetRemainingDuration());
     }
-    wrefresh(window);
-    delwin(window);
+    wrefresh(m_PlayerActiveEffectsWindow);
 }
 
 void BattleScreen::DisplayEnemyActiveEffects()
 {
-    WINDOW* window = newwin(1, ArenaPanelWidth, 0, 0);
-    mvwhline(window, 0, 0, ' ', ArenaPanelWidth);
-    bool first = true;
+    werase(m_EnemyActiveEffectsWindow);
+    bool first          = true;
     const auto& effects = m_Battle.GetEnemyProfile().ActiveEffects;
     for (const auto& effect : effects)
     {
         if (!first)
-            waddstr(window, ", ");
+            waddstr(m_EnemyActiveEffectsWindow, ", ");
         else
-            mvwaddstr(window, 0, 1, "Effects: ");
+            mvwaddstr(m_EnemyActiveEffectsWindow, 0, 1, "Effects: ");
         first = false;
-        wprintw(window, "%s(%d)", effect->GetName().c_str(), effect->GetRemainingDuration());
+        wprintw(m_EnemyActiveEffectsWindow, "%s(%d)", effect->GetName().c_str(), effect->GetRemainingDuration());
     }
-    wrefresh(window);
-    delwin(window);
+    wrefresh(m_EnemyActiveEffectsWindow);
 }
 
 void BattleScreen::DrawScreenLayout()

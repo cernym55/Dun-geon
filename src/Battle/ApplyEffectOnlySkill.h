@@ -20,6 +20,7 @@ public:
      * @param flavorText flavor text (up to 24 characters)
      * @param longDescription longer description
      * @param baseHitChance base hit chance
+     * @param baseDuration base duration
      * @param baseManaCost base mana cost
      */
     ApplyEffectOnlySkill(Category category,
@@ -28,9 +29,11 @@ public:
                          const std::string& flavorText,
                          const std::string& longDescription,
                          int baseHitChance,
+                         int baseDuration,
                          int baseManaCost)
         : Skill(category, targetType, name, flavorText, longDescription, baseManaCost),
-          m_BaseHitChance(baseHitChance)
+          m_BaseHitChance(baseHitChance),
+          m_BaseDuration(baseDuration)
     {
     }
 
@@ -52,7 +55,7 @@ public:
         if (hit)
         {
             auto& effect
-                = targetProfile.ActiveEffects.emplace_back(std::make_unique<EffectType>(userProfile, targetProfile, 1));
+                = targetProfile.ActiveEffects.emplace_back(std::make_unique<EffectType>(userProfile, targetProfile, m_BaseDuration));
             effect->Apply();
         }
         return { hit, false, 0 };
@@ -82,6 +85,7 @@ public:
 
 protected:
     int m_BaseHitChance;
+    int m_BaseDuration;
 };
 
 } /* namespace Battle */
