@@ -1,6 +1,8 @@
 #include "Utils.h"
+#include <chrono>
 #include <fstream>
 #include <string>
+#include <thread>
 
 bool fileExists(const std::string& filename)
 {
@@ -27,4 +29,9 @@ std::string ShortenString(const std::string& str, size_t maxLength)
         }
     }
     return out;
+}
+
+void Sleep(int ms)
+{
+    std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }

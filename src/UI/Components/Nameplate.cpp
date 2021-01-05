@@ -1,9 +1,8 @@
 #include "Nameplate.h"
 #include "ColorPairs.h"
 #include "FillBar.h"
+#include "Misc/Utils.h"
 #include "Screen.h"
-#include <chrono>
-#include <thread>
 
 namespace UI::Components
 {
@@ -59,17 +58,15 @@ void Nameplate::Draw()
 
 void Nameplate::FlashBorder(short colorPair, int count, int periodMs)
 {
-    const std::chrono::milliseconds delay(periodMs);
-
     for (int i = 0; i < count; i++)
     {
         if (i != 0)
-            std::this_thread::sleep_for(delay);
+            Sleep(periodMs);
 
         wattron(m_Window, COLOR_PAIR(colorPair));
         DrawBorder();
 
-        std::this_thread::sleep_for(delay);
+        Sleep(periodMs);
 
         wattroff(m_Window, A_COLOR);
         DrawBorder();

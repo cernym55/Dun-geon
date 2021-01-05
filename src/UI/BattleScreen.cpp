@@ -1,10 +1,9 @@
 #include "BattleScreen.h"
 #include "Components/FillBar.h"
+#include "Misc/Utils.h"
 #include <algorithm>
-#include <chrono>
 #include <ncurses.h>
 #include <sstream>
-#include <thread>
 
 using BattleResult = Battle::Battle::Result;
 
@@ -151,26 +150,26 @@ void BattleScreen::AnimatePlayerAttack(const Battle::Skill::ApplySkillResult& di
     // Constants
     constexpr size_t arrowXPos      = ArenaNameplateWidth / 2 + 6;
     constexpr int animationPeriodMs = 100;
-    constexpr int missDelayMs       = 1200;
+    constexpr int postAttackDelayMs = 600;
 
     // Begin drawing the arrow
     wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::YellowOnDefault) | A_BOLD);
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
+    Sleep(animationPeriodMs);
     mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height + 2, arrowXPos, '|');
     wrefresh(m_ArenaPanelWindow);
-    std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
+    Sleep(animationPeriodMs);
 
     if (displayData.IsHit)
     {
         // Finish drawing the arrow
         mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos, '|');
         wrefresh(m_ArenaPanelWindow);
-        std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
+        Sleep(animationPeriodMs);
 
         mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height, arrowXPos, ACS_UARROW);
         wrefresh(m_ArenaPanelWindow);
-        std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
+        Sleep(animationPeriodMs);
 
         // "Hit!"
         wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::RedOnDefault));
@@ -198,6 +197,10 @@ void BattleScreen::AnimatePlayerAttack(const Battle::Skill::ApplySkillResult& di
             m_EnemyNameplate.FlashBorder(ColorPairs::RedOnDefault, 2, animationPeriodMs);
             m_EnemyNameplate.HealthBar.RollBy(-displayData.Value);
         }
+        else
+        {
+            Sleep(animationPeriodMs * 3);
+        }
     }
     else
     {
@@ -205,7 +208,7 @@ void BattleScreen::AnimatePlayerAttack(const Battle::Skill::ApplySkillResult& di
         wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::RedOnDefault));
         mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos, 'X');
         wrefresh(m_ArenaPanelWindow);
-        std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
+        Sleep(animationPeriodMs);
         mvwprintw(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos - 6, "Miss!");
         wrefresh(m_ArenaPanelWindow);
 
@@ -214,7 +217,7 @@ void BattleScreen::AnimatePlayerAttack(const Battle::Skill::ApplySkillResult& di
     }
 
     // Wait a bit, delay is shorter if hit due to animations
-    std::this_thread::sleep_for(std::chrono::milliseconds(missDelayMs / (displayData.IsHit ? 2 : 1)));
+    Sleep(postAttackDelayMs / (displayData.IsHit ? 2 : 0.75));
     wattroff(m_ArenaPanelWindow, A_COLOR | A_BOLD);
     wrefresh(m_ArenaPanelWindow);
 
@@ -226,34 +229,34 @@ void BattleScreen::AnimateEnemyAttack(const Battle::Skill::ApplySkillResult& dis
     // Constants
     constexpr size_t arrowXPos      = ArenaNameplateWidth / 2 - 7;
     constexpr int animationPeriodMs = 100;
-    constexpr int missDelayMs       = 1200;
-    constexpr int preAttackDelayMs  = 800;
+    constexpr int postAttackDelayMs = 600;
+    constexpr int preAttackDelayMs  = 400;
 
     // Skill name
     std::string nameYell = skillName + "!";
     wattron(m_ArenaPanelWindow, A_BOLD);
     mvwaddstr(m_ArenaPanelWindow, Components::Nameplate::Height, arrowXPos + 2, nameYell.c_str());
     wrefresh(m_ArenaPanelWindow);
-    std::this_thread::sleep_for(std::chrono::milliseconds(preAttackDelayMs));
+    Sleep(preAttackDelayMs);
 
     // Begin drawing the arrow
     wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::YellowOnDefault));
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
+    Sleep(animationPeriodMs);
     mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height, arrowXPos, '|');
     wrefresh(m_ArenaPanelWindow);
-    std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
+    Sleep(animationPeriodMs);
 
     if (displayData.IsHit)
     {
         // Finish drawing the arrow
         mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos, '|');
         wrefresh(m_ArenaPanelWindow);
-        std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
+        Sleep(animationPeriodMs);
 
         mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height + 2, arrowXPos, ACS_DARROW);
         wrefresh(m_ArenaPanelWindow);
-        std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
+        Sleep(animationPeriodMs);
 
         // Damage number
         wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::RedOnDefault));
@@ -278,6 +281,11 @@ void BattleScreen::AnimateEnemyAttack(const Battle::Skill::ApplySkillResult& dis
             m_PlayerNameplate.FlashBorder(ColorPairs::RedOnDefault, 2, animationPeriodMs);
             m_PlayerNameplate.HealthBar.RollBy(-displayData.Value);
         }
+        else
+        {
+            Sleep(animationPeriodMs * 3);
+        }
+        
     }
     else
     {
@@ -285,7 +293,7 @@ void BattleScreen::AnimateEnemyAttack(const Battle::Skill::ApplySkillResult& dis
         wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::RedOnDefault));
         mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos, 'X');
         wrefresh(m_ArenaPanelWindow);
-        std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
+        Sleep(animationPeriodMs);
         mvwprintw(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos + 2, "Miss!");
         wrefresh(m_ArenaPanelWindow);
 
@@ -294,7 +302,7 @@ void BattleScreen::AnimateEnemyAttack(const Battle::Skill::ApplySkillResult& dis
     }
 
     // Wait a bit, delay is shorter if hit due to animations
-    std::this_thread::sleep_for(std::chrono::milliseconds(missDelayMs / (displayData.IsHit ? 2 : 1)));
+    Sleep(postAttackDelayMs / (displayData.IsHit ? 2 : 0.75));
     wattroff(m_ArenaPanelWindow, A_COLOR | A_BOLD);
     wrefresh(m_ArenaPanelWindow);
 
@@ -559,7 +567,7 @@ void BattleScreen::AnimateBattleStart()
 
         wrefresh(tempBottomWindow);
         if (i > 0)
-            std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
+            Sleep(animationPeriodMs);
     }
     delwin(tempBottomWindow);
 }
@@ -589,7 +597,7 @@ void BattleScreen::AnimateBattleEnd()
         mvwaddch(tempBottomWindow, BottomPanelHeight - i - 1, ArenaPanelWidth, ACS_BTEE);
 
         wrefresh(tempBottomWindow);
-        std::this_thread::sleep_for(std::chrono::milliseconds(animationPeriodMs));
+        Sleep(animationPeriodMs);
     }
     werase(tempBottomWindow);
     wrefresh(tempBottomWindow);
