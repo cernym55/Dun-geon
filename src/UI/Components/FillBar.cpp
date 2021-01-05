@@ -1,5 +1,6 @@
 #include "FillBar.h"
 #include "Misc/Utils.h"
+#include <algorithm>
 #include <cmath>
 
 namespace UI::Components
@@ -95,8 +96,8 @@ void FillBar::MoveBy(int value)
 
 void FillBar::RollBy(int value)
 {
-    constexpr int delayMs = 60;
-    int targetValue       = m_Value + value;
+    constexpr int variableDelayMs = 160;
+    int targetValue               = m_Value + value;
     if (targetValue < 0)
         targetValue = 0;
     else if (targetValue > m_MaxValue)
@@ -106,14 +107,15 @@ void FillBar::RollBy(int value)
     while (m_Value != targetValue)
     {
         int diff = abs(m_Value - targetValue);
-        m_Value += diff != 1 ? sgn * ceil(diff / 10.0) : sgn;
+        m_Value += diff != 1 ? sgn * ceil(diff / 7.5) : sgn;
 
         if (sgn < 0 && m_Value < targetValue)
             m_Value = targetValue;
         if (sgn > 0 && m_Value > targetValue)
             m_Value = targetValue;
         Draw(targetValue);
-        Sleep(delayMs);
+        if (m_Value != targetValue)
+            Sleep(variableDelayMs * std::clamp(1.0 / diff, 0.3, 1.0));
     }
 }
 
