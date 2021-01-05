@@ -157,7 +157,7 @@ void Screen::ShowMap()
         }
 
         key = InputHandler::ReadKeypress(
-            { 'w', KEY_UP, 'd', KEY_RIGHT, 's', KEY_DOWN, 'a', KEY_LEFT, ' ', KEY_ENTER, 10, 27, 'q' }, mapWindow);
+            { 'w', KEY_UP, 'd', KEY_RIGHT, 's', KEY_DOWN, 'a', KEY_LEFT, ' ', KEY_ENTER, 10, 27, 'q', 'm' }, mapWindow);
         if (!key)
             continue;
 
@@ -203,6 +203,7 @@ void Screen::ShowMap()
         case 10:
         case 27:
         case 'q':
+        case 'm':
             done = true;
             break;
         }
