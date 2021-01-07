@@ -44,6 +44,36 @@ Room::Room(WorldManager& worldManager,
             m_Entrances[dir.ToInt()] = nullptr;
         }
     }
+
+    // If there is only one entrance, add the opposite end of the room as a PoI
+    // to prevent revealing the room icon immediately upon entering
+    if (entrances.size() == 1)
+    {
+        const auto& entrance = *entrances.begin();
+        Coords discoveryPoiCoords;
+        switch (entrance.first())
+        {
+        case Direction::Value::Up:
+            discoveryPoiCoords = { entrance.second.X, static_cast<Coords::Scalar>(m_Height - 1) };
+            break;
+        case Direction::Value::Right:
+            discoveryPoiCoords = { 0, entrance.second.Y };
+            break;
+        case Direction::Value::Down:
+            discoveryPoiCoords = { entrance.second.X, 0 };
+            break;
+        case Direction::Value::Left:
+            discoveryPoiCoords = { static_cast<Coords::Scalar>(m_Width - 1), entrance.second.Y };
+            break;
+        default:
+            return;
+        }
+        while (!FieldAt(discoveryPoiCoords).IsAccessible())
+        {
+            discoveryPoiCoords.Move(entrance.first);
+        }
+        m_PointsOfInterest.push_back(discoveryPoiCoords);
+    }
 }
 
 Coords Room::GetCoords() const

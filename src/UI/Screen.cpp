@@ -1188,6 +1188,7 @@ WorldMapObjectType Screen::MapObjectType(Coords coords) const
             const auto& neighbor = world.RoomAt(neighborCoords);
             const auto targetEntrance = neighbor.Entrance(dir.Opposite());
 
+            // Entrance in the neighboring room must exist and be discovered
             if (targetEntrance != nullptr && m_RoomDiscovery.count(&neighbor) > 0
                 && m_RoomDiscovery.at(&neighbor).count(targetEntrance->GetCoords()) > 0
                 && m_RoomDiscovery.at(&neighbor).at(targetEntrance->GetCoords()) == true)
