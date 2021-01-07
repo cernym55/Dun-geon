@@ -817,9 +817,8 @@ void Screen::DrawWorld()
             {
                 auto radius = m_CurrentRoom->GetVisionRadius();
                 Coords targetCoords(desiredFieldXPos, desiredFieldYPos);
-                if (radius > 0
-                    && playerCoords.Distance(targetCoords)
-                           > (playerCoords.SharesAxis(targetCoords) ? radius - 1 : radius))
+                auto distance = playerCoords.Distance(targetCoords);
+                if (radius > 0 && distance > (playerCoords.SharesAxis(targetCoords) ? radius - 1 : radius))
                 {
                     mvwaddch(m_GameWorldWindow, j, i, DefaultFieldIcon);
                 }
@@ -827,7 +826,8 @@ void Screen::DrawWorld()
                 {
                     // Field is visible
                     // Check if we should add a discovery entry
-                    if (m_RoomDiscovery.at(m_CurrentRoom).count(targetCoords) > 0)
+                    if (m_RoomDiscovery.at(m_CurrentRoom).count(targetCoords) > 0
+                        && (radius == 0 || distance < (playerCoords.SharesAxis(targetCoords) ? radius - 1 : radius)))
                     {
                         m_RoomDiscovery.at(m_CurrentRoom).at(targetCoords) = true;
                     }
