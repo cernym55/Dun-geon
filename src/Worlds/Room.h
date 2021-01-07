@@ -149,6 +149,13 @@ public:
      */
     double GetNPCSpawnChance() const;
 
+    /**
+     * @brief Get the points of interest
+     * 
+     * @return const std::vector<Coords>& points of interest
+     */
+    inline const std::vector<Coords>& GetPointsOfInterest() const { return m_PointsOfInterest; }
+
 protected:
     WorldManager& m_WorldManager;
     World& m_World;
@@ -162,6 +169,7 @@ protected:
     int m_VisionRadius;
     int m_AccessibleFieldCount;
     double m_NPCSpawnChance;
+    std::vector<Coords> m_PointsOfInterest;
 };
 
 } /* namespace Worlds */

@@ -34,7 +34,15 @@ Room::Room(WorldManager& worldManager,
     const auto& entrances = layout.GetEntrances();
     for (const auto& dir : Direction::All)
     {
-        m_Entrances[dir.ToInt()] = entrances.count(dir) > 0 ? &FieldAt(entrances.at(dir)) : nullptr;
+        if (entrances.count(dir) > 0)
+        {
+            m_Entrances[dir.ToInt()] = &FieldAt(entrances.at(dir));
+            m_PointsOfInterest.push_back(entrances.at(dir));
+        }
+        else
+        {
+            m_Entrances[dir.ToInt()] = nullptr;
+        }
     }
 }
 

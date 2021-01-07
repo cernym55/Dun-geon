@@ -774,6 +774,15 @@ void Screen::DrawWorld()
     {
         m_CurrentRoom = &m_WorldManager.CurrentRoom();
         ResizeWorldWindow();
+
+        // Zero out room discovery if no record exists yet
+        if (m_RoomDiscovery.count(m_CurrentRoom) == 0)
+        {
+            for (const auto& poiCoords : m_CurrentRoom->GetPointsOfInterest())
+            {
+                m_RoomDiscovery[m_CurrentRoom][poiCoords] = false;
+            }
+        }
     }
     int worldY, worldX;
     getmaxyx(m_GameWorldWindow, worldY, worldX);
@@ -816,6 +825,13 @@ void Screen::DrawWorld()
                 }
                 else
                 {
+                    // Field is visible
+                    // Check if we should add a discovery entry
+                    if (m_RoomDiscovery.at(m_CurrentRoom).count(targetCoords) > 0)
+                    {
+                        m_RoomDiscovery.at(m_CurrentRoom).at(targetCoords) = true;
+                    }
+                    
                     mvwaddch(m_GameWorldWindow, j, i, FieldIcon(targetCoords));
                 }
             }
@@ -949,11 +965,17 @@ void Screen::DrawMap(WINDOW* mapWindow, Coords cursor)
             case WorldMapObjectType::Room:
             {
                 const auto& room = world.RoomAt(current);
-                icon             = RoomMapIcon(room);
-                if (room.Entrance(Direction::Left) != nullptr)
+                icon             = IsRoomFullyDiscovered(room) ? RoomMapIcon(room) : '?';
+                if (room.Entrance(Direction::Left) != nullptr
+                    && m_RoomDiscovery.at(&room).at(room.Entrance(Direction::Left)->GetCoords()) == true)
+                {
                     mvwaddch(mapWindow, j + 1, i * 2, ACS_HLINE);
-                if (room.Entrance(Direction::Right) != nullptr)
+                }
+                if (room.Entrance(Direction::Right) != nullptr
+                    && m_RoomDiscovery.at(&room).at(room.Entrance(Direction::Right)->GetCoords()) == true)
+                {
                     mvwaddch(mapWindow, j + 1, i * 2 + 2, ACS_HLINE);
+                }
                 break;
             }
             case WorldMapObjectType::UndiscoveredRoom:
@@ -1158,8 +1180,17 @@ WorldMapObjectType Screen::MapObjectType(Coords coords) const
         // if its neighbors have any entrances leading here.
         for (const auto& dir : Direction::All)
         {
-            if (world.RoomExists(coords.Adjacent(dir))
-                && world.RoomAt(coords.Adjacent(dir)).Entrance(dir.Opposite()) != nullptr)
+            Coords neighborCoords = coords.Adjacent(dir);
+            if (!world.RoomExists(neighborCoords))
+            {
+                continue;
+            }
+            const auto& neighbor = world.RoomAt(neighborCoords);
+            const auto targetEntrance = neighbor.Entrance(dir.Opposite());
+
+            if (targetEntrance != nullptr && m_RoomDiscovery.count(&neighbor) > 0
+                && m_RoomDiscovery.at(&neighbor).count(targetEntrance->GetCoords()) > 0
+                && m_RoomDiscovery.at(&neighbor).at(targetEntrance->GetCoords()) == true)
             {
                 type = WorldMapObjectType::UndiscoveredRoom;
                 break;
@@ -1172,6 +1203,26 @@ WorldMapObjectType Screen::MapObjectType(Coords coords) const
     }
 
     return type;
+}
+
+bool Screen::IsRoomFullyDiscovered(const Worlds::Room& room) const
+{
+    // Must have a record existing
+    if (m_RoomDiscovery.count(&room) == 0)
+    {
+        return false;
+    }
+
+    // Must not have any undiscovered PoIs
+    for (const auto& poi : m_RoomDiscovery.at(&room))
+    {
+        if (poi.second == false)
+        {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 } /* namespace UI */

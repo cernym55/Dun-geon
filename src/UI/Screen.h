@@ -247,6 +247,7 @@ private:
     std::string m_Message;
     bool m_IsWorldMapCursorEnabled;
     std::unique_ptr<Subscreen> m_Subscreen;
+    std::map<const Worlds::Room*, std::unordered_map<Coords, bool>> m_RoomDiscovery;
 
     /**
      * @brief Initialize the screen
@@ -342,6 +343,14 @@ private:
      * @return WorldMapObjectType object type
      */
     WorldMapObjectType MapObjectType(Coords coords) const;
+
+    /**
+     * @brief Check if the given room is fully discovered (all 4 directions)
+     * 
+     * @param room room to check
+     * @return true if fully discovered, false otherwise
+     */
+    bool IsRoomFullyDiscovered(const Worlds::Room& room) const;
 };
 
 } /* namespace UI */
