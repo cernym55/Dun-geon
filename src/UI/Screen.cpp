@@ -965,7 +965,7 @@ void Screen::DrawMap(WINDOW* mapWindow, Coords cursor)
             case WorldMapObjectType::Room:
             {
                 const auto& room = world.RoomAt(current);
-                icon             = IsRoomFullyDiscovered(room) ? RoomMapIcon(room) : '?';
+                icon             = IsRoomFullyDiscovered(room) ? RoomMapIcon(room) : ('?' | A_REVERSE);
                 if (room.Entrance(Direction::Left) != nullptr
                     && m_RoomDiscovery.at(&room).at(room.Entrance(Direction::Left)->GetCoords()) == true)
                 {
@@ -979,7 +979,7 @@ void Screen::DrawMap(WINDOW* mapWindow, Coords cursor)
                 break;
             }
             case WorldMapObjectType::UndiscoveredRoom:
-                icon = '?';
+                icon = '?' | A_BOLD | COLOR_PAIR(ColorPairs::BlackOnDefault);
                 break;
             }
 
@@ -987,7 +987,8 @@ void Screen::DrawMap(WINDOW* mapWindow, Coords cursor)
             bool isCurrentRoom = m_WorldManager.CurrentRoom().GetCoords() == current;
             if (m_IsWorldMapCursorEnabled && cursor == current)
             {
-                icon |= isCurrentRoom ? (COLOR_PAIR(ColorPairs::BlackOnRed)) : (COLOR_PAIR(ColorPairs::BlackOnYellow));
+                icon |= COLOR_PAIR(ColorPairs::BlackOnYellow);
+                icon &= ~A_REVERSE;
             }
             else if (isCurrentRoom)
             {
@@ -1016,6 +1017,8 @@ void Screen::DrawMapTooltip(Coords cursor, WorldMapObjectType objectType)
         lines.push_back("Room " + std::to_string(room.GetRoomNumber()));
         if (m_WorldManager.IsCurrentRoom(room))
             lines.push_back("* You are here *");
+        if (!IsRoomFullyDiscovered(room))
+            lines.push_back("Partially discovered");
         if (room.GetVisionRadius() > 0)
             lines.push_back("It's dark in " + locPronoun + ".");
         break;
