@@ -99,3 +99,13 @@ inline bool operator!=(const Coords& l, const Coords& r)
 }
 
 std::ostream& operator<<(std::ostream& os, const Coords& coords);
+
+template<>
+struct std::hash<Coords>
+{
+    size_t operator()(const Coords& coords) const
+    {
+        std::hash<int32_t> hashFn;
+        return hashFn(coords.X << 16 | coords.Y);
+    }
+};

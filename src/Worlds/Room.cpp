@@ -34,7 +34,45 @@ Room::Room(WorldManager& worldManager,
     const auto& entrances = layout.GetEntrances();
     for (const auto& dir : Direction::All)
     {
-        m_Entrances[dir.ToInt()] = entrances.count(dir) > 0 ? &FieldAt(entrances.at(dir)) : nullptr;
+        if (entrances.count(dir) > 0)
+        {
+            m_Entrances[dir.ToInt()] = &FieldAt(entrances.at(dir));
+            m_PointsOfInterest.push_back(entrances.at(dir));
+        }
+        else
+        {
+            m_Entrances[dir.ToInt()] = nullptr;
+        }
+    }
+
+    // If there is only one entrance, add the opposite end of the room as a PoI
+    // to prevent revealing the room icon immediately upon entering
+    if (entrances.size() == 1)
+    {
+        const auto& entrance = *entrances.begin();
+        Coords discoveryPoiCoords;
+        switch (entrance.first())
+        {
+        case Direction::Value::Up:
+            discoveryPoiCoords = { entrance.second.X, static_cast<Coords::Scalar>(m_Height - 1) };
+            break;
+        case Direction::Value::Right:
+            discoveryPoiCoords = { 0, entrance.second.Y };
+            break;
+        case Direction::Value::Down:
+            discoveryPoiCoords = { entrance.second.X, 0 };
+            break;
+        case Direction::Value::Left:
+            discoveryPoiCoords = { static_cast<Coords::Scalar>(m_Width - 1), entrance.second.Y };
+            break;
+        default:
+            return;
+        }
+        while (!FieldAt(discoveryPoiCoords).IsAccessible())
+        {
+            discoveryPoiCoords.Move(entrance.first);
+        }
+        m_PointsOfInterest.push_back(discoveryPoiCoords);
     }
 }
 
