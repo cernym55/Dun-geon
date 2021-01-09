@@ -88,7 +88,7 @@ public:
      * 
      * @param window window to print to
      */
-    void PrintColor(WINDOW* window) const;
+    void PrintInColor(WINDOW* window) const;
 
 private:
     Value m_Value;

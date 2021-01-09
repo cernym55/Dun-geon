@@ -1,4 +1,5 @@
 #include "DamageType.h"
+#include "Misc/Exceptions.h"
 #include "UI/ColorPairs.h"
 
 namespace Battle
@@ -35,11 +36,11 @@ std::string DamageType::ToString() const
     case Value::Magic:
         return "Magic";
     default:
-        throw;
+        throw InvalidEnumValueException("Attempted to convert invalid damage type value to string");
     }
 }
 
-void DamageType::PrintColor(WINDOW* window) const
+void DamageType::PrintInColor(WINDOW* window) const
 {
     short color;
 
