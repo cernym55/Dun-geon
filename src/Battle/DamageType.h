@@ -84,6 +84,13 @@ public:
     std::string ToString() const;
 
     /**
+     * @brief Get the text color associated with the damage type
+     * 
+     * @return short color pair number
+     */
+    short TextColor() const;
+
+    /**
      * @brief Print the name in color at the current position
      * 
      * @param window window to print to

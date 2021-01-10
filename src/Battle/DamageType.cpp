@@ -40,30 +40,28 @@ std::string DamageType::ToString() const
     }
 }
 
-void DamageType::PrintInColor(WINDOW* window) const
+short DamageType::TextColor() const
 {
-    short color;
-
     switch (m_Value)
     {
     case Value::Physical:
-        color = UI::ColorPairs::WhiteOnDefault;
-        break;
+        return UI::ColorPairs::WhiteOnDefault;
     case Value::Fire:
-        color = UI::ColorPairs::RedOnDefault;
-        break;
+        return UI::ColorPairs::RedOnDefault;
     case Value::Frost:
-        color = UI::ColorPairs::BlueOnDefault;
-        break;
+        return UI::ColorPairs::BlueOnDefault;
     case Value::Poison:
-        color = UI::ColorPairs::GreenOnDefault;
-        break;
+        return UI::ColorPairs::GreenOnDefault;
     case Value::Magic:
-        color = UI::ColorPairs::MagentaOnDefault;
-        break;
+        return UI::ColorPairs::MagentaOnDefault;
+    default:
+        throw InvalidEnumValueException("Attempted to get text color of invalid damage type");
     }
+}
 
-    wattron(window, COLOR_PAIR(color) | A_BOLD);
+void DamageType::PrintInColor(WINDOW* window) const
+{
+    wattron(window, COLOR_PAIR(TextColor()) | A_BOLD);
     waddstr(window, ToString().c_str());
     wattroff(window, A_COLOR | A_BOLD);
 }
