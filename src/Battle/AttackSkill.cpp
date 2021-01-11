@@ -12,11 +12,13 @@ AttackSkill::AttackSkill(Category category,
                          const std::string& flavorText,
                          const std::string& longDescription,
                          const std::pair<int, int>& baseDamageRange,
+                         DamageType damageType,
                          int baseHitChance,
                          int baseCritChance,
                          int baseManaCost)
     : Skill(category, Target::Opponent, name, flavorText, longDescription, baseManaCost),
       m_BaseDamageRange(baseDamageRange),
+      m_DamageType(damageType),
       m_BaseHitChance(baseHitChance),
       m_BaseCritChance(baseCritChance)
 {
@@ -39,10 +41,7 @@ Skill::ApplySkillResult AttackSkill::ApplySkill(const BattleProfile& userProfile
     }
 
     // Damage modifiers
-    if (m_Category == Category::Melee) // TODO: Rework to check for physical damage type instead of category
-    {
-        damage *= (100 - targetProfile.Resistances.Physical) / 100.0;
-    }
+    damage *= (100 - targetProfile.Resistances[m_DamageType.ToInt()]) / 100.0;
 
     targetProfile.Stats.Health -= damage;
 

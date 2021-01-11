@@ -1,5 +1,6 @@
 #pragma once
 
+#include "DamageType.h"
 #include "Skill.h"
 
 namespace Battle
@@ -16,6 +17,7 @@ public:
      * @param flavorText flavor text (up to 24 characters)
      * @param longDescription longer description
      * @param baseDamageRange base damage range
+     * @param damageType damage type
      * @param baseHitChance base hit chance
      * @param baseCritChance base crit chance
      * @param baseManaCost base mana cost
@@ -25,6 +27,7 @@ public:
                 const std::string& flavorText,
                 const std::string& longDescription,
                 const std::pair<int, int>& baseDamageRange,
+                DamageType damageType,
                 int baseHitChance,
                 int baseCritChance,
                 int baseManaCost);
@@ -90,8 +93,16 @@ public:
      */
     int CalculateCritChance(const BattleProfile& userProfile, const BattleProfile& targetProfile) const;
 
+    /**
+     * @brief Get the damage type
+     * 
+     * @return DamageType damage type
+     */
+    inline DamageType GetDamageType() const { return m_DamageType; }
+
 protected:
     std::pair<int, int> m_BaseDamageRange;
+    DamageType m_DamageType;
     int m_BaseHitChance;
     int m_BaseCritChance;
 };
