@@ -1,4 +1,5 @@
 #include "AttackSkill.h"
+#include "Misc/Exceptions.h"
 #include "Misc/RNG.h"
 #include "UI/BattleScreen.h"
 #include <algorithm>
@@ -24,11 +25,16 @@ AttackSkill::AttackSkill(Category category,
 {
 }
 
-Skill::ApplySkillResult AttackSkill::ApplySkill(const BattleProfile& userProfile, BattleProfile& targetProfile)
+void AttackSkill::ApplySkill(const BattleProfile& userProfile, BattleProfile& targetProfile)
 {
+    m_LastApplyResult.reset();
     bool hit = RNG::Chance(CalculateHitChance(userProfile, targetProfile) / 100.);
     if (!hit)
-        return { false, false, 0 };
+    {
+        m_LastApplyResult = std::make_unique<AttackSkillResult>(
+            AttackSkillResult { false, false, DamageInstance { 0, m_DamageType } });
+        return;
+    }
 
     auto damageRange = CalculateEffectiveDamageRange(userProfile, targetProfile);
     int damage       = RNG::RandomInt(damageRange.first, damageRange.second + 1);
@@ -45,13 +51,31 @@ Skill::ApplySkillResult AttackSkill::ApplySkill(const BattleProfile& userProfile
 
     targetProfile.Stats.Health -= damage;
 
-    return { true, crit, damage };
+    m_LastApplyResult = std::make_unique<AttackSkillResult>(
+        AttackSkillResult { true, crit, DamageInstance { damage, m_DamageType } });
 }
 
 void AttackSkill::OnBattleMenuHover(UI::BattleScreen& battleScreen)
 {
     battleScreen.ProjectSkillUse(*this);
     battleScreen.PrintSkillHoverThumbnailInfo(*this);
+}
+
+void AttackSkill::AnimateTo(UI::BattleScreen& battleScreen, bool isPlayer) const
+{
+    if (!m_LastApplyResult)
+    {
+        throw CustomException("AttackSkill::AnimateTo() failed - no last usage record");
+    }
+
+    if (isPlayer)
+    {
+        battleScreen.AnimatePlayerAttack(*m_LastApplyResult);
+    }
+    else
+    {
+        battleScreen.AnimateEnemyAttack(*m_LastApplyResult, m_Name);
+    }
 }
 
 std::pair<int, int> AttackSkill::CalculateEffectiveDamageRange(const BattleProfile& userProfile,

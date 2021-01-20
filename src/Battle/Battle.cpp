@@ -142,7 +142,7 @@ ACTION_CHOICE:
         m_BattleScreen->PostMessage("");
         m_BattleScreen->ClearProjectionArea();
         m_BattleScreen->ClearThumbnailArea();
-        LaunchPlayerAttack(*availableSkills.at(meleeChoice));
+        LaunchAttack(*availableSkills.at(meleeChoice), true);
 
         break;
     }
@@ -157,10 +157,10 @@ ACTION_CHOICE:
             switch (specialSkill->GetTargetType())
             {
             case Skill::Target::Opponent:
-                specialSkill->ApplySkill(m_PlayerProfile, m_EnemyProfile);
+                LaunchAttack(*specialSkill, true);
                 break;
             case Skill::Target::Self:
-                specialSkill->ApplySkill(m_PlayerProfile, m_PlayerProfile);
+                LaunchAttack(*specialSkill, true);
                 break;
             // TODO: Add option to choose target or target both
             default:
@@ -193,19 +193,41 @@ void Battle::DoEnemyTurn()
     }
 
     // Pick random skill
-    LaunchEnemyAttack(*availableSkills.at(RNG::RandomInt(availableSkills.size())));
+    LaunchAttack(*availableSkills.at(RNG::RandomInt(availableSkills.size())), false);
 }
 
-void Battle::LaunchPlayerAttack(Skill& skill)
+void Battle::LaunchAttack(Skill& skill, bool isPlayer)
 {
-    auto result = skill.ApplySkill(m_PlayerProfile, m_EnemyProfile);
-    m_BattleScreen->AnimatePlayerAttack(result);
-}
+    if (isPlayer)
+    {
+        switch (skill.GetTargetType())
+        {
+        case Skill::Target::Opponent:
+            skill.ApplySkill(m_PlayerProfile, m_EnemyProfile);
+            break;
+        case Skill::Target::Self:
+            skill.ApplySkill(m_PlayerProfile, m_PlayerProfile);
+            break;
+        default:
+            break;
+        }
+    }
+    else
+    {
+        switch (skill.GetTargetType())
+        {
+        case Skill::Target::Opponent:
+            skill.ApplySkill(m_EnemyProfile, m_PlayerProfile);
+            break;
+        case Skill::Target::Self:
+            skill.ApplySkill(m_EnemyProfile, m_EnemyProfile);
+            break;
+        default:
+            break;
+        }
+    }
 
-void Battle::LaunchEnemyAttack(Skill& skill)
-{
-    auto result = skill.ApplySkill(m_EnemyProfile, m_PlayerProfile);
-    m_BattleScreen->AnimateEnemyAttack(result, skill.GetName());
+    skill.AnimateTo(*m_BattleScreen, isPlayer);
 }
 
 void Battle::FinishBattle()

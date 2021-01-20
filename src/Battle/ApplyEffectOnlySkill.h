@@ -1,12 +1,18 @@
 #pragma once
 
 #include "Effect.h"
+#include "Misc/Exceptions.h"
 #include "Misc/RNG.h"
 #include "Skill.h"
+#include "UI/BattleScreen.h"
 #include <memory>
 
 namespace Battle
 {
+
+struct ApplyEffectOnlySkillResult : public Skill::SkillResult
+{
+};
 
 template<typename EffectType> class ApplyEffectOnlySkill : public Skill
 {
@@ -47,18 +53,19 @@ public:
      *
      * @param userProfile user battle profile
      * @param targetProfile target battle profile to apply effects to
-     * @return ApplySkillResult result
      */
-    virtual ApplySkillResult ApplySkill(const BattleProfile& userProfile, BattleProfile& targetProfile) override
+    virtual void ApplySkill(const BattleProfile& userProfile, BattleProfile& targetProfile) override
     {
+        m_LastApplyResult.reset();
         bool hit = RNG::Chance(CalculateHitChance(userProfile, targetProfile) / 100.);
         if (hit)
         {
-            auto& effect
-                = targetProfile.ActiveEffects.emplace_back(std::make_unique<EffectType>(userProfile, targetProfile, m_BaseDuration));
+            auto& effect = targetProfile.ActiveEffects.emplace_back(
+                std::make_unique<EffectType>(userProfile, targetProfile, m_BaseDuration));
             effect->Apply();
         }
-        return { hit, false, 0 };
+
+        m_LastApplyResult = std::make_unique<ApplyEffectOnlySkillResult>(ApplyEffectOnlySkillResult { hit });
     }
 
     /**
@@ -69,6 +76,29 @@ public:
     virtual void OnBattleMenuHover(UI::BattleScreen& battleScreen) override
     {
         // TODO
+    }
+
+    /**
+     * @brief Get the SkillResult of the last skill usage
+     *
+     * @param battleScreen battle screen
+     * @param isPlayer true if the user is the player
+     */
+    virtual void AnimateTo(UI::BattleScreen& battleScreen, bool isPlayer) const override
+    {
+        if (!m_LastApplyResult)
+        {
+            throw CustomException("ApplyEffectOnlySkill::AnimateTo() failed - no last usage record");
+        }
+
+        if (isPlayer)
+        {
+            battleScreen.AnimatePlayerAttack(*m_LastApplyResult);
+        }
+        else
+        {
+            battleScreen.AnimateEnemyAttack(*m_LastApplyResult, m_Name);
+        }
     }
 
     /**
@@ -86,6 +116,9 @@ public:
 protected:
     int m_BaseHitChance;
     int m_BaseDuration;
+
+private:
+    std::unique_ptr<ApplyEffectOnlySkillResult> m_LastApplyResult;
 };
 
 } /* namespace Battle */
