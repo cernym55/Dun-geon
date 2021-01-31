@@ -29,7 +29,7 @@ public:
 class Nibble : public AttackSkill
 {
 public:
-    Nibble() : AttackSkill(Category::Melee, "Nibble", "", "", { 1, 3 }, 90, 15, 0) {}
+    Nibble() : AttackSkill(Category::Melee, "Nibble", "", "", { 1, 3 }, DamageType::Physical, 90, 15, 0) {}
 
     inline int CalculateEffectiveDamage(int baseDamage,
                                         const BattleProfile& userProfile,
@@ -51,6 +51,7 @@ public:
                       "Take a swing at your foe",
                       "Reliable basic melee attack.",
                       { 2, 4 },
+                      DamageType::Physical,
                       90,
                       8,
                       0)
@@ -71,7 +72,7 @@ public:
 class Wail : public AttackSkill
 {
 public:
-    Wail() : AttackSkill(Category::Spell, "Wail", "", "", { 2, 3 }, 80, 5, 0) {}
+    Wail() : AttackSkill(Category::Spell, "Wail", "", "", { 2, 3 }, DamageType::Magic, 80, 5, 0) {}
 
     inline int CalculateEffectiveDamage(int baseDamage,
                                         const BattleProfile& userProfile,

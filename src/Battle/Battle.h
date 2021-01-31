@@ -90,18 +90,12 @@ private:
     void DoEnemyTurn();
 
     /**
-     * @brief Launch a player attack against the enemy
+     * @brief Launch an attack
      * 
      * @param skill skill used
+     * @param isPlayer true if the attacker is the player
      */
-    void LaunchPlayerAttack(Skill& skill);
-
-    /**
-     * @brief Launch an enemy attack against the player
-     * 
-     * @param skill skill used
-     */
-    void LaunchEnemyAttack(Skill& skill);
+    void LaunchAttack(Skill& skill, bool isPlayer);
 
     /**
      * @brief Wrap up

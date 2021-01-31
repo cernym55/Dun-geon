@@ -8,6 +8,11 @@
 #include "Screen.h"
 #include "Subscreen.h"
 
+namespace Battle
+{
+class ApplyEffectOnlySkillResult;
+}
+
 namespace UI
 {
 
@@ -108,7 +113,14 @@ public:
      *
      * @param displayData result data to display
      */
-    void AnimatePlayerAttack(const Battle::Skill::ApplySkillResult& displayData);
+    void AnimatePlayerAttack(const Battle::AttackSkill::AttackSkillResult& displayData);
+
+    /**
+     * @brief Animate a player attack
+     *
+     * @param displayData result data to display
+     */
+    void AnimatePlayerAttack(const Battle::ApplyEffectOnlySkillResult& displayData);
 
     /**
      * @brief Animate an enemy attack
@@ -116,7 +128,15 @@ public:
      * @param displayData result data to display
      * @param skillName name of skill used
      */
-    void AnimateEnemyAttack(const Battle::Skill::ApplySkillResult& displayData, const std::string& skillName);
+    void AnimateEnemyAttack(const Battle::AttackSkill::AttackSkillResult& displayData, const std::string& skillName);
+
+    /**
+     * @brief Animate an enemy attack
+     *
+     * @param displayData result data to display
+     * @param skillName name of skill used
+     */
+    void AnimateEnemyAttack(const Battle::ApplyEffectOnlySkillResult& displayData, const std::string& skillName);
 
     /**
      * @brief Display the message after the battle
@@ -218,9 +238,11 @@ private:
     void AnimateBattleEnd();
 
     /**
-     * @brief Log damage done in a battle.
+     * @brief Log an attack
      */
-    void LogDamage(const Battle::Skill::ApplySkillResult& result, const std::string& attacker, const std::string& target);
+    void LogAttack(const Battle::AttackSkill::AttackSkillResult& result,
+                   const std::string& attacker,
+                   const std::string& target);
 };
 
 } /* namespace UI */

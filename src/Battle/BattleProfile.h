@@ -2,6 +2,7 @@
 
 #include "Entities/Stats.h"
 #include "Effect.h"
+#include <array>
 #include <memory>
 #include <vector>
 
@@ -16,11 +17,7 @@ class BattleProfile
 public:
     Entities::Stats Stats;
 
-    struct
-    {
-        int Physical;
-        // TODO: Add more
-    } Resistances;
+    std::array<int, 5> Resistances;
 
     std::vector<std::unique_ptr<Effect>> ActiveEffects;
 

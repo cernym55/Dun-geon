@@ -41,23 +41,14 @@ public:
     };
 
     /**
-     * @brief Result data for ApplySkill
+     * @brief Result data for ApplySkill - base struct
      */
-    struct ApplySkillResult
+    struct SkillResult
     {
         /**
          * @brief Was a hit
          */
         bool IsHit;
-        /**
-         * @brief Was a crit (if applicable)
-         */
-        bool IsCrit;
-
-        /**
-         * @brief Damage or healing value (if applicable)
-         */
-        int Value;
     };
 
     /**
@@ -87,9 +78,9 @@ public:
      *
      * @param userProfile user battle profile
      * @param targetProfile target battle profile to apply effects to
-     * @return ApplySkillResult result
+     * @return std::unique_ptr<SkillResult> result data
      */
-    virtual ApplySkillResult ApplySkill(const BattleProfile& userProfile, BattleProfile& targetProfile) = 0;
+    virtual void ApplySkill(const BattleProfile& userProfile, BattleProfile& targetProfile) = 0;
 
     /**
      * @brief Action to perform when the skill is hovered over in the battle menu
@@ -97,6 +88,14 @@ public:
      * @param battleScreen battle screen
      */
     virtual void OnBattleMenuHover(UI::BattleScreen& battleScreen) = 0;
+
+    /**
+     * @brief Animate the result of the last skill usage on the battle screen
+     * 
+     * @param battleScreen battle screen
+     * @param isPlayer true if the user is the player
+     */
+    virtual void AnimateTo(UI::BattleScreen& battleScreen, bool isPlayer) const = 0;
 
     /**
      * @brief Get the Category

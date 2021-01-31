@@ -14,9 +14,9 @@ class Brace : public Effect
 public:
     Brace(const BattleProfile& user, BattleProfile& target, int duration) : Effect("Brace", user, target, duration) {}
 
-    void Apply() override { m_Target.Resistances.Physical += 50; }
+    void Apply() override { m_Target.Resistances[DamageType::Physical.ToInt()] += 50; }
 
-    void Remove() override { m_Target.Resistances.Physical -= 50; }
+    void Remove() override { m_Target.Resistances[DamageType::Physical.ToInt()] -= 50; }
 
     void TickAction() override
     {

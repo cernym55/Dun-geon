@@ -145,7 +145,7 @@ void BattleScreen::ClearThumbnailArea()
     wrefresh(m_BottomPanelWindow);
 }
 
-void BattleScreen::AnimatePlayerAttack(const Battle::Skill::ApplySkillResult& displayData)
+void BattleScreen::AnimatePlayerAttack(const Battle::AttackSkill::AttackSkillResult& displayData)
 {
     // Constants
     constexpr size_t arrowXPos      = ArenaNameplateWidth / 2 + 6;
@@ -176,10 +176,12 @@ void BattleScreen::AnimatePlayerAttack(const Battle::Skill::ApplySkillResult& di
         mvwprintw(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos - 5, "Hit!");
 
         // Damage number
+        short asteriskColor = displayData.Damage.GetDamageType().TextColor();
+        wattron(m_ArenaPanelWindow, COLOR_PAIR(asteriskColor));
         mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos + 2, '*');
         wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::YellowOnDefault));
-        wprintw(m_ArenaPanelWindow, " %d ", displayData.Value);
-        waddch(m_ArenaPanelWindow, '*' | COLOR_PAIR(ColorPairs::RedOnDefault));
+        wprintw(m_ArenaPanelWindow, " %d ", displayData.Damage.GetValue());
+        waddch(m_ArenaPanelWindow, '*' | COLOR_PAIR(asteriskColor));
 
         // "Crit!"
         if (displayData.IsCrit)
@@ -189,13 +191,13 @@ void BattleScreen::AnimatePlayerAttack(const Battle::Skill::ApplySkillResult& di
         wrefresh(m_ArenaPanelWindow);
 
         // Log
-        LogDamage(displayData, m_Battle.GetPlayer().GetName(), m_Battle.GetEnemy().GetName());
+        LogAttack(displayData, m_Battle.GetPlayer().GetName(), m_Battle.GetEnemy().GetName());
 
         // Nameplate animations
-        if (displayData.Value > 0)
+        if (displayData.Damage.GetValue() > 0)
         {
             m_EnemyNameplate.FlashBorder(ColorPairs::RedOnDefault, 2, animationPeriodMs);
-            m_EnemyNameplate.HealthBar.RollBy(-displayData.Value);
+            m_EnemyNameplate.HealthBar.RollBy(-displayData.Damage.GetValue());
         }
         else
         {
@@ -213,7 +215,7 @@ void BattleScreen::AnimatePlayerAttack(const Battle::Skill::ApplySkillResult& di
         wrefresh(m_ArenaPanelWindow);
 
         // Log
-        LogDamage(displayData, m_Battle.GetPlayer().GetName(), m_Battle.GetEnemy().GetName());
+        LogAttack(displayData, m_Battle.GetPlayer().GetName(), m_Battle.GetEnemy().GetName());
     }
 
     // Wait a bit, delay is shorter if hit due to animations
@@ -224,7 +226,13 @@ void BattleScreen::AnimatePlayerAttack(const Battle::Skill::ApplySkillResult& di
     ClearProjectionArea();
 }
 
-void BattleScreen::AnimateEnemyAttack(const Battle::Skill::ApplySkillResult& displayData, const std::string& skillName)
+void BattleScreen::AnimatePlayerAttack(const Battle::ApplyEffectOnlySkillResult& displayData)
+{
+    // TODO
+}
+
+void BattleScreen::AnimateEnemyAttack(const Battle::AttackSkill::AttackSkillResult& displayData,
+                                      const std::string& skillName)
 {
     // Constants
     constexpr size_t arrowXPos      = ArenaNameplateWidth / 2 - 7;
@@ -259,11 +267,12 @@ void BattleScreen::AnimateEnemyAttack(const Battle::Skill::ApplySkillResult& dis
         Sleep(animationPeriodMs);
 
         // Damage number
-        wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::RedOnDefault));
+        short asteriskColor = displayData.Damage.GetDamageType().TextColor();
+        wattron(m_ArenaPanelWindow, COLOR_PAIR(asteriskColor));
         mvwaddch(m_ArenaPanelWindow, Components::Nameplate::Height + 1, arrowXPos + 2, '*');
         wattron(m_ArenaPanelWindow, COLOR_PAIR(ColorPairs::YellowOnDefault));
-        wprintw(m_ArenaPanelWindow, " %d ", displayData.Value);
-        waddch(m_ArenaPanelWindow, '*' | COLOR_PAIR(ColorPairs::RedOnDefault));
+        wprintw(m_ArenaPanelWindow, " %d ", displayData.Damage.GetValue());
+        waddch(m_ArenaPanelWindow, '*' | COLOR_PAIR(asteriskColor));
 
         // "Crit!"
         if (displayData.IsCrit)
@@ -273,19 +282,18 @@ void BattleScreen::AnimateEnemyAttack(const Battle::Skill::ApplySkillResult& dis
         wrefresh(m_ArenaPanelWindow);
 
         // Log
-        LogDamage(displayData, m_Battle.GetEnemy().GetName(), m_Battle.GetPlayer().GetName());
+        LogAttack(displayData, m_Battle.GetEnemy().GetName(), m_Battle.GetPlayer().GetName());
 
         // Nameplate animations
-        if (displayData.Value > 0)
+        if (displayData.Damage.GetValue() > 0)
         {
             m_PlayerNameplate.FlashBorder(ColorPairs::RedOnDefault, 2, animationPeriodMs);
-            m_PlayerNameplate.HealthBar.RollBy(-displayData.Value);
+            m_PlayerNameplate.HealthBar.RollBy(-displayData.Damage.GetValue());
         }
         else
         {
             Sleep(animationPeriodMs * 3);
         }
-        
     }
     else
     {
@@ -298,7 +306,7 @@ void BattleScreen::AnimateEnemyAttack(const Battle::Skill::ApplySkillResult& dis
         wrefresh(m_ArenaPanelWindow);
 
         // Log
-        LogDamage(displayData, m_Battle.GetEnemy().GetName(), m_Battle.GetPlayer().GetName());
+        LogAttack(displayData, m_Battle.GetEnemy().GetName(), m_Battle.GetPlayer().GetName());
     }
 
     // Wait a bit, delay is shorter if hit due to animations
@@ -307,6 +315,12 @@ void BattleScreen::AnimateEnemyAttack(const Battle::Skill::ApplySkillResult& dis
     wrefresh(m_ArenaPanelWindow);
 
     ClearProjectionArea();
+}
+
+void BattleScreen::AnimateEnemyAttack(const Battle::ApplyEffectOnlySkillResult& displayData,
+                                      const std::string& skillName)
+{
+    // TODO
 }
 
 void BattleScreen::BattleEndMessage(BattleResult result)
@@ -415,14 +429,14 @@ void BattleScreen::PrintSkillHoverThumbnailInfo(const Battle::AttackSkill& attac
     mvwaddstr(m_BottomPanelWindow, 1, SkillHoverThumbnailXPos + 2, weaponName.c_str());
 
     // Attack damage
-    wattron(m_BottomPanelWindow, A_BOLD);
+    wattron(m_BottomPanelWindow, A_BOLD | COLOR_PAIR(attackSkill.GetDamageType().TextColor()));
     mvwprintw(m_BottomPanelWindow, 2, SkillHoverThumbnailXPos + 2, "%d", damageRange.first);
-    wattroff(m_BottomPanelWindow, A_BOLD);
+    wattroff(m_BottomPanelWindow, A_BOLD | A_COLOR);
     waddstr(m_BottomPanelWindow, " - ");
-    wattron(m_BottomPanelWindow, A_BOLD);
+    wattron(m_BottomPanelWindow, A_BOLD | COLOR_PAIR(attackSkill.GetDamageType().TextColor()));
     wprintw(m_BottomPanelWindow, "%d ", damageRange.second);
-    waddstr(m_BottomPanelWindow, "Physical"); // TODO: add after damage types are added
-    wattroff(m_BottomPanelWindow, A_BOLD);
+    waddstr(m_BottomPanelWindow, attackSkill.GetDamageType().ToString().c_str());
+    wattroff(m_BottomPanelWindow, A_BOLD | A_COLOR);
 
     // Hit & crit
     int hitChance  = attackSkill.CalculateHitChance(m_Battle.GetPlayerProfile(), m_Battle.GetEnemyProfile());
@@ -607,7 +621,7 @@ void BattleScreen::AnimateBattleEnd()
     delwin(tempBottomWindow);
 }
 
-void BattleScreen::LogDamage(const Battle::Skill::ApplySkillResult& result,
+void BattleScreen::LogAttack(const Battle::AttackSkill::AttackSkillResult& result,
                              const std::string& attacker,
                              const std::string& target)
 {
@@ -615,14 +629,14 @@ void BattleScreen::LogDamage(const Battle::Skill::ApplySkillResult& result,
 
     if (result.IsHit)
     {
-        if (result.Value == 0)
+        if (result.Damage.GetValue() == 0)
         {
             ossLog << attacker << "'s attack did no damage to " << target << "!";
         }
         else
         {
-            ossLog << attacker << (result.IsCrit ? " critically hit " : " hit ") << target << " for " << result.Value
-                   << " damage!";
+            ossLog << attacker << (result.IsCrit ? " critically hit " : " hit ") << target << " for "
+                   << result.Damage.GetValue() << " damage!";
         }
     }
     else
