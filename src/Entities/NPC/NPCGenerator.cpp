@@ -19,7 +19,16 @@ NPCGenerator::NPCGenerator(EntityManager& entityManager, const Player& player, c
 
 std::unique_ptr<Character> NPCGenerator::CreateRandomEnemy()
 {
-    int enemyLevel = std::clamp(m_Player.GetStats().Level + RNG::RandomInt(-2, 3), 1, Entities::LevelCap);
+    // For now this simple algorithm based on distance and world number will do
+    int roomDistance = m_WorldManager.CurrentRoom().GetCoords().Distance(
+        Coords { Worlds::World::CenterPos, Worlds::World::CenterPos });
+    if (roomDistance > 14)
+    {
+        roomDistance = 14;
+    }
+    int worldBonus = 15 * (m_WorldManager.CurrentWorld().GetWorldNumber() - 1);
+    int enemyLevel = std::clamp(roomDistance + RNG::RandomInt(-1, 2) + worldBonus, 1, Entities::LevelCap);
+
     return CreateRandomEnemyAtLevel(enemyLevel);
 }
 
