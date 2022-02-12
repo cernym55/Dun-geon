@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BattleProfile.h"
+#include "DamageType.h"
 #include "Effect.h"
 
 namespace Battle::EffectCollection

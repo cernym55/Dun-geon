@@ -7,6 +7,9 @@
 namespace Battle::SkillCollection
 {
 
+/**
+ * @brief Single turn physical defense move
+ */
 class Brace : public ApplyEffectOnlySkill<EffectCollection::Brace>
 {
 public:
@@ -15,7 +18,8 @@ public:
                                Target::Self,
                                "Brace",
                                "Brace for the next blow",
-                               "Increases physical resistance by 50 % for the next turn.",
+                               "Increases physical resistance by 50% for the next turn.",
+                               "Next turn:\nPhys. Res. +50%",
                                100,
                                1,
                                0)

@@ -4,8 +4,12 @@
 #include "Misc/Exceptions.h"
 #include "Misc/RNG.h"
 #include "Skill.h"
-#include "UI/BattleScreen.h"
 #include <memory>
+
+namespace UI
+{
+class BattleScreen;
+}
 
 namespace Battle
 {
@@ -25,6 +29,7 @@ public:
      * @param name skill name
      * @param flavorText flavor text (up to 24 characters)
      * @param longDescription longer description
+     * @param effectDescription brief description of the effect
      * @param baseHitChance base hit chance
      * @param baseDuration base duration
      * @param baseManaCost base mana cost
@@ -34,12 +39,14 @@ public:
                          const std::string& name,
                          const std::string& flavorText,
                          const std::string& longDescription,
+                         const std::string& effectDescription,
                          int baseHitChance,
                          int baseDuration,
                          int baseManaCost)
         : Skill(category, targetType, name, flavorText, longDescription, baseManaCost),
           m_BaseHitChance(baseHitChance),
-          m_BaseDuration(baseDuration)
+          m_BaseDuration(baseDuration),
+          m_EffectDescription(effectDescription)
     {
     }
 
@@ -73,10 +80,7 @@ public:
      *
      * @param battleScreen battle screen
      */
-    virtual void OnBattleMenuHover(UI::BattleScreen& battleScreen) override
-    {
-        // TODO
-    }
+    virtual void OnBattleMenuHover(UI::BattleScreen& battleScreen) override;
 
     /**
      * @brief Get the SkillResult of the last skill usage
@@ -84,22 +88,7 @@ public:
      * @param battleScreen battle screen
      * @param isPlayer true if the user is the player
      */
-    virtual void AnimateTo(UI::BattleScreen& battleScreen, bool isPlayer) const override
-    {
-        if (!m_LastApplyResult)
-        {
-            throw CustomException("ApplyEffectOnlySkill::AnimateTo() failed - no last usage record");
-        }
-
-        if (isPlayer)
-        {
-            battleScreen.AnimatePlayerAttack(*m_LastApplyResult);
-        }
-        else
-        {
-            battleScreen.AnimateEnemyAttack(*m_LastApplyResult, m_Name);
-        }
-    }
+    virtual void AnimateTo(UI::BattleScreen& battleScreen, bool isPlayer) const override;
 
     /**
      * @brief Calculate effective hit chance for a particular instance
@@ -113,9 +102,17 @@ public:
         return m_BaseHitChance;
     }
 
+    /**
+     * @brief Get the Effect Description
+     * 
+     * @return const std::string& effect description
+     */
+    inline const std::string& GetEffectDescription() const { return m_EffectDescription; }
+
 protected:
     int m_BaseHitChance;
     int m_BaseDuration;
+    std::string m_EffectDescription;
 
 private:
     std::unique_ptr<ApplyEffectOnlySkillResult> m_LastApplyResult;
