@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 /**
  * @brief Major version number
@@ -54,6 +55,15 @@ int Abs(int x);
  * @return std::string shortened string
  */
 std::string ShortenString(const std::string& str, size_t maxLength);
+
+/**
+ * @brief Split the given string into lines of a given maximum width
+ * 
+ * @param str string to split
+ * @param maxWidth maximum width
+ * @return std::vector<std::string> collection of lines
+ */
+std::vector<std::string> SplitStringIntoLines(std::string str, size_t maxWidth);
 
 /**
  * @brief Delay the current thread for the given number of milliseconds

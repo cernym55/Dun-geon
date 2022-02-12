@@ -1,10 +1,13 @@
 #pragma once
 
+#include "Battle/ApplyEffectOnlySkill.h"
 #include "Battle/AttackSkill.h"
 #include "Battle/Battle.h"
+#include "Battle/Skill.h"
 #include "ColorPairs.h"
 #include "Components/LogWindow.h"
 #include "Components/Nameplate.h"
+#include "Misc/Utils.h"
 #include "Screen.h"
 #include "Subscreen.h"
 
@@ -156,6 +159,49 @@ public:
      * @param skill skill being hovered over
      */
     void DrawSkillHoverThumbnailBase(const Battle::Skill& skill);
+
+    template<typename EffectType>
+    void PrintSkillHoverThumbnailInfo(const Battle::ApplyEffectOnlySkill<EffectType>& applyEffectOnlySkill)
+    {
+        DrawSkillHoverThumbnailBase(applyEffectOnlySkill);
+
+        // Target type
+        std::string targetTypeName;
+        short targetTypeColor;
+        switch (applyEffectOnlySkill.GetTargetType())
+        {
+        case Battle::Skill::Target::Opponent:
+            targetTypeName = "Opponent";
+            targetTypeColor = ColorPairs::RedOnDefault;
+            break;
+        case Battle::Skill::Target::Self:
+            targetTypeName = "Self";
+            targetTypeColor = ColorPairs::GreenOnDefault;
+            break;
+        case Battle::Skill::Target::Choice:
+            targetTypeName = "Choice";
+            targetTypeColor = ColorPairs::CyanOnDefault;
+            break;
+        case Battle::Skill::Target::Both:
+            targetTypeName = "Both";
+            targetTypeColor = ColorPairs::YellowOnDefault;
+            break;
+        }
+        mvwaddstr(m_BottomPanelWindow, 1, SkillHoverThumbnailXPos + 2, "Target ");
+        wattron(m_BottomPanelWindow, A_BOLD | COLOR_PAIR(targetTypeColor));
+        waddstr(m_BottomPanelWindow, targetTypeName.c_str());
+        wattroff(m_BottomPanelWindow, A_BOLD | A_COLOR);
+
+        auto descriptionLines = SplitStringIntoLines(applyEffectOnlySkill.GetEffectDescription(), ArenaPanelWidth - SkillHoverThumbnailXPos - 4);
+        int counter           = 0;
+        for (const auto& line : descriptionLines)
+        {
+            mvwaddstr(m_BottomPanelWindow, 3 + counter, SkillHoverThumbnailXPos + 2, line.c_str());
+            counter++;
+        }
+
+        wrefresh(m_BottomPanelWindow);
+    }
 
     /**
      * @brief Display additional thumbnail info for a given skill type

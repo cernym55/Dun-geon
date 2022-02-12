@@ -76,12 +76,13 @@ void Battle::DoPlayerTurn()
     }
 
     // Filter available options
-    static std::map<int, std::string> actions = { { 0, "Melee" }, { 1, "Ranged" }, { 2, "Spell" }, { 20, "Escape" } };
+    static std::map<int, std::string> actions
+        = { { 0, "Melee" }, { 1, "Ranged" }, { 2, "Spell" }, { 5, "Special" }, { 20, "Escape" } };
     std::map<int, Skill*> specialSkills;
-    int specialSkillNumber = 10;
     bool hasMelee          = false;
     bool hasRanged         = false;
     bool hasSpell          = false;
+    bool hasSpecial        = false;
     for (auto& skill : m_Player.GetSkills())
     {
         if (skill->GetCategory() == Skill::Category::Melee)
@@ -91,11 +92,7 @@ void Battle::DoPlayerTurn()
         else if (skill->GetCategory() == Skill::Category::Spell)
             hasSpell = true;
         else if (skill->GetCategory() == Skill::Category::Special)
-        {
-            actions[specialSkillNumber]       = skill->GetName();
-            specialSkills[specialSkillNumber] = skill.get();
-            specialSkillNumber++;
-        }
+            hasSpecial = true;
     }
     if (!hasMelee)
         actions.erase(0);
@@ -103,70 +100,77 @@ void Battle::DoPlayerTurn()
         actions.erase(1);
     if (!hasSpell)
         actions.erase(2);
+    if (!hasSpecial)
+        actions.erase(5);
 
 ACTION_CHOICE:
     constexpr int RethinkCode = 1000;
     m_BattleScreen->PostMessage("What will " + m_Player.GetName() + " do?");
 
     int choice = m_BattleScreen->SelectPlayerAction(actions);
+    Skill::Category selectedSkillCategory = Skill::Category::Passive;
     switch (choice)
     {
     case 0:
-    {
-        m_BattleScreen->PostMessage("Which attack?");
-        std::map<int, Skill*> availableSkills;
-        std::map<int, std::string> options { { RethinkCode, "<rethink>" } };
-        int counter = 0;
-        for (auto& skill : m_Player.GetSkills())
-        {
-            if (skill->GetCategory() == Skill::Category::Melee)
-            {
-                availableSkills[counter] = skill.get();
-                options[counter]         = skill->GetName();
-                counter++;
-            }
-        }
-
-        int meleeChoice = m_BattleScreen->SelectWithHoverAction(options, [&](auto it) {
-            m_BattleScreen->ClearProjectionArea();
-            m_BattleScreen->ClearThumbnailArea();
-            if (it->first == RethinkCode)
-                return;
-
-            availableSkills.at(it->first)->OnBattleMenuHover(*m_BattleScreen);
-        });
-
-        if (meleeChoice == RethinkCode)
-            goto ACTION_CHOICE;
-
-        m_BattleScreen->PostMessage("");
-        m_BattleScreen->ClearProjectionArea();
-        m_BattleScreen->ClearThumbnailArea();
-        LaunchAttack(*availableSkills.at(meleeChoice), true);
-
+        selectedSkillCategory = Skill::Category::Melee;
+        break;
+    case 1:
+        selectedSkillCategory = Skill::Category::Ranged;
+        break;
+    case 2:
+        selectedSkillCategory = Skill::Category::Spell;
+        break;
+    case 5:
+        selectedSkillCategory = Skill::Category::Special;
         break;
     }
-    case 20:
+
+    if (choice == 20)
+    {
         m_Result = Result::Escape;
-        break;
-    default:
-        if (specialSkills.count(choice) > 0)
+        return;
+    }
+
+    m_BattleScreen->PostMessage("Which skill?");
+    std::map<int, Skill*> availableSkills;
+    std::map<int, std::string> options { { RethinkCode, "<rethink>" } };
+    int counter = 0;
+    for (auto& skill : m_Player.GetSkills())
+    {
+        if (skill->GetCategory() == selectedSkillCategory)
         {
-            auto specialSkill = specialSkills.at(choice);
-            m_BattleScreen->PostMessage(m_Player.GetName() + " uses " + specialSkills.at(choice)->GetName() + "!");
-            switch (specialSkill->GetTargetType())
-            {
-            case Skill::Target::Opponent:
-                LaunchAttack(*specialSkill, true);
-                break;
-            case Skill::Target::Self:
-                LaunchAttack(*specialSkill, true);
-                break;
-            // TODO: Add option to choose target or target both
-            default:
-                break;
-            }
+            availableSkills[counter] = skill.get();
+            options[counter]         = skill->GetName();
+            counter++;
         }
+    }
+
+    int skillChoice = m_BattleScreen->SelectWithHoverAction(options, [&](auto it) {
+        m_BattleScreen->ClearProjectionArea();
+        m_BattleScreen->ClearThumbnailArea();
+        if (it->first == RethinkCode)
+            return;
+
+        availableSkills.at(it->first)->OnBattleMenuHover(*m_BattleScreen);
+    });
+
+    if (skillChoice == RethinkCode)
+        goto ACTION_CHOICE;
+
+    auto& selectedSkill = *availableSkills.at(skillChoice);
+    m_BattleScreen->PostMessage(m_Player.GetName() + " uses " + selectedSkill.GetName() + "!");
+    m_BattleScreen->ClearProjectionArea();
+    m_BattleScreen->ClearThumbnailArea();
+    switch (selectedSkill.GetTargetType())
+    {
+    case Skill::Target::Opponent:
+        LaunchAttack(selectedSkill, true);
+        break;
+    case Skill::Target::Self:
+        LaunchAttack(selectedSkill, true);
+        break;
+    // TODO: Add option to choose target or target both
+    default:
         break;
     }
 }
